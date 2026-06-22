@@ -15,111 +15,6 @@
         }
       }
     }
-
-    var estadosPres = { '0138': 'enviado' };
-
-    var estilosEstado = {
-      borrador: 'bg-slate-200 text-slate-700',
-      enviado: 'bg-amber-100 text-amber-800',
-      revision: 'bg-blue-100 text-blue-800',
-      aprobado: 'bg-emerald-100 text-emerald-800',
-      rechazado: 'bg-red-100 text-red-800',
-      confirmado: 'bg-emerald-600 text-white'
-    };
-
-    var etiquetasEstado = {
-      borrador: 'Borrador',
-      enviado: 'Enviado',
-      revision: 'En Revisión',
-      aprobado: 'Aprobado',
-      rechazado: 'Rechazado',
-      confirmado: 'Confirmado'
-    };
-
-    function actualizarBadgesEstado(presId) {
-      var estado = estadosPres[presId];
-      if (!estado) return;
-      var clase = estilosEstado[estado];
-      var texto = etiquetasEstado[estado];
-      ['badge-estado-' + presId + '-lista', 'badge-estado-' + presId + '-detalle'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (!el) return;
-        el.className = 'text-xs px-2 py-0.5 rounded-full ' + clase;
-        el.textContent = texto;
-      });
-    }
-
-    function actualizarWorkflowVisual(presId) {
-      var estado = estadosPres[presId];
-      var panel = document.getElementById('pres-detalle-' + presId);
-      if (!panel || !estado) return;
-      var orden = ['borrador', 'enviado', 'revision', 'aprobado', 'confirmado'];
-      var idxActual = estado === 'rechazado' ? orden.indexOf('revision') : orden.indexOf(estado);
-      panel.querySelectorAll('.workflow-paso').forEach(function (paso) {
-        var est = paso.getAttribute('data-estado');
-        var idx = orden.indexOf(est);
-        var activo = idx <= idxActual && estado !== 'rechazado';
-        var esActual = est === estado || (estado === 'rechazado' && est === 'revision');
-        paso.className = 'workflow-paso px-2.5 py-1 rounded-full text-xs font-medium ' +
-          (esActual && estado === 'rechazado' ? 'bg-red-100 text-red-800' :
-           esActual ? 'bg-obrados-100 text-obrados-800' :
-           activo ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500');
-      });
-      var msg = document.getElementById('estado-rechazado-msg-' + presId);
-      if (msg) msg.classList.toggle('hidden', estado !== 'rechazado');
-    }
-
-    function renderAccionesEstado(presId) {
-      var estado = estadosPres[presId];
-      var cont = document.getElementById('estado-acciones-' + presId);
-      if (!cont || !estado) return;
-      cont.innerHTML = '';
-      if (estado === 'confirmado') {
-        cont.innerHTML = '<p class="text-sm text-emerald-700">Presupuesto confirmado.</p>';
-        return;
-      }
-      var acciones = {
-        borrador: [{ id: 'btn-enviar', texto: 'Enviar al cliente', clase: 'bg-obrados-600 hover:bg-obrados-700 text-white', siguiente: 'enviado' }],
-        enviado: [{ id: 'btn-revision', texto: 'Marcar en revisión', clase: 'bg-blue-600 hover:bg-blue-700 text-white', siguiente: 'revision' }],
-        revision: [
-          { id: 'btn-aprobar', texto: 'Aprobar', clase: 'bg-emerald-600 hover:bg-emerald-700 text-white', siguiente: 'aprobado' },
-          { id: 'btn-rechazar', texto: 'Rechazar', clase: 'border border-red-300 text-red-700 hover:bg-red-50', siguiente: 'rechazado' }
-        ],
-        aprobado: [{ id: 'btn-confirmar', texto: 'Confirmar presupuesto', clase: 'bg-emerald-600 hover:bg-emerald-700 text-white', siguiente: 'confirmado' }],
-        rechazado: [{ id: 'btn-borrador', texto: 'Volver a borrador', clase: 'border border-slate-300 text-slate-700 hover:bg-slate-50', siguiente: 'borrador' }]
-      };
-      (acciones[estado] || []).forEach(function (acc) {
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.id = acc.id + '-' + presId;
-        btn.textContent = acc.texto;
-        btn.className = 'text-sm px-3 py-1.5 rounded-lg ' + acc.clase;
-        btn.addEventListener('click', function () {
-          if (acc.siguiente === 'confirmado' && estadosPres[presId] !== 'aprobado') return;
-          estadosPres[presId] = acc.siguiente;
-          actualizarBadgesEstado(presId);
-          actualizarWorkflowVisual(presId);
-          renderAccionesEstado(presId);
-        });
-        cont.appendChild(btn);
-      });
-      if (estado !== 'aprobado') {
-        var hint = document.createElement('span');
-        hint.className = 'text-xs text-slate-400 ml-1';
-        hint.textContent = estado === 'borrador' || estado === 'enviado' || estado === 'revision'
-          ? 'La confirmación requiere estado Aprobado' : '';
-        cont.appendChild(hint);
-      }
-    }
-
-    Object.keys(estadosPres).forEach(function (presId) {
-      if (document.getElementById('estado-acciones-' + presId)) {
-        renderAccionesEstado(presId);
-        actualizarBadgesEstado(presId);
-        actualizarWorkflowVisual(presId);
-      }
-    });
-
   </script>
   <style>
     .modulo-panel { display: none; }
@@ -263,7 +158,7 @@
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-semibold text-slate-900">Comercial</h2>
-            <p class="text-sm text-slate-600 mt-1">Presupuestos, duplicación y propuestas comerciales</p>
+            <p class="text-sm text-slate-600 mt-1">Presupuestos, coeficientes, estados y confirmación</p>
           </div>
           <button type="button" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">+ Nuevo presupuesto</button>
         </div>
@@ -340,11 +235,36 @@
         </div>
 
         <div id="pres-detalle-0142" class="pres-detalle">
-<section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6" id="seccion-estado-0142">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Estado del presupuesto</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Flujo comercial hasta confirmación y generación de certificados</p>
+          </div>
+          <div class="px-4 py-4">
+            <div class="flex flex-wrap items-center gap-2 text-xs mb-4" id="workflow-pasos">
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-obrados-100 text-obrados-800 font-medium" data-estado="borrador">Borrador</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="enviado">Enviado</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="revision">En Revisión</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="aprobado">Aprobado</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="confirmado">Confirmado</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2" id="estado-acciones-0142">
+              <button type="button" id="btn-enviar" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-3 py-1.5 rounded-lg">Enviar al cliente</button>
+            </div>
+            <p id="estado-rechazado-msg-0142" class="hidden mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">Presupuesto rechazado. Podés volver a Borrador para renegociar.</p>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
           <div class="px-4 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 class="font-medium text-slate-800">PRES-2026-0142 · Torre Rivadavia</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Inmobiliaria del Plata · Obras Residenciales · Emisión 12/06/2026 · <span style="display:none" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></p>
+              <p class="text-xs text-slate-500 mt-0.5">Inmobiliaria del Plata · Obras Residenciales · Emisión 12/06/2026 · <span id="badge-estado-0142-detalle" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></p>
             </div>
             <div class="flex gap-2">
               <button type="button" data-pres-tab="0143" class="pres-link text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">Duplicar presupuesto</button>
@@ -372,30 +292,30 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50" id="items-0142">
-                  <tr>
+                  <tr data-coef="MO" data-cant="120" data-punit="8500">
                     <td class="px-4 py-2">Demolición y retiro de escombros</td>
                     <td class="px-4 py-2 text-slate-600">m³</td>
                     <td class="px-4 py-2">120</td>
-                    <td class="px-4 py-2">$ 8.500</td>
-                    <td class="px-4 py-2 font-medium">$ 1.020.000</td>
+                    <td class="px-4 py-2 punit">$ 8.500</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 1.020.000</td>
                     <td class="px-4 py-2">40%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
                   </tr>
-                  <tr>
+                  <tr data-coef="Mat" data-cant="1" data-punit="430000">
                     <td class="px-4 py-2">Replanteo y niveles</td>
                     <td class="px-4 py-2 text-slate-600">gl</td>
                     <td class="px-4 py-2">1</td>
-                    <td class="px-4 py-2">$ 430.000</td>
-                    <td class="px-4 py-2 font-medium">$ 430.000</td>
+                    <td class="px-4 py-2 punit">$ 430.000</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 430.000</td>
                     <td class="px-4 py-2">30%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">Mat</span></td>
                   </tr>
-                  <tr>
+                  <tr data-coef="Constr" data-cant="25" data-punit="40000">
                     <td class="px-4 py-2">Hormigón de limpieza</td>
                     <td class="px-4 py-2 text-slate-600">m³</td>
                     <td class="px-4 py-2">25</td>
-                    <td class="px-4 py-2">$ 40.000</td>
-                    <td class="px-4 py-2 font-medium">$ 1.000.000</td>
+                    <td class="px-4 py-2 punit">$ 40.000</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 1.000.000</td>
                     <td class="px-4 py-2">30%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Constr.</span></td>
                   </tr>
@@ -424,21 +344,21 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
-                  <tr>
+                  <tr data-coef="MO" data-cant="2400" data-punit="5200">
                     <td class="px-4 py-2">Revoque exterior hidrófugo</td>
                     <td class="px-4 py-2 text-slate-600">m²</td>
                     <td class="px-4 py-2">2.400</td>
-                    <td class="px-4 py-2">$ 5.200</td>
-                    <td class="px-4 py-2 font-medium">$ 12.480.000</td>
+                    <td class="px-4 py-2 punit">$ 5.200</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 12.480.000</td>
                     <td class="px-4 py-2">55%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
                   </tr>
-                  <tr>
+                  <tr data-coef="Mat" data-cant="1800" data-punit="3200">
                     <td class="px-4 py-2">Aplicación de revestimiento símil piedra</td>
                     <td class="px-4 py-2 text-slate-600">m²</td>
                     <td class="px-4 py-2">1.800</td>
-                    <td class="px-4 py-2">$ 3.200</td>
-                    <td class="px-4 py-2 font-medium">$ 5.760.000</td>
+                    <td class="px-4 py-2 punit">$ 3.200</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 5.760.000</td>
                     <td class="px-4 py-2">45%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">Mat</span></td>
                   </tr>
@@ -467,21 +387,21 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
-                  <tr>
+                  <tr data-coef="Constr" data-cant="3200" data-punit="4800">
                     <td class="px-4 py-2">Mampostería y tabiques interiores</td>
                     <td class="px-4 py-2 text-slate-600">m²</td>
                     <td class="px-4 py-2">3.200</td>
-                    <td class="px-4 py-2">$ 4.800</td>
-                    <td class="px-4 py-2 font-medium">$ 15.360.000</td>
+                    <td class="px-4 py-2 punit">$ 4.800</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 15.360.000</td>
                     <td class="px-4 py-2">50%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Constr.</span></td>
                   </tr>
-                  <tr>
+                  <tr data-coef="MO" data-cant="48" data-punit="265000">
                     <td class="px-4 py-2">Instalaciones eléctricas por unidad</td>
                     <td class="px-4 py-2 text-slate-600">un</td>
                     <td class="px-4 py-2">48</td>
-                    <td class="px-4 py-2">$ 265.000</td>
-                    <td class="px-4 py-2 font-medium">$ 12.720.000</td>
+                    <td class="px-4 py-2 punit">$ 265.000</td>
+                    <td class="px-4 py-2 font-medium total-item">$ 12.720.000</td>
                     <td class="px-4 py-2">50%</td>
                     <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
                   </tr>
@@ -492,10 +412,84 @@
 
           <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <p class="text-sm text-slate-600">Totales calculados automáticamente</p>
-            <p class="text-lg font-semibold text-slate-900">Total presupuesto: $ 48.750.000</span></p>
+            <p class="text-lg font-semibold text-slate-900">Total presupuesto: <span id="total-pres-0142">$ 48.750.000</span></p>
           </div>
         </section>
-<section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6" id="seccion-coeficientes-0142">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Coeficientes de actualización</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Ajuste por inflación según tipo de ítem (MO, Materiales, Construcción)</p>
+          </div>
+          <div class="px-4 py-4 grid sm:grid-cols-4 gap-4 text-sm">
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Mano de obra (MO)</span>
+              <input type="number" id="coef-mo" step="0.01" min="1" value="1.05" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+              <span class="text-xs text-slate-400">Ej. 1,05 = +5%</span>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Materiales (Mat)</span>
+              <input type="number" id="coef-mat" step="0.01" min="1" value="1.03" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Construcción (Constr.)</span>
+              <input type="number" id="coef-constr" step="0.01" min="1" value="1.04" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+            </label>
+            <div class="flex items-end">
+              <button type="button" id="btn-aplicar-coef" class="w-full text-sm bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg">Aplicar coeficientes</button>
+            </div>
+          </div>
+          <div class="px-4 pb-4">
+            <h4 class="text-xs font-medium text-slate-600 uppercase tracking-wide mb-2">Historial de ajustes</h4>
+            <div class="overflow-x-auto border border-slate-200 rounded-lg">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-500 text-left text-xs">
+                  <tr>
+                    <th class="px-3 py-2 font-medium">Fecha</th>
+                    <th class="px-3 py-2 font-medium">Usuario</th>
+                    <th class="px-3 py-2 font-medium">Tipo</th>
+                    <th class="px-3 py-2 font-medium">Coef. anterior</th>
+                    <th class="px-3 py-2 font-medium">Coef. nuevo</th>
+                    <th class="px-3 py-2 font-medium text-right">Total anterior</th>
+                    <th class="px-3 py-2 font-medium text-right">Total nuevo</th>
+                  </tr>
+                </thead>
+                <tbody id="historial-coef-body" class="divide-y divide-slate-100 text-slate-700">
+                  <tr id="historial-vacio">
+                    <td colspan="7" class="px-3 py-4 text-center text-slate-400 text-xs">Sin ajustes registrados</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </section>
+
+        <section id="certificados-generados" class="hidden bg-white rounded-xl border border-emerald-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-emerald-100 bg-emerald-50">
+            <h3 class="font-medium text-emerald-900">Certificados generados</h3>
+            <p class="text-xs text-emerald-700 mt-0.5">Creados automáticamente al confirmar el presupuesto</p>
+          </div>
+          <div class="p-4 grid sm:grid-cols-2 gap-4 text-sm">
+            <div class="border border-slate-200 rounded-lg p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wide">Certificado de obra</p>
+              <p class="font-semibold text-slate-900 mt-1">CERT-OBR-2026-0007</p>
+              <p class="text-slate-600 mt-2">Obra: Torre Rivadavia — 24 pisos</p>
+              <p class="text-slate-600">Cliente: Inmobiliaria del Plata</p>
+              <p class="text-slate-600">Monto base: <span id="cert-obra-monto">$ 48.750.000</span></p>
+              <p class="text-xs text-slate-400 mt-2">Generado el 17/06/2026</p>
+            </div>
+            <div class="border border-slate-200 rounded-lg p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wide">Certificado administrativo</p>
+              <p class="font-semibold text-slate-900 mt-1">CERT-ADM-2026-0003</p>
+              <p class="text-slate-600 mt-2">Vinculado a PRES-2026-0142</p>
+              <p class="text-slate-600">Estado inicial: Pendiente de avances</p>
+              <p class="text-slate-600">Monto contratado: <span id="cert-adm-monto">$ 48.750.000</span></p>
+              <p class="text-xs text-slate-400 mt-2">Generado el 17/06/2026</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
           <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
             <h3 class="font-medium text-slate-800">Documentación del presupuesto</h3>
             <button type="button" class="text-sm border border-dashed border-slate-300 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-50">+ Adjuntar archivo</button>
@@ -688,11 +682,200 @@
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.3">
-    © 2026 ObraDOS · Versión 0.9.3
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.4">
+    © 2026 ObraDOS · Versión 0.9.4
   </footer>
 
   <script>
+    document.querySelectorAll('#nav-modulos .nav-item').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var modulo = btn.getAttribute('data-modulo');
+        document.querySelectorAll('#nav-modulos .nav-item').forEach(function (b) {
+          b.classList.toggle('activo', b === btn);
+        });
+        document.querySelectorAll('.modulo-panel').forEach(function (panel) {
+          panel.classList.toggle('activo', panel.id === 'panel-' + modulo);
+        });
+      });
+    });
+var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
+    var totalAnteriorCoef = 48750000;
+
+    var estilosEstado = {
+      borrador: 'bg-slate-200 text-slate-700',
+      enviado: 'bg-amber-100 text-amber-800',
+      revision: 'bg-blue-100 text-blue-800',
+      aprobado: 'bg-emerald-100 text-emerald-800',
+      rechazado: 'bg-red-100 text-red-800',
+      confirmado: 'bg-emerald-600 text-white'
+    };
+
+    var etiquetasEstado = {
+      borrador: 'Borrador',
+      enviado: 'Enviado',
+      revision: 'En Revisión',
+      aprobado: 'Aprobado',
+      rechazado: 'Rechazado',
+      confirmado: 'Confirmado'
+    };
+
+    function formatMoneda(n) {
+      return '$ ' + Math.round(n).toLocaleString('es-AR');
+    }
+
+    function obtenerTotal0142() {
+      var suma = 0;
+      document.querySelectorAll('#pres-detalle-0142 tr[data-coef]').forEach(function (row) {
+        var cant = parseFloat(row.getAttribute('data-cant'));
+        var punit = parseFloat(row.getAttribute('data-punit'));
+        suma += cant * punit;
+      });
+      return suma;
+    }
+
+    function actualizarTotal0142() {
+      var total = obtenerTotal0142();
+      document.getElementById('total-pres-0142').textContent = formatMoneda(total);
+      document.getElementById('total-lista-0142').textContent = formatMoneda(total);
+      return total;
+    }
+
+    function actualizarBadgesEstado(presId) {
+      var estado = estadosPres[presId];
+      if (!estado) return;
+      var clase = estilosEstado[estado];
+      var texto = etiquetasEstado[estado];
+      ['badge-estado-' + presId + '-lista', 'badge-estado-' + presId + '-detalle'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'text-xs px-2 py-0.5 rounded-full ' + clase;
+        el.textContent = texto;
+      });
+    }
+
+    function actualizarWorkflowVisual(presId) {
+      var estado = estadosPres[presId];
+      var panel = document.getElementById('pres-detalle-' + presId);
+      if (!panel || !estado) return;
+      var orden = ['borrador', 'enviado', 'revision', 'aprobado', 'confirmado'];
+      var idxActual = estado === 'rechazado' ? orden.indexOf('revision') : orden.indexOf(estado);
+      panel.querySelectorAll('.workflow-paso').forEach(function (paso) {
+        var est = paso.getAttribute('data-estado');
+        var idx = orden.indexOf(est);
+        var activo = idx <= idxActual && estado !== 'rechazado';
+        var esActual = est === estado || (estado === 'rechazado' && est === 'revision');
+        paso.className = 'workflow-paso px-2.5 py-1 rounded-full text-xs font-medium ' +
+          (esActual && estado === 'rechazado' ? 'bg-red-100 text-red-800' :
+           esActual ? 'bg-obrados-100 text-obrados-800' :
+           activo ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500');
+      });
+      var msg = document.getElementById('estado-rechazado-msg-' + presId);
+      if (msg) msg.classList.toggle('hidden', estado !== 'rechazado');
+    }
+
+    function renderAccionesEstado(presId) {
+      var estado = estadosPres[presId];
+      var cont = document.getElementById('estado-acciones-' + presId);
+      if (!cont || !estado) return;
+      cont.innerHTML = '';
+      if (estado === 'confirmado') {
+        var confirmMsg = presId === '0142'
+          ? 'Presupuesto confirmado. Certificados de obra y administrativo generados.'
+          : 'Presupuesto confirmado.';
+        cont.innerHTML = '<p class="text-sm text-emerald-700">' + confirmMsg + '</p>';
+        return;
+      }
+      var acciones = {
+        borrador: [{ id: 'btn-enviar', texto: 'Enviar al cliente', clase: 'bg-obrados-600 hover:bg-obrados-700 text-white', siguiente: 'enviado' }],
+        enviado: [{ id: 'btn-revision', texto: 'Marcar en revisión', clase: 'bg-blue-600 hover:bg-blue-700 text-white', siguiente: 'revision' }],
+        revision: [
+          { id: 'btn-aprobar', texto: 'Aprobar', clase: 'bg-emerald-600 hover:bg-emerald-700 text-white', siguiente: 'aprobado' },
+          { id: 'btn-rechazar', texto: 'Rechazar', clase: 'border border-red-300 text-red-700 hover:bg-red-50', siguiente: 'rechazado' }
+        ],
+        aprobado: [{ id: 'btn-confirmar', texto: 'Confirmar presupuesto', clase: 'bg-emerald-600 hover:bg-emerald-700 text-white', siguiente: 'confirmado' }],
+        rechazado: [{ id: 'btn-borrador', texto: 'Volver a borrador', clase: 'border border-slate-300 text-slate-700 hover:bg-slate-50', siguiente: 'borrador' }]
+      };
+      (acciones[estado] || []).forEach(function (acc) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = acc.id + '-' + presId;
+        btn.textContent = acc.texto;
+        btn.className = 'text-sm px-3 py-1.5 rounded-lg ' + acc.clase;
+        btn.addEventListener('click', function () {
+          if (acc.siguiente === 'confirmado' && estadosPres[presId] !== 'aprobado') return;
+          cambiarEstadoPres(presId, acc.siguiente);
+        });
+        cont.appendChild(btn);
+      });
+      if (estado !== 'aprobado') {
+        var hint = document.createElement('span');
+        hint.className = 'text-xs text-slate-400 ml-1';
+        hint.textContent = estado === 'borrador' || estado === 'enviado' || estado === 'revision'
+          ? 'La confirmación requiere estado Aprobado' : '';
+        cont.appendChild(hint);
+      }
+    }
+
+    function bloquearEdicion0142(bloquear) {
+      document.getElementById('btn-aplicar-coef').disabled = bloquear;
+      document.getElementById('btn-aplicar-coef').classList.toggle('opacity-50', bloquear);
+      document.getElementById('btn-aplicar-coef').classList.toggle('cursor-not-allowed', bloquear);
+      ['coef-mo', 'coef-mat', 'coef-constr'].forEach(function (id) {
+        document.getElementById(id).disabled = bloquear;
+      });
+    }
+
+    function cambiarEstadoPres(presId, nuevo) {
+      if (nuevo === 'confirmado' && estadosPres[presId] !== 'aprobado') return;
+      estadosPres[presId] = nuevo;
+      actualizarBadgesEstado(presId);
+      actualizarWorkflowVisual(presId);
+      renderAccionesEstado(presId);
+      if (presId === '0142' && nuevo === 'confirmado') {
+        var total = actualizarTotal0142();
+        document.getElementById('cert-obra-monto').textContent = formatMoneda(total);
+        document.getElementById('cert-adm-monto').textContent = formatMoneda(total);
+        document.getElementById('certificados-generados').classList.remove('hidden');
+        bloquearEdicion0142(true);
+        if (typeof actualizarBannerCertObra === 'function') actualizarBannerCertObra();
+      }
+    }
+
+    function aplicarCoeficientes() {
+      if (estadosPres['0142'] === 'confirmado') return;
+      var coefs = {
+        MO: parseFloat(document.getElementById('coef-mo').value) || 1,
+        Mat: parseFloat(document.getElementById('coef-mat').value) || 1,
+        Constr: parseFloat(document.getElementById('coef-constr').value) || 1
+      };
+      var totalAnt = obtenerTotal0142();
+      Object.keys(coefs).forEach(function (tipo) {
+        document.querySelectorAll('#pres-detalle-0142 tr[data-coef="' + tipo + '"]').forEach(function (row) {
+          var punitAnt = parseFloat(row.getAttribute('data-punit'));
+          var punitNuevo = Math.round(punitAnt * coefs[tipo]);
+          var cant = parseFloat(row.getAttribute('data-cant'));
+          row.setAttribute('data-punit', punitNuevo);
+          row.querySelector('.punit').textContent = formatMoneda(punitNuevo);
+          row.querySelector('.total-item').textContent = formatMoneda(cant * punitNuevo);
+        });
+      });
+      var totalNuevo = actualizarTotal0142();
+      document.getElementById('historial-vacio').classList.add('hidden');
+      var tr = document.createElement('tr');
+      tr.innerHTML =
+        '<td class="px-3 py-2">17/06/2026 14:32</td>' +
+        '<td class="px-3 py-2">Roberto Méndez</td>' +
+        '<td class="px-3 py-2">MO ' + coefs.MO + ' · Mat ' + coefs.Mat + ' · Constr. ' + coefs.Constr + '</td>' +
+        '<td class="px-3 py-2">1,00 / 1,00 / 1,00</td>' +
+        '<td class="px-3 py-2">' + coefs.MO.toFixed(2) + ' / ' + coefs.Mat.toFixed(2) + ' / ' + coefs.Constr.toFixed(2) + '</td>' +
+        '<td class="px-3 py-2 text-right">' + formatMoneda(totalAnt) + '</td>' +
+        '<td class="px-3 py-2 text-right font-medium">' + formatMoneda(totalNuevo) + '</td>';
+      document.getElementById('historial-coef-body').appendChild(tr);
+      totalAnteriorCoef = totalNuevo;
+      document.getElementById('coef-mo').value = '1.00';
+      document.getElementById('coef-mat').value = '1.00';
+      document.getElementById('coef-constr').value = '1.00';
+    }
 
     function activarPresupuesto(id) {
       document.querySelectorAll('.pres-detalle').forEach(function (el) {
@@ -706,6 +889,7 @@
         tab.classList.toggle('text-slate-500', !activo);
       });
     }
+
     document.querySelectorAll('#nav-modulos .nav-item').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var modulo = btn.getAttribute('data-modulo');
@@ -717,6 +901,23 @@
         });
       });
     });
+
+    document.querySelectorAll('[data-pres-tab]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        activarPresupuesto(el.getAttribute('data-pres-tab'));
+      });
+    });
+
+    document.getElementById('btn-aplicar-coef').addEventListener('click', aplicarCoeficientes);
+    Object.keys(estadosPres).forEach(function (presId) {
+      if (document.getElementById('estado-acciones-' + presId)) {
+        renderAccionesEstado(presId);
+        actualizarBadgesEstado(presId);
+        actualizarWorkflowVisual(presId);
+      }
+    });
+
+    
     document.querySelectorAll('[data-pres-tab]').forEach(function (el) {
       el.addEventListener('click', function () {
         activarPresupuesto(el.getAttribute('data-pres-tab'));
