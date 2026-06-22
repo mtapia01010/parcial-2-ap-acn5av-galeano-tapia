@@ -15,6 +15,111 @@
         }
       }
     }
+
+    var estadosPres = { '0138': 'enviado' };
+
+    var estilosEstado = {
+      borrador: 'bg-slate-200 text-slate-700',
+      enviado: 'bg-amber-100 text-amber-800',
+      revision: 'bg-blue-100 text-blue-800',
+      aprobado: 'bg-emerald-100 text-emerald-800',
+      rechazado: 'bg-red-100 text-red-800',
+      confirmado: 'bg-emerald-600 text-white'
+    };
+
+    var etiquetasEstado = {
+      borrador: 'Borrador',
+      enviado: 'Enviado',
+      revision: 'En Revisión',
+      aprobado: 'Aprobado',
+      rechazado: 'Rechazado',
+      confirmado: 'Confirmado'
+    };
+
+    function actualizarBadgesEstado(presId) {
+      var estado = estadosPres[presId];
+      if (!estado) return;
+      var clase = estilosEstado[estado];
+      var texto = etiquetasEstado[estado];
+      ['badge-estado-' + presId + '-lista', 'badge-estado-' + presId + '-detalle'].forEach(function (id) {
+        var el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'text-xs px-2 py-0.5 rounded-full ' + clase;
+        el.textContent = texto;
+      });
+    }
+
+    function actualizarWorkflowVisual(presId) {
+      var estado = estadosPres[presId];
+      var panel = document.getElementById('pres-detalle-' + presId);
+      if (!panel || !estado) return;
+      var orden = ['borrador', 'enviado', 'revision', 'aprobado', 'confirmado'];
+      var idxActual = estado === 'rechazado' ? orden.indexOf('revision') : orden.indexOf(estado);
+      panel.querySelectorAll('.workflow-paso').forEach(function (paso) {
+        var est = paso.getAttribute('data-estado');
+        var idx = orden.indexOf(est);
+        var activo = idx <= idxActual && estado !== 'rechazado';
+        var esActual = est === estado || (estado === 'rechazado' && est === 'revision');
+        paso.className = 'workflow-paso px-2.5 py-1 rounded-full text-xs font-medium ' +
+          (esActual && estado === 'rechazado' ? 'bg-red-100 text-red-800' :
+           esActual ? 'bg-obrados-100 text-obrados-800' :
+           activo ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-500');
+      });
+      var msg = document.getElementById('estado-rechazado-msg-' + presId);
+      if (msg) msg.classList.toggle('hidden', estado !== 'rechazado');
+    }
+
+    function renderAccionesEstado(presId) {
+      var estado = estadosPres[presId];
+      var cont = document.getElementById('estado-acciones-' + presId);
+      if (!cont || !estado) return;
+      cont.innerHTML = '';
+      if (estado === 'confirmado') {
+        cont.innerHTML = '<p class="text-sm text-emerald-700">Presupuesto confirmado.</p>';
+        return;
+      }
+      var acciones = {
+        borrador: [{ id: 'btn-enviar', texto: 'Enviar al cliente', clase: 'bg-obrados-600 hover:bg-obrados-700 text-white', siguiente: 'enviado' }],
+        enviado: [{ id: 'btn-revision', texto: 'Marcar en revisión', clase: 'bg-blue-600 hover:bg-blue-700 text-white', siguiente: 'revision' }],
+        revision: [
+          { id: 'btn-aprobar', texto: 'Aprobar', clase: 'bg-emerald-600 hover:bg-emerald-700 text-white', siguiente: 'aprobado' },
+          { id: 'btn-rechazar', texto: 'Rechazar', clase: 'border border-red-300 text-red-700 hover:bg-red-50', siguiente: 'rechazado' }
+        ],
+        aprobado: [{ id: 'btn-confirmar', texto: 'Confirmar presupuesto', clase: 'bg-emerald-600 hover:bg-emerald-700 text-white', siguiente: 'confirmado' }],
+        rechazado: [{ id: 'btn-borrador', texto: 'Volver a borrador', clase: 'border border-slate-300 text-slate-700 hover:bg-slate-50', siguiente: 'borrador' }]
+      };
+      (acciones[estado] || []).forEach(function (acc) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.id = acc.id + '-' + presId;
+        btn.textContent = acc.texto;
+        btn.className = 'text-sm px-3 py-1.5 rounded-lg ' + acc.clase;
+        btn.addEventListener('click', function () {
+          if (acc.siguiente === 'confirmado' && estadosPres[presId] !== 'aprobado') return;
+          estadosPres[presId] = acc.siguiente;
+          actualizarBadgesEstado(presId);
+          actualizarWorkflowVisual(presId);
+          renderAccionesEstado(presId);
+        });
+        cont.appendChild(btn);
+      });
+      if (estado !== 'aprobado') {
+        var hint = document.createElement('span');
+        hint.className = 'text-xs text-slate-400 ml-1';
+        hint.textContent = estado === 'borrador' || estado === 'enviado' || estado === 'revision'
+          ? 'La confirmación requiere estado Aprobado' : '';
+        cont.appendChild(hint);
+      }
+    }
+
+    Object.keys(estadosPres).forEach(function (presId) {
+      if (document.getElementById('estado-acciones-' + presId)) {
+        renderAccionesEstado(presId);
+        actualizarBadgesEstado(presId);
+        actualizarWorkflowVisual(presId);
+      }
+    });
+
   </script>
   <style>
     .modulo-panel { display: none; }
@@ -158,7 +263,7 @@
         <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-semibold text-slate-900">Comercial</h2>
-            <p class="text-sm text-slate-600 mt-1">Presupuestos estructurados y propuestas comerciales</p>
+            <p class="text-sm text-slate-600 mt-1">Presupuestos, duplicación y propuestas comerciales</p>
           </div>
           <button type="button" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">+ Nuevo presupuesto</button>
         </div>
@@ -181,16 +286,33 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
-<tr class="bg-obrados-50/50">
+                <tr class="bg-emerald-50/60">
+                  <td class="px-4 py-3">
+                    <span class="font-medium">PRES-2026-0143</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Copia de PRES-2026-0142</p>
+                  </td>
+                  <td class="px-4 py-3">Edificios Sur</td>
+                  <td class="px-4 py-3">Torre Rivadavia — Etapa 2</td>
+                  <td class="px-4 py-3 text-slate-600">17/06/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></td>
+                  <td class="px-4 py-3 text-right font-medium">$ 48.750.000</td>
+                  <td class="px-4 py-3 text-right whitespace-nowrap">
+                    <button type="button" data-pres-tab="0143" class="text-obrados-600 hover:underline font-medium pres-link">Abrir</button>
+                    <span class="text-slate-300 mx-1">·</span>
+                    <button type="button" class="text-slate-400 cursor-not-allowed" disabled>Duplicar</button>
+                  </td>
+                </tr>
+                <tr class="bg-obrados-50/50" id="fila-pres-0142">
                   <td class="px-4 py-3 font-medium">PRES-2026-0142</td>
                   <td class="px-4 py-3">Inmobiliaria del Plata</td>
                   <td class="px-4 py-3">Torre Rivadavia — 24 pisos</td>
                   <td class="px-4 py-3 text-slate-600">12/06/2026</td>
-                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></td>
-                  <td class="px-4 py-3 text-right font-medium">$ 48.750.000</td>
+                  <td class="px-4 py-3"><span id="badge-estado-0142-lista" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></td>
+                  <td class="px-4 py-3 text-right font-medium" id="total-lista-0142">$ 48.750.000</td>
                   <td class="px-4 py-3 text-right whitespace-nowrap">
                     <button type="button" data-pres-tab="0142" class="text-obrados-600 hover:underline font-medium pres-link">Abrir</button>
-                    
+                    <span class="text-slate-300 mx-1">·</span>
+                    <button type="button" data-pres-tab="0143" class="text-slate-600 hover:underline pres-link">Duplicar</button>
                   </td>
                 </tr>
                 <tr>
@@ -198,12 +320,12 @@
                   <td class="px-4 py-3">Grupo Norte SA</td>
                   <td class="px-4 py-3">Local comercial Mendoza</td>
                   <td class="px-4 py-3 text-slate-600">02/06/2026</td>
-                  <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Enviado</span></td>
+                  <td class="px-4 py-3"><span id="badge-estado-0138-lista" class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Enviado</span></td>
                   <td class="px-4 py-3 text-right">$ 12.340.000</td>
                   <td class="px-4 py-3 text-right whitespace-nowrap">
-                    <button type="button" class="text-obrados-600 hover:underline">Abrir</button>
+                    <button type="button" data-pres-tab="0138" class="text-obrados-600 hover:underline font-medium pres-link">Abrir</button>
                     <span class="text-slate-300 mx-1">·</span>
-                    <button type="button" class="text-slate-600 hover:underline">Duplicar</button>
+                    <button type="button" class="text-slate-600 hover:underline pres-link">Duplicar</button>
                   </td>
                 </tr>
               </tbody>
@@ -211,15 +333,22 @@
           </div>
         </section>
 
+        <div class="flex gap-1 mb-4 border-b border-slate-200" id="presupuesto-tabs">
+          <button type="button" data-pres-tab="0138" class="pres-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">PRES-2026-0138</button>
+          <button type="button" data-pres-tab="0142" class="pres-tab px-4 py-2 text-sm font-medium border-b-2 border-obrados-600 text-obrados-700">PRES-2026-0142</button>
+          <button type="button" data-pres-tab="0143" class="pres-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">PRES-2026-0143</button>
+        </div>
+
         <div id="pres-detalle-0142" class="pres-detalle">
 <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
           <div class="px-4 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
             <div>
               <h3 class="font-medium text-slate-800">PRES-2026-0142 · Torre Rivadavia</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Inmobiliaria del Plata · Obras Residenciales · Emisión 12/06/2026</p>
+              <p class="text-xs text-slate-500 mt-0.5">Inmobiliaria del Plata · Obras Residenciales · Emisión 12/06/2026 · <span style="display:none" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></p>
             </div>
             <div class="flex gap-2">
-<button type="button" class="text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">+ Ítem global</button>
+              <button type="button" data-pres-tab="0143" class="pres-link text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">Duplicar presupuesto</button>
+              <button type="button" class="text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">+ Ítem global</button>
             </div>
           </div>
 
@@ -363,7 +492,7 @@
 
           <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <p class="text-sm text-slate-600">Totales calculados automáticamente</p>
-            <p class="text-lg font-semibold text-slate-900">Total presupuesto: $ 48.750.000</p>
+            <p class="text-lg font-semibold text-slate-900">Total presupuesto: $ 48.750.000</span></p>
           </div>
         </section>
 <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
@@ -384,16 +513,199 @@
         </section>
         </div>
 
+
+        <div id="pres-detalle-0138" class="pres-detalle hidden">
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6" id="seccion-estado-0138">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Estado del presupuesto</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Flujo comercial hasta confirmación y generación de certificados</p>
+          </div>
+          <div class="px-4 py-4">
+            <div class="flex flex-wrap items-center gap-2 text-xs mb-4">
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-medium" data-estado="borrador">Borrador</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-obrados-100 text-obrados-800 font-medium" data-estado="enviado">Enviado</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="revision">En Revisión</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="aprobado">Aprobado</span>
+              <span class="text-slate-300">→</span>
+              <span class="workflow-paso px-2.5 py-1 rounded-full bg-slate-100 text-slate-500" data-estado="confirmado">Confirmado</span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2" id="estado-acciones-0138"></div>
+            <p id="estado-rechazado-msg-0138" class="hidden mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg px-3 py-2">Presupuesto rechazado. Podés volver a Borrador para renegociar.</p>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-medium text-slate-800">PRES-2026-0138 · Local comercial Mendoza</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Grupo Norte SA · Obras Comerciales · Emisión 02/06/2026 · <span id="badge-estado-0138-detalle" class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Enviado</span></p>
+            </div>
+          </div>
+          <div class="border-b border-slate-100">
+            <div class="px-4 py-2 bg-slate-50 flex items-center justify-between">
+              <span class="font-medium text-slate-800 text-sm">Local comercial</span>
+              <span class="text-sm text-slate-600">Subtotal: <strong>$ 12.340.000</strong></span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-slate-500 text-left text-xs">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">Ítem de trabajo</th>
+                    <th class="px-4 py-2 font-medium">Unidad</th>
+                    <th class="px-4 py-2 font-medium">Cant.</th>
+                    <th class="px-4 py-2 font-medium">P. unit.</th>
+                    <th class="px-4 py-2 font-medium">Total</th>
+                    <th class="px-4 py-2 font-medium">Peso av.</th>
+                    <th class="px-4 py-2 font-medium">Coef.</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                  <tr>
+                    <td class="px-4 py-2">Replanteo y movimiento de suelos</td>
+                    <td class="px-4 py-2 text-slate-600">gl</td>
+                    <td class="px-4 py-2">1</td>
+                    <td class="px-4 py-2">$ 890.000</td>
+                    <td class="px-4 py-2 font-medium">$ 890.000</td>
+                    <td class="px-4 py-2">35%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2">Estructura metálica y cerramientos</td>
+                    <td class="px-4 py-2 text-slate-600">m²</td>
+                    <td class="px-4 py-2">420</td>
+                    <td class="px-4 py-2">$ 18.500</td>
+                    <td class="px-4 py-2 font-medium">$ 7.770.000</td>
+                    <td class="px-4 py-2">45%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Constr.</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2">Instalaciones eléctricas y sanitarias</td>
+                    <td class="px-4 py-2 text-slate-600">gl</td>
+                    <td class="px-4 py-2">1</td>
+                    <td class="px-4 py-2">$ 3.680.000</td>
+                    <td class="px-4 py-2 font-medium">$ 3.680.000</td>
+                    <td class="px-4 py-2">20%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">Mat</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <p class="text-sm text-slate-600">Totales calculados automáticamente</p>
+            <p class="text-lg font-semibold text-slate-900">Total presupuesto: $ 12.340.000</p>
+          </div>
+        </section>
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-medium text-slate-800">Documentación del presupuesto</h3>
+            <button type="button" class="text-sm border border-dashed border-slate-300 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-50">+ Adjuntar archivo</button>
+          </div>
+          <ul class="divide-y divide-slate-100 text-sm">
+            <li class="px-4 py-3 flex items-center justify-between">
+              <span class="text-slate-700">plano-local-mendoza.pdf</span>
+              <span class="text-xs text-slate-500">1,8 MB · 02/06/2026</span>
+            </li>
+          </ul>
+        </section>
+        </div>
+
+        <div id="pres-detalle-0143" class="pres-detalle hidden">
+        <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+          Presupuesto duplicado desde <strong>PRES-2026-0142</strong>. Estructura de ítems copiada. Los cambios en esta copia no modifican el presupuesto original.
+        </div>
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <h3 class="font-medium text-slate-800">PRES-2026-0143 · Torre Rivadavia — Etapa 2</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Emisión 17/06/2026 · <span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></p>
+            </div>
+          </div>
+          <div class="px-4 py-4 grid sm:grid-cols-2 gap-4 border-b border-slate-100 text-sm">
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Cliente</span>
+              <select class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option>Edificios Sur</option>
+                <option>Inmobiliaria del Plata</option>
+                <option>Grupo Norte SA</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Unidad de negocio</span>
+              <select class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option>Obras Residenciales</option>
+                <option>Obras Comerciales</option>
+              </select>
+            </label>
+          </div>
+          <div class="px-4 py-3 bg-slate-50 border-b border-slate-100 text-sm text-slate-600">
+            Estructura copiada: <strong>3 ítems globales</strong> · <strong>7 ítems de trabajo</strong> · coeficientes y pesos de avance incluidos
+          </div>
+          <div class="border-b border-slate-100">
+            <div class="px-4 py-2 bg-slate-50 flex items-center justify-between">
+              <span class="font-medium text-slate-800 text-sm">Recepción</span>
+              <span class="text-sm text-slate-600">Subtotal: <strong>$ 2.450.000</strong></span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-slate-500 text-left text-xs">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">Ítem de trabajo</th>
+                    <th class="px-4 py-2 font-medium">Unidad</th>
+                    <th class="px-4 py-2 font-medium">Cant.</th>
+                    <th class="px-4 py-2 font-medium">P. unit.</th>
+                    <th class="px-4 py-2 font-medium">Total</th>
+                    <th class="px-4 py-2 font-medium">Coef.</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                  <tr>
+                    <td class="px-4 py-2">Demolición y retiro de escombros</td>
+                    <td class="px-4 py-2 text-slate-600">m³</td>
+                    <td class="px-4 py-2"><input type="text" value="120" class="w-16 border border-slate-200 rounded px-1 py-0.5 text-center" /></td>
+                    <td class="px-4 py-2">$ 8.500</td>
+                    <td class="px-4 py-2 font-medium">$ 1.020.000</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <p class="px-4 py-2 text-xs text-slate-500">+ 2 ítems de trabajo en Recepción · Fachada y Departamentos (misma estructura que el original)</p>
+          </div>
+          <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <p class="text-sm text-slate-600">Total recalculado al editar cantidades</p>
+            <p class="text-lg font-semibold text-slate-900">Total presupuesto: $ 48.750.000</p>
+          </div>
+        </section>
+        </div>
+
       </div>
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.2">
-    © 2026 ObraDOS · Versión 0.9.2
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.3">
+    © 2026 ObraDOS · Versión 0.9.3
   </footer>
 
   <script>
+
+    function activarPresupuesto(id) {
+      document.querySelectorAll('.pres-detalle').forEach(function (el) {
+        el.classList.toggle('hidden', el.id !== 'pres-detalle-' + id);
+      });
+      document.querySelectorAll('#presupuesto-tabs .pres-tab').forEach(function (tab) {
+        var activo = tab.getAttribute('data-pres-tab') === id;
+        tab.classList.toggle('border-obrados-600', activo);
+        tab.classList.toggle('text-obrados-700', activo);
+        tab.classList.toggle('border-transparent', !activo);
+        tab.classList.toggle('text-slate-500', !activo);
+      });
+    }
     document.querySelectorAll('#nav-modulos .nav-item').forEach(function (btn) {
       btn.addEventListener('click', function () {
         var modulo = btn.getAttribute('data-modulo');
@@ -403,6 +715,11 @@
         document.querySelectorAll('.modulo-panel').forEach(function (panel) {
           panel.classList.toggle('activo', panel.id === 'panel-' + modulo);
         });
+      });
+    });
+    document.querySelectorAll('[data-pres-tab]').forEach(function (el) {
+      el.addEventListener('click', function () {
+        activarPresupuesto(el.getAttribute('data-pres-tab'));
       });
     });
   </script>
