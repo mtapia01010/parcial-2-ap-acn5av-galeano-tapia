@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ObraDOS — Panel de gestión</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            obrados: { 50: '#fff7ed', 500: '#f97316', 600: '#ea580c', 700: '#c2410c' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    .modulo-panel { display: none; }
+    .modulo-panel.activo { display: block; }
+    .nav-item.activo { background-color: #ea580c; color: white; }
+    .nav-item:not(.activo) { color: rgb(203 213 225); }
+    .nav-item:not(.activo):hover { background-color: rgb(51 65 85); }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen">
+
+  <header class="bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 rounded-lg bg-obrados-600 text-white flex items-center justify-center font-bold text-sm">OD</div>
+      <div>
+        <h1 class="font-semibold text-slate-900">ObraDOS</h1>
+        <p class="text-xs text-slate-500">Tu segunda mano en la gestión de obras</p>
+      </div>
+    </div>
+    <div class="text-right text-sm">
+      <p class="font-medium text-slate-700">Constructora Demo S.A.</p>
+      <p class="text-xs text-slate-500">Roberto Méndez · Administración</p>
+    </div>
+  </header>
+
+  <div class="flex min-h-[calc(100vh-65px)]">
+
+    <aside class="w-56 bg-slate-900 flex-shrink-0 hidden md:block">
+      <p class="px-4 pt-4 pb-2 text-xs uppercase tracking-wider text-slate-500">Módulos</p>
+      <nav class="px-2 space-y-1" id="nav-modulos">
+        <button type="button" data-modulo="organizacion" class="nav-item activo w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
+          Organización
+        </button>
+        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+          Comercial
+          <span class="text-xs text-slate-600">Próximamente</span>
+        </span>
+        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+          Operativo
+          <span class="text-xs text-slate-600">Próximamente</span>
+        </span>
+        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+          Financiero
+          <span class="text-xs text-slate-600">Próximamente</span>
+        </span>
+        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+          Dashboard
+          <span class="text-xs text-slate-600">Próximamente</span>
+        </span>
+      </nav>
+    </aside>
+
+    <div class="flex-1 p-4 md:p-6 max-w-6xl overflow-x-auto">
+
+      <div id="panel-organizacion" class="modulo-panel activo">
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-slate-900">Organización</h2>
+          <p class="text-sm text-slate-600 mt-1">Unidades de negocio y cartera de clientes</p>
+        </div>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-medium text-slate-800">Unidades de negocio</h3>
+            <button type="button" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-3 py-1.5 rounded-lg">+ Nueva unidad</button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Nombre</th>
+                  <th class="px-4 py-2 font-medium">Responsable</th>
+                  <th class="px-4 py-2 font-medium">Clientes</th>
+                  <th class="px-4 py-2 font-medium"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="px-4 py-3">Obras Residenciales</td>
+                  <td class="px-4 py-3 text-slate-600">Roberto Méndez</td>
+                  <td class="px-4 py-3">12</td>
+                  <td class="px-4 py-3 text-obrados-600 text-right"><button type="button" class="hover:underline">Editar</button></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Obras Comerciales</td>
+                  <td class="px-4 py-3 text-slate-600">Laura Fernández</td>
+                  <td class="px-4 py-3">8</td>
+                  <td class="px-4 py-3 text-obrados-600 text-right"><button type="button" class="hover:underline">Editar</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <h3 class="font-medium text-slate-800">Clientes</h3>
+            <div class="flex gap-2">
+              <input type="search" placeholder="Buscar por nombre o unidad…" class="text-sm border border-slate-300 rounded-lg px-3 py-1.5 w-full sm:w-56 focus:outline-none focus:ring-2 focus:ring-obrados-500" />
+              <button type="button" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-3 py-1.5 rounded-lg whitespace-nowrap">+ Nuevo cliente</button>
+            </div>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Cliente</th>
+                  <th class="px-4 py-2 font-medium">Contacto</th>
+                  <th class="px-4 py-2 font-medium">Unidad de negocio</th>
+                  <th class="px-4 py-2 font-medium">Presupuestos / Obras</th>
+                  <th class="px-4 py-2 font-medium"></th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr>
+                  <td class="px-4 py-3 font-medium">Inmobiliaria del Plata</td>
+                  <td class="px-4 py-3 text-slate-600">contacto@delplata.com</td>
+                  <td class="px-4 py-3">Obras Residenciales</td>
+                  <td class="px-4 py-3 text-slate-600">3 / 2</td>
+                  <td class="px-4 py-3 text-obrados-600 text-right"><button type="button" class="hover:underline">Editar</button></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">Grupo Norte SA</td>
+                  <td class="px-4 py-3 text-slate-600">obra@gruponorte.com</td>
+                  <td class="px-4 py-3">Obras Comerciales</td>
+                  <td class="px-4 py-3 text-slate-600">5 / 4</td>
+                  <td class="px-4 py-3 text-obrados-600 text-right"><button type="button" class="hover:underline">Editar</button></td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3 font-medium">Edificios Sur</td>
+                  <td class="px-4 py-3 text-slate-600">admin@edificiossur.com</td>
+                  <td class="px-4 py-3">Obras Residenciales</td>
+                  <td class="px-4 py-3 text-slate-600">2 / 1</td>
+                  <td class="px-4 py-3 text-obrados-600 text-right"><button type="button" class="hover:underline">Editar</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+
+
+    </div>
+  </div>
+
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.1">
+    © 2026 ObraDOS · Versión 0.9.1
+  </footer>
+
+  <script>
+    document.querySelectorAll('#nav-modulos .nav-item').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var modulo = btn.getAttribute('data-modulo');
+        document.querySelectorAll('#nav-modulos .nav-item').forEach(function (b) {
+          b.classList.toggle('activo', b === btn);
+        });
+        document.querySelectorAll('.modulo-panel').forEach(function (panel) {
+          panel.classList.toggle('activo', panel.id === 'panel-' + modulo);
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>
