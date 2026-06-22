@@ -48,10 +48,9 @@
         <button type="button" data-modulo="organizacion" class="nav-item activo w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Organización
         </button>
-        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+        <button type="button" data-modulo="comercial" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Comercial
-          <span class="text-xs text-slate-600">Próximamente</span>
-        </span>
+        </button>
         <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
           Operativo
           <span class="text-xs text-slate-600">Próximamente</span>
@@ -155,12 +154,243 @@
         </section>
       </div>
 
+      <div id="panel-comercial" class="modulo-panel">
+        <div class="mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-900">Comercial</h2>
+            <p class="text-sm text-slate-600 mt-1">Presupuestos estructurados y propuestas comerciales</p>
+          </div>
+          <button type="button" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">+ Nuevo presupuesto</button>
+        </div>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Presupuestos recientes</h3>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Nº</th>
+                  <th class="px-4 py-2 font-medium">Cliente</th>
+                  <th class="px-4 py-2 font-medium">Obra</th>
+                  <th class="px-4 py-2 font-medium">Emisión</th>
+                  <th class="px-4 py-2 font-medium">Estado</th>
+                  <th class="px-4 py-2 font-medium text-right">Total</th>
+                  <th class="px-4 py-2 font-medium text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+<tr class="bg-obrados-50/50">
+                  <td class="px-4 py-3 font-medium">PRES-2026-0142</td>
+                  <td class="px-4 py-3">Inmobiliaria del Plata</td>
+                  <td class="px-4 py-3">Torre Rivadavia — 24 pisos</td>
+                  <td class="px-4 py-3 text-slate-600">12/06/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Borrador</span></td>
+                  <td class="px-4 py-3 text-right font-medium">$ 48.750.000</td>
+                  <td class="px-4 py-3 text-right whitespace-nowrap">
+                    <button type="button" data-pres-tab="0142" class="text-obrados-600 hover:underline font-medium pres-link">Abrir</button>
+                    
+                  </td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">PRES-2026-0138</td>
+                  <td class="px-4 py-3">Grupo Norte SA</td>
+                  <td class="px-4 py-3">Local comercial Mendoza</td>
+                  <td class="px-4 py-3 text-slate-600">02/06/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Enviado</span></td>
+                  <td class="px-4 py-3 text-right">$ 12.340.000</td>
+                  <td class="px-4 py-3 text-right whitespace-nowrap">
+                    <button type="button" class="text-obrados-600 hover:underline">Abrir</button>
+                    <span class="text-slate-300 mx-1">·</span>
+                    <button type="button" class="text-slate-600 hover:underline">Duplicar</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div id="pres-detalle-0142" class="pres-detalle">
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="font-medium text-slate-800">PRES-2026-0142 · Torre Rivadavia</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Inmobiliaria del Plata · Obras Residenciales · Emisión 12/06/2026</p>
+            </div>
+            <div class="flex gap-2">
+<button type="button" class="text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">+ Ítem global</button>
+            </div>
+          </div>
+
+          <!-- Ítem global: Recepción -->
+          <div class="border-b border-slate-100">
+            <div class="px-4 py-2 bg-slate-50 flex items-center justify-between">
+              <span class="font-medium text-slate-800 text-sm">Recepción</span>
+              <span class="text-sm text-slate-600">Subtotal: <strong>$ 2.450.000</strong></span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-slate-500 text-left text-xs">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">Ítem de trabajo</th>
+                    <th class="px-4 py-2 font-medium">Unidad</th>
+                    <th class="px-4 py-2 font-medium">Cant.</th>
+                    <th class="px-4 py-2 font-medium">P. unit.</th>
+                    <th class="px-4 py-2 font-medium">Total</th>
+                    <th class="px-4 py-2 font-medium">Peso av.</th>
+                    <th class="px-4 py-2 font-medium">Coef.</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50" id="items-0142">
+                  <tr>
+                    <td class="px-4 py-2">Demolición y retiro de escombros</td>
+                    <td class="px-4 py-2 text-slate-600">m³</td>
+                    <td class="px-4 py-2">120</td>
+                    <td class="px-4 py-2">$ 8.500</td>
+                    <td class="px-4 py-2 font-medium">$ 1.020.000</td>
+                    <td class="px-4 py-2">40%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2">Replanteo y niveles</td>
+                    <td class="px-4 py-2 text-slate-600">gl</td>
+                    <td class="px-4 py-2">1</td>
+                    <td class="px-4 py-2">$ 430.000</td>
+                    <td class="px-4 py-2 font-medium">$ 430.000</td>
+                    <td class="px-4 py-2">30%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">Mat</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2">Hormigón de limpieza</td>
+                    <td class="px-4 py-2 text-slate-600">m³</td>
+                    <td class="px-4 py-2">25</td>
+                    <td class="px-4 py-2">$ 40.000</td>
+                    <td class="px-4 py-2 font-medium">$ 1.000.000</td>
+                    <td class="px-4 py-2">30%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Constr.</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Ítem global: Fachada -->
+          <div class="border-b border-slate-100">
+            <div class="px-4 py-2 bg-slate-50 flex items-center justify-between">
+              <span class="font-medium text-slate-800 text-sm">Fachada</span>
+              <span class="text-sm text-slate-600">Subtotal: <strong>$ 18.200.000</strong></span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-slate-500 text-left text-xs">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">Ítem de trabajo</th>
+                    <th class="px-4 py-2 font-medium">Unidad</th>
+                    <th class="px-4 py-2 font-medium">Cant.</th>
+                    <th class="px-4 py-2 font-medium">P. unit.</th>
+                    <th class="px-4 py-2 font-medium">Total</th>
+                    <th class="px-4 py-2 font-medium">Peso av.</th>
+                    <th class="px-4 py-2 font-medium">Coef.</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                  <tr>
+                    <td class="px-4 py-2">Revoque exterior hidrófugo</td>
+                    <td class="px-4 py-2 text-slate-600">m²</td>
+                    <td class="px-4 py-2">2.400</td>
+                    <td class="px-4 py-2">$ 5.200</td>
+                    <td class="px-4 py-2 font-medium">$ 12.480.000</td>
+                    <td class="px-4 py-2">55%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2">Aplicación de revestimiento símil piedra</td>
+                    <td class="px-4 py-2 text-slate-600">m²</td>
+                    <td class="px-4 py-2">1.800</td>
+                    <td class="px-4 py-2">$ 3.200</td>
+                    <td class="px-4 py-2 font-medium">$ 5.760.000</td>
+                    <td class="px-4 py-2">45%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-green-100 text-green-800 px-1.5 py-0.5 rounded">Mat</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Ítem global: Departamentos -->
+          <div>
+            <div class="px-4 py-2 bg-slate-50 flex items-center justify-between">
+              <span class="font-medium text-slate-800 text-sm">Departamentos</span>
+              <span class="text-sm text-slate-600">Subtotal: <strong>$ 28.100.000</strong></span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="text-slate-500 text-left text-xs">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">Ítem de trabajo</th>
+                    <th class="px-4 py-2 font-medium">Unidad</th>
+                    <th class="px-4 py-2 font-medium">Cant.</th>
+                    <th class="px-4 py-2 font-medium">P. unit.</th>
+                    <th class="px-4 py-2 font-medium">Total</th>
+                    <th class="px-4 py-2 font-medium">Peso av.</th>
+                    <th class="px-4 py-2 font-medium">Coef.</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                  <tr>
+                    <td class="px-4 py-2">Mampostería y tabiques interiores</td>
+                    <td class="px-4 py-2 text-slate-600">m²</td>
+                    <td class="px-4 py-2">3.200</td>
+                    <td class="px-4 py-2">$ 4.800</td>
+                    <td class="px-4 py-2 font-medium">$ 15.360.000</td>
+                    <td class="px-4 py-2">50%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded">Constr.</span></td>
+                  </tr>
+                  <tr>
+                    <td class="px-4 py-2">Instalaciones eléctricas por unidad</td>
+                    <td class="px-4 py-2 text-slate-600">un</td>
+                    <td class="px-4 py-2">48</td>
+                    <td class="px-4 py-2">$ 265.000</td>
+                    <td class="px-4 py-2 font-medium">$ 12.720.000</td>
+                    <td class="px-4 py-2">50%</td>
+                    <td class="px-4 py-2"><span class="text-xs bg-blue-100 text-blue-800 px-1.5 py-0.5 rounded">MO</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="px-4 py-4 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <p class="text-sm text-slate-600">Totales calculados automáticamente</p>
+            <p class="text-lg font-semibold text-slate-900">Total presupuesto: $ 48.750.000</p>
+          </div>
+        </section>
+<section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-medium text-slate-800">Documentación del presupuesto</h3>
+            <button type="button" class="text-sm border border-dashed border-slate-300 text-slate-600 px-3 py-1.5 rounded-lg hover:bg-slate-50">+ Adjuntar archivo</button>
+          </div>
+          <ul class="divide-y divide-slate-100 text-sm">
+            <li class="px-4 py-3 flex items-center justify-between">
+              <span class="text-slate-700">plano-arquitectura-rivadavia.pdf</span>
+              <span class="text-xs text-slate-500">2,4 MB · 12/06/2026</span>
+            </li>
+            <li class="px-4 py-3 flex items-center justify-between">
+              <span class="text-slate-700">especificaciones-tecnicas.docx</span>
+              <span class="text-xs text-slate-500">890 KB · 12/06/2026</span>
+            </li>
+          </ul>
+        </section>
+        </div>
+
+      </div>
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.1">
-    © 2026 ObraDOS · Versión 0.9.1
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.2">
+    © 2026 ObraDOS · Versión 0.9.2
   </footer>
 
   <script>
