@@ -51,10 +51,9 @@
         <button type="button" data-modulo="comercial" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Comercial
         </button>
-        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+        <button type="button" data-modulo="operativo" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Operativo
-          <span class="text-xs text-slate-600">Próximamente</span>
-        </span>
+        </button>
         <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
           Financiero
           <span class="text-xs text-slate-600">Próximamente</span>
@@ -678,12 +677,184 @@
         </div>
 
       </div>
+      <div id="panel-operativo" class="modulo-panel">
+        <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-900">Operativo</h2>
+            <p class="text-sm text-slate-600 mt-1" id="operativo-subtitulo">Asignación de tareas según presupuesto confirmado</p>
+          </div>
+          <div class="flex flex-wrap items-center gap-2">
+            <label class="text-sm text-slate-600 flex items-center gap-2">
+              <span class="whitespace-nowrap">Vista</span>
+              <select id="vista-operativo" class="text-sm border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="admin">Administrador</option>
+                <option value="carlos">Carlos Ruiz — Obrero</option>
+                <option value="maria">María López — Obrero</option>
+                <option value="juan">Juan Pereyra — Obrero</option>
+              </select>
+            </label>
+            <button type="button" id="btn-nueva-tarea" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">+ Nueva tarea</button>
+          </div>
+        </div>
+
+        <section class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4 text-sm text-blue-900">
+          <strong>Obra:</strong> Torre Rivadavia — 24 pisos · <strong>Certificado:</strong> CERT-OBR-2026-0007 · <strong>Presupuesto:</strong> PRES-2026-0142 (Confirmado)
+        </section>
+
+        <section id="filtros-tareas" class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
+          <div class="grid sm:grid-cols-3 gap-3 text-sm">
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Obra</span>
+              <select id="filtro-obra" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="">Todas</option>
+                <option value="rivadavia" selected>Torre Rivadavia — 24 pisos</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Obrero</span>
+              <select id="filtro-obrero" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="">Todos</option>
+                <option value="carlos">Carlos Ruiz</option>
+                <option value="maria">María López</option>
+                <option value="juan">Juan Pereyra</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Estado</span>
+              <select id="filtro-estado" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="">Todos</option>
+                <option value="pendiente">Pendiente</option>
+                <option value="curso">En curso</option>
+                <option value="completada">Completada</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section id="form-nueva-tarea" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Nueva tarea</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Vinculada a un ítem de trabajo del presupuesto confirmado</p>
+          </div>
+          <form id="form-tarea" class="p-4 grid sm:grid-cols-2 gap-4 text-sm">
+            <label class="block sm:col-span-2">
+              <span class="text-slate-600 text-xs font-medium">Ítem de trabajo (presupuesto)</span>
+              <select id="tarea-item" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="">Seleccionar ítem…</option>
+                <option value="Recepción · Demolición y retiro de escombros">Recepción · Demolición y retiro de escombros</option>
+                <option value="Recepción · Replanteo y niveles">Recepción · Replanteo y niveles</option>
+                <option value="Recepción · Hormigón de limpieza">Recepción · Hormigón de limpieza</option>
+                <option value="Fachada · Revoque exterior hidrófugo">Fachada · Revoque exterior hidrófugo</option>
+                <option value="Fachada · Revestimiento símil piedra">Fachada · Revestimiento símil piedra</option>
+                <option value="Departamentos · Mampostería y tabiques">Departamentos · Mampostería y tabiques</option>
+                <option value="Departamentos · Instalaciones eléctricas">Departamentos · Instalaciones eléctricas</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Obrero responsable</span>
+              <select id="tarea-obrero" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="carlos">Carlos Ruiz</option>
+                <option value="maria">María López</option>
+                <option value="juan">Juan Pereyra</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Prioridad</span>
+              <select id="tarea-prioridad" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="baja">Baja</option>
+              </select>
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Fecha de inicio</span>
+              <input type="date" id="tarea-inicio" value="2026-06-18" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+            </label>
+            <label class="block">
+              <span class="text-slate-600 text-xs font-medium">Fecha estimada de fin</span>
+              <input type="date" id="tarea-fin" value="2026-06-25" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+            </label>
+            <div class="sm:col-span-2 flex gap-2 justify-end">
+              <button type="button" id="btn-cancelar-tarea" class="text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">Cancelar</button>
+              <button type="submit" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-3 py-1.5 rounded-lg">Crear tarea</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+          <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+            <h3 class="font-medium text-slate-800" id="titulo-lista-tareas">Tareas de obra</h3>
+            <span class="text-xs text-slate-500" id="contador-tareas">4 tareas</span>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm" id="tabla-tareas">
+              <thead class="bg-slate-50 text-slate-600 text-left">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Tarea / ítem presupuesto</th>
+                  <th class="px-4 py-2 font-medium col-obrero">Obrero</th>
+                  <th class="px-4 py-2 font-medium">Inicio</th>
+                  <th class="px-4 py-2 font-medium">Fin est.</th>
+                  <th class="px-4 py-2 font-medium">Prioridad</th>
+                  <th class="px-4 py-2 font-medium">Estado</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100" id="tareas-body">
+                <tr class="fila-tarea" data-tarea-id="tarea-1" data-unidad="m³" data-nombre="Demolición y retiro de escombros" data-obra="rivadavia" data-obrero="carlos" data-estado="pendiente" data-prioridad="alta">
+                  <td class="px-4 py-3">
+                    <span class="font-medium text-slate-800">Demolición y retiro de escombros</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Recepción · PRES-2026-0142</p>
+                  </td>
+                  <td class="px-4 py-3 col-obrero">Carlos Ruiz</td>
+                  <td class="px-4 py-3 text-slate-600">18/06/2026</td>
+                  <td class="px-4 py-3 text-slate-600">25/06/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Alta</span></td>
+                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente</span></td>
+                </tr>
+                <tr class="fila-tarea" data-tarea-id="tarea-2" data-unidad="gl" data-nombre="Replanteo y niveles" data-obra="rivadavia" data-obrero="maria" data-estado="curso" data-prioridad="media">
+                  <td class="px-4 py-3">
+                    <span class="font-medium text-slate-800">Replanteo y niveles</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Recepción · PRES-2026-0142</p>
+                  </td>
+                  <td class="px-4 py-3 col-obrero">María López</td>
+                  <td class="px-4 py-3 text-slate-600">20/06/2026</td>
+                  <td class="px-4 py-3 text-slate-600">22/06/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Media</span></td>
+                  <td class="px-4 py-3"><span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">En curso</span></td>
+                </tr>
+                <tr class="fila-tarea" data-tarea-id="tarea-3" data-unidad="m²" data-nombre="Revoque exterior hidrófugo" data-obra="rivadavia" data-obrero="carlos" data-estado="pendiente" data-prioridad="alta">
+                  <td class="px-4 py-3">
+                    <span class="font-medium text-slate-800">Revoque exterior hidrófugo</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Fachada · PRES-2026-0142</p>
+                  </td>
+                  <td class="px-4 py-3 col-obrero">Carlos Ruiz</td>
+                  <td class="px-4 py-3 text-slate-600">26/06/2026</td>
+                  <td class="px-4 py-3 text-slate-600">10/07/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Alta</span></td>
+                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente</span></td>
+                </tr>
+                <tr class="fila-tarea" data-tarea-id="tarea-4" data-unidad="un" data-nombre="Instalaciones eléctricas por unidad" data-obra="rivadavia" data-obrero="juan" data-estado="pendiente" data-prioridad="baja">
+                  <td class="px-4 py-3">
+                    <span class="font-medium text-slate-800">Instalaciones eléctricas por unidad</span>
+                    <p class="text-xs text-slate-500 mt-0.5">Departamentos · PRES-2026-0142</p>
+                  </td>
+                  <td class="px-4 py-3 col-obrero">Juan Pereyra</td>
+                  <td class="px-4 py-3 text-slate-600">01/07/2026</td>
+                  <td class="px-4 py-3 text-slate-600">15/07/2026</td>
+                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Baja</span></td>
+                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p id="tareas-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay tareas para los filtros seleccionados.</p>
+        </section>
+      </div>
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.4">
-    © 2026 ObraDOS · Versión 0.9.4
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.5">
+    © 2026 ObraDOS · Versión 0.9.5
   </footer>
 
   <script>
@@ -923,6 +1094,105 @@ var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
         activarPresupuesto(el.getAttribute('data-pres-tab'));
       });
     });
+    var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan Pereyra' };
+    var etiquetasPrioridad = { alta: 'Alta', media: 'Media', baja: 'Baja' };
+    var clasesPrioridad = { alta: 'bg-red-100 text-red-800', media: 'bg-amber-100 text-amber-800', baja: 'bg-slate-200 text-slate-700' };
+    var etiquetasEstadoTarea = { pendiente: 'Pendiente', curso: 'En curso', completada: 'Completada' };
+    var clasesEstadoTarea = { pendiente: 'bg-slate-200 text-slate-700', curso: 'bg-blue-100 text-blue-800', completada: 'bg-emerald-100 text-emerald-800' };
+    var contadorTareaId = 5;
+
+    function formatearFecha(iso) {
+      if (!iso) return '';
+      var p = iso.split('-');
+      return p[2] + '/' + p[1] + '/' + p[0];
+    }
+
+    function aplicarFiltrosTareas() {
+      var vista = document.getElementById('vista-operativo').value;
+      var esAdmin = vista === 'admin';
+      var filtroObra = document.getElementById('filtro-obra').value;
+      var filtroObrero = esAdmin ? document.getElementById('filtro-obrero').value : vista;
+      var filtroEstado = document.getElementById('filtro-estado').value;
+      var visibles = 0;
+
+      document.getElementById('filtros-tareas').classList.toggle('hidden', !esAdmin);
+      document.getElementById('btn-nueva-tarea').classList.toggle('hidden', !esAdmin);
+      if (!esAdmin) document.getElementById('form-nueva-tarea').classList.add('hidden');
+      document.querySelectorAll('#tabla-tareas .col-obrero').forEach(function (c) {
+        c.classList.toggle('hidden', !esAdmin);
+      });
+
+      if (esAdmin) {
+        document.getElementById('operativo-subtitulo').textContent = 'Asignación de tareas según presupuesto confirmado';
+        document.getElementById('titulo-lista-tareas').textContent = 'Tareas de obra';
+      } else {
+        document.getElementById('operativo-subtitulo').textContent = 'Mis tareas asignadas — ' + nombresObrero[vista];
+        document.getElementById('titulo-lista-tareas').textContent = 'Mis tareas';
+      }
+
+      document.querySelectorAll('.fila-tarea').forEach(function (fila) {
+        var ok = true;
+        if (filtroObra && fila.getAttribute('data-obra') !== filtroObra) ok = false;
+        if (filtroObrero && fila.getAttribute('data-obrero') !== filtroObrero) ok = false;
+        if (filtroEstado && fila.getAttribute('data-estado') !== filtroEstado) ok = false;
+        fila.classList.toggle('hidden', !ok);
+        if (ok) visibles++;
+      });
+
+      document.getElementById('contador-tareas').textContent = visibles + (visibles === 1 ? ' tarea' : ' tareas');
+      document.getElementById('tareas-vacio').classList.toggle('hidden', visibles > 0);
+    }
+
+    document.getElementById('vista-operativo').addEventListener('change', aplicarFiltrosTareas);
+    document.getElementById('filtro-obra').addEventListener('change', aplicarFiltrosTareas);
+    document.getElementById('filtro-obrero').addEventListener('change', aplicarFiltrosTareas);
+    document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosTareas);
+
+    document.getElementById('btn-nueva-tarea').addEventListener('click', function () {
+      document.getElementById('form-nueva-tarea').classList.remove('hidden');
+    });
+    document.getElementById('btn-cancelar-tarea').addEventListener('click', function () {
+      document.getElementById('form-nueva-tarea').classList.add('hidden');
+    });
+
+    document.getElementById('form-tarea').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var item = document.getElementById('tarea-item').value;
+      var partes = item.split(' · ');
+      var global = partes[0] || '';
+      var nombre = partes[1] || item;
+      var obrero = document.getElementById('tarea-obrero').value;
+      var prioridad = document.getElementById('tarea-prioridad').value;
+      var inicio = formatearFecha(document.getElementById('tarea-inicio').value);
+      var fin = formatearFecha(document.getElementById('tarea-fin').value);
+      var tr = document.createElement('tr');
+      var tareaId = 'tarea-' + contadorTareaId++;
+      tr.className = 'fila-tarea';
+      tr.setAttribute('data-tarea-id', tareaId);
+      tr.setAttribute('data-nombre', nombre);
+      tr.setAttribute('data-unidad', '—');
+      tr.setAttribute('data-obra', 'rivadavia');
+      tr.setAttribute('data-obrero', obrero);
+      tr.setAttribute('data-estado', 'pendiente');
+      tr.setAttribute('data-prioridad', prioridad);
+      tr.innerHTML =
+        '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + nombre + '</span>' +
+        '<p class="text-xs text-slate-500 mt-0.5">' + global + ' · PRES-2026-0142</p></td>' +
+        '<td class="px-4 py-3 col-obrero">' + nombresObrero[obrero] + '</td>' +
+        '<td class="px-4 py-3 text-slate-600">' + inicio + '</td>' +
+        '<td class="px-4 py-3 text-slate-600">' + fin + '</td>' +
+        '<td class="px-4 py-3"><span class="text-xs ' + clasesPrioridad[prioridad] + ' px-2 py-0.5 rounded-full">' + etiquetasPrioridad[prioridad] + '</span></td>' +
+        '<td class="px-4 py-3"><span class="text-xs ' + clasesEstadoTarea.pendiente + ' px-2 py-0.5 rounded-full">Pendiente</span></td>';
+      document.getElementById('tareas-body').appendChild(tr);
+      document.getElementById('form-nueva-tarea').classList.add('hidden');
+      document.getElementById('form-tarea').reset();
+      document.getElementById('tarea-inicio').value = '2026-06-18';
+      document.getElementById('tarea-fin').value = '2026-06-25';
+      aplicarFiltrosTareas();
+    });
+
+    aplicarFiltrosTareas();
+
   </script>
 
 </body>
