@@ -702,9 +702,10 @@
           <strong>Obra:</strong> Torre Rivadavia — 24 pisos · <strong>Certificado:</strong> CERT-OBR-2026-0007 · <strong>Presupuesto:</strong> PRES-2026-0142 (Confirmado)
         </section>
 
-        <div class="flex gap-1 mb-4 border-b border-slate-200" id="operativo-tabs">
+        <div class="flex gap-1 mb-4 border-b border-slate-200 flex-wrap" id="operativo-tabs">
           <button type="button" data-op-tab="planificacion" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-obrados-600 text-obrados-700">Planificación</button>
           <button type="button" data-op-tab="avances" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Registro de avances</button>
+          <button type="button" data-op-tab="validacion" id="tab-validacion" class="op-tab hidden px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Validación y certificación</button>
         </div>
 
         <div id="operativo-planificacion">
@@ -936,7 +937,7 @@
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-100" id="avances-body">
-                  <tr class="fila-avance" data-obrero="maria">
+                  <tr class="fila-avance" data-avance-id="AV-2026-0041" data-obrero="maria" data-estado="pendiente" data-tarea-id="tarea-2" data-porcentaje="35" data-importe="150500" data-global="Recepción">
                     <td class="px-4 py-3 font-mono text-xs text-slate-500">AV-2026-0041</td>
                     <td class="px-4 py-3">
                       <span class="font-medium text-slate-800">Replanteo y niveles</span>
@@ -948,7 +949,7 @@
                     <td class="px-4 py-3 text-slate-600">1 foto</td>
                     <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>
                   </tr>
-                  <tr class="fila-avance" data-obrero="carlos">
+                  <tr class="fila-avance" data-avance-id="AV-2026-0042" data-obrero="carlos" data-estado="pendiente" data-tarea-id="tarea-1" data-porcentaje="12" data-importe="122400" data-global="Recepción">
                     <td class="px-4 py-3 font-mono text-xs text-slate-500">AV-2026-0042</td>
                     <td class="px-4 py-3">
                       <span class="font-medium text-slate-800">Demolición y retiro de escombros</span>
@@ -965,7 +966,7 @@
             </div>
 
             <div class="md:hidden divide-y divide-slate-100 p-3 space-y-3" id="avances-cards">
-              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-obrero="maria">
+              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-avance-id="AV-2026-0041" data-obrero="maria" data-estado="pendiente">
                 <div class="flex justify-between items-start gap-2 mb-2">
                   <span class="font-mono text-xs text-slate-500">AV-2026-0041</span>
                   <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span>
@@ -974,7 +975,7 @@
                 <p class="text-xs text-slate-500 mt-1">35% · 1 gl · Semanal · 20/06/2026</p>
                 <p class="text-xs text-slate-400 mt-2">1 foto adjunta</p>
               </article>
-              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-obrero="carlos">
+              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-avance-id="AV-2026-0042" data-obrero="carlos" data-estado="pendiente">
                 <div class="flex justify-between items-start gap-2 mb-2">
                   <span class="font-mono text-xs text-slate-500">AV-2026-0042</span>
                   <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span>
@@ -987,14 +988,120 @@
 
             <p id="avances-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay avances para mostrar.</p>
           </section>
+
+          <section id="historial-pagos-obrero" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm mt-6">
+            <div class="px-4 py-3 border-b border-slate-100">
+              <h3 class="font-medium text-slate-800">Historial de pagos y liquidaciones</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Certificaciones quincenales aprobadas y montos pendientes de liberación</p>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm">
+                <thead class="bg-slate-50 text-slate-600 text-left">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">Certificación</th>
+                    <th class="px-4 py-2 font-medium">Período</th>
+                    <th class="px-4 py-2 font-medium text-right">Importe</th>
+                    <th class="px-4 py-2 font-medium">Estado</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="pagos-obrero-body">
+                  <tr class="fila-pago-obrero" data-obrero="maria">
+                    <td class="px-4 py-3 font-mono text-xs">CERT-Q-2026-0012</td>
+                    <td class="px-4 py-3 text-slate-600">16/05 — 31/05/2026</td>
+                    <td class="px-4 py-3 text-right font-medium">$ 285.000</td>
+                    <td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Pagado</span></td>
+                  </tr>
+                  <tr class="fila-pago-obrero" data-obrero="carlos">
+                    <td class="px-4 py-3 font-mono text-xs">CERT-Q-2026-0012</td>
+                    <td class="px-4 py-3 text-slate-600">16/05 — 31/05/2026</td>
+                    <td class="px-4 py-3 text-right font-medium">$ 412.500</td>
+                    <td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Pagado</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="px-4 py-3 border-t border-slate-100 bg-slate-50 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <span class="text-slate-600" id="pagos-pendientes-resumen">Pendiente de liberación: $ 0</span>
+              <span class="text-xs text-slate-400">Los montos se liberan al generar la certificación quincenal</span>
+            </div>
+          </section>
+        </div>
+
+        <div id="operativo-validacion" class="hidden">
+          <section class="grid sm:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wide">Ítem de trabajo</p>
+              <p class="text-sm text-slate-700 mt-1 truncate" id="avance-item-nombre">Replanteo y niveles</p>
+              <p class="text-2xl font-semibold text-obrados-700 mt-2" id="avance-item-pct">35%</p>
+              <p class="text-xs text-slate-400 mt-1">Avance acumulado validado</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wide">Ítem global</p>
+              <p class="text-sm text-slate-700 mt-1" id="avance-global-nombre">Recepción</p>
+              <p class="text-2xl font-semibold text-obrados-700 mt-2" id="avance-global-pct">11,5%</p>
+              <p class="text-xs text-slate-400 mt-1">Ponderado por peso de avance</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500 uppercase tracking-wide">Obra completa</p>
+              <p class="text-sm text-slate-700 mt-1">Torre Rivadavia</p>
+              <p class="text-2xl font-semibold text-obrados-700 mt-2" id="avance-obra-pct">4,2%</p>
+              <p class="text-xs text-slate-400 mt-1">Avance físico total de la obra</p>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+              <div>
+                <h3 class="font-medium text-slate-800">Avances pendientes de validación</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Aprobá o rechazá con comentario al obrero</p>
+              </div>
+              <span class="text-xs text-slate-500" id="contador-pendientes">2 pendientes</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm" id="tabla-validacion">
+                <thead class="bg-slate-50 text-slate-600 text-left">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">ID</th>
+                    <th class="px-4 py-2 font-medium">Tarea / obrero</th>
+                    <th class="px-4 py-2 font-medium">Avance</th>
+                    <th class="px-4 py-2 font-medium">Importe est.</th>
+                    <th class="px-4 py-2 font-medium">Comentario</th>
+                    <th class="px-4 py-2 font-medium text-right">Acciones</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="validacion-body"></tbody>
+              </table>
+            </div>
+            <p id="validacion-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay avances pendientes de validación.</p>
+          </section>
+
+          <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 class="font-medium text-slate-800">Certificación quincenal</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Consolidación cada 15 días de trabajos validados e importe a pagar</p>
+              </div>
+              <button type="button" id="btn-generar-cert-quincenal" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">Generar certificación quincenal</button>
+            </div>
+            <div class="p-4 text-sm" id="cert-quincenal-panel">
+              <p class="text-slate-600">Período actual: <strong>01/06 — 15/06/2026</strong></p>
+              <p class="text-xs text-slate-400 mt-1">Solo incluye avances en estado Validado dentro del período</p>
+              <div id="cert-quincenal-resultado" class="hidden mt-4 border border-emerald-200 bg-emerald-50 rounded-lg p-4">
+                <p class="font-medium text-emerald-900" id="cert-quincenal-titulo">CERT-Q-2026-0013 generada</p>
+                <ul class="mt-2 space-y-1 text-slate-700 text-sm" id="cert-quincenal-detalle"></ul>
+                <p class="mt-3 font-semibold text-slate-900">Total a pagar obreros: <span id="cert-quincenal-total">$ 0</span></p>
+              </div>
+              <p id="cert-quincenal-alerta" class="hidden mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">No hay avances validados en el período para consolidar.</p>
+            </div>
+          </section>
         </div>
       </div>
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.6">
-    © 2026 ObraDOS · Versión 0.9.6
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.7">
+    © 2026 ObraDOS · Versión 0.9.7
   </footer>
 
   <script>
@@ -1226,6 +1333,159 @@
     var contadorAvance = 43;
     var opTabActivo = 'planificacion';
     var contadorTareaId = 5;
+    var contadorCertQuincenal = 13;
+    var avanceAcumuladoTarea = { 'tarea-1': 0, 'tarea-2': 35, 'tarea-3': 0, 'tarea-4': 0 };
+    var pesoTareaObra = { 'tarea-1': 8.5, 'tarea-2': 6.2, 'tarea-3': 12.4, 'tarea-4': 18.6 };
+    var pesoGlobalRecepcion = { 'tarea-1': 40, 'tarea-2': 30, 'tarea-3': 0, 'tarea-4': 0 };
+
+    function formatMonedaOperativo(n) {
+      return '$ ' + Math.round(n).toLocaleString('es-AR');
+    }
+
+    function badgeEstadoAvance(estado) {
+      if (estado === 'aprobado') return '<span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Validado</span>';
+      if (estado === 'rechazado') return '<span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Rechazado</span>';
+      return '<span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span>';
+    }
+
+    function actualizarTabsOperativo() {
+      var esAdmin = document.getElementById('vista-operativo').value === 'admin';
+      document.getElementById('tab-validacion').classList.toggle('hidden', !esAdmin);
+      document.getElementById('form-registro-avance').classList.toggle('hidden', esAdmin);
+      document.getElementById('historial-pagos-obrero').classList.toggle('hidden', esAdmin);
+      if (!esAdmin && opTabActivo === 'validacion') activarOperativoTab('avances');
+    }
+
+    function calcularAvancePonderado() {
+      var sumaObra = 0;
+      Object.keys(pesoTareaObra).forEach(function (tid) {
+        sumaObra += (avanceAcumuladoTarea[tid] || 0) * pesoTareaObra[tid] / 100;
+      });
+      var sumaRecepcion = 0;
+      var pesoTotalRec = 0;
+      Object.keys(pesoGlobalRecepcion).forEach(function (tid) {
+        if (pesoGlobalRecepcion[tid] > 0) {
+          sumaRecepcion += (avanceAcumuladoTarea[tid] || 0) * pesoGlobalRecepcion[tid];
+          pesoTotalRec += pesoGlobalRecepcion[tid];
+        }
+      });
+      var pctGlobal = pesoTotalRec ? (sumaRecepcion / pesoTotalRec) : 0;
+      document.getElementById('avance-obra-pct').textContent = sumaObra.toFixed(1).replace('.', ',') + '%';
+      document.getElementById('avance-global-pct').textContent = pctGlobal.toFixed(1).replace('.', ',') + '%';
+      var itemDestacado = 'tarea-2';
+      var filaTarea = document.querySelector('.fila-tarea[data-tarea-id="' + itemDestacado + '"]');
+      document.getElementById('avance-item-nombre').textContent = filaTarea ? filaTarea.getAttribute('data-nombre') : '—';
+      document.getElementById('avance-item-pct').textContent = (avanceAcumuladoTarea[itemDestacado] || 0) + '%';
+    }
+
+    function renderValidacionPendientes() {
+      var body = document.getElementById('validacion-body');
+      body.innerHTML = '';
+      var pendientes = 0;
+      document.querySelectorAll('#avances-body .fila-avance[data-estado="pendiente"]').forEach(function (fila) {
+        pendientes++;
+        var id = fila.getAttribute('data-avance-id');
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td class="px-4 py-3 font-mono text-xs text-slate-500">' + id + '</td>' +
+          '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + fila.querySelector('.font-medium').textContent + '</span>' +
+          '<p class="text-xs text-slate-500 mt-0.5">' + nombresObrero[fila.getAttribute('data-obrero')] + '</p></td>' +
+          '<td class="px-4 py-3">' + fila.getAttribute('data-porcentaje') + '%</td>' +
+          '<td class="px-4 py-3">' + formatMonedaOperativo(parseFloat(fila.getAttribute('data-importe'))) + '</td>' +
+          '<td class="px-4 py-3"><input type="text" class="comentario-validacion w-full min-w-[8rem] border border-slate-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-obrados-500 focus:outline-none" placeholder="Observación al obrero…" data-avance-id="' + id + '" /></td>' +
+          '<td class="px-4 py-3 text-right whitespace-nowrap">' +
+          '<button type="button" class="btn-aprobar-avance text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg mr-1" data-avance-id="' + id + '">Aprobar</button>' +
+          '<button type="button" class="btn-rechazar-avance text-xs border border-red-300 text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg" data-avance-id="' + id + '">Rechazar</button></td>';
+        body.appendChild(tr);
+      });
+      document.getElementById('contador-pendientes').textContent = pendientes + (pendientes === 1 ? ' pendiente' : ' pendientes');
+      document.getElementById('validacion-vacio').classList.toggle('hidden', pendientes > 0);
+    }
+
+    function sincronizarEstadoAvance(id, estado, comentario) {
+      document.querySelectorAll('.fila-avance[data-avance-id="' + id + '"]').forEach(function (el) {
+        el.setAttribute('data-estado', estado);
+        var badge = el.querySelector('.rounded-full');
+        if (badge) {
+          if (estado === 'aprobado') {
+            badge.className = 'text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0';
+            badge.textContent = 'Validado';
+          } else if (estado === 'rechazado') {
+            badge.className = 'text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full shrink-0';
+            badge.textContent = 'Rechazado';
+          }
+        }
+        var tdEstado = el.querySelector('td:last-child');
+        if (tdEstado && el.tagName === 'TR') tdEstado.innerHTML = badgeEstadoAvance(estado);
+        if (comentario && estado === 'rechazado') {
+          var det = el.querySelector('.text-xs.text-slate-500');
+          if (det) det.textContent += ' · Rechazado: ' + comentario;
+        }
+      });
+    }
+
+    function validarAvance(id, aprobar) {
+      var fila = document.querySelector('#avances-body .fila-avance[data-avance-id="' + id + '"]');
+      if (!fila || fila.getAttribute('data-estado') !== 'pendiente') return;
+      var inputCom = document.querySelector('.comentario-validacion[data-avance-id="' + id + '"]');
+      var comentario = inputCom ? inputCom.value : '';
+      if (!aprobar && !comentario.trim()) {
+        alert('Indicá un comentario para el obrero al rechazar el avance.');
+        return;
+      }
+      var tareaId = fila.getAttribute('data-tarea-id');
+      var pct = parseFloat(fila.getAttribute('data-porcentaje'));
+      if (aprobar) {
+        avanceAcumuladoTarea[tareaId] = Math.min(100, (avanceAcumuladoTarea[tareaId] || 0) + pct);
+        sincronizarEstadoAvance(id, 'aprobado');
+      } else {
+        sincronizarEstadoAvance(id, 'rechazado', comentario);
+      }
+      calcularAvancePonderado();
+      renderValidacionPendientes();
+      aplicarFiltrosAvances();
+    }
+
+    function generarCertificacionQuincenal() {
+      var validados = [];
+      var total = 0;
+      document.querySelectorAll('#avances-body .fila-avance[data-estado="aprobado"]').forEach(function (fila) {
+        var imp = parseFloat(fila.getAttribute('data-importe')) || 0;
+        if (!fila.getAttribute('data-certificado')) {
+          validados.push({ id: fila.getAttribute('data-avance-id'), nombre: fila.querySelector('.font-medium').textContent, obrero: nombresObrero[fila.getAttribute('data-obrero')], importe: imp });
+          total += imp;
+          fila.setAttribute('data-certificado', 'si');
+        }
+      });
+      var res = document.getElementById('cert-quincenal-resultado');
+      var alerta = document.getElementById('cert-quincenal-alerta');
+      if (!validados.length) {
+        res.classList.add('hidden');
+        alerta.classList.remove('hidden');
+        return;
+      }
+      alerta.classList.add('hidden');
+      var certId = 'CERT-Q-2026-' + String(contadorCertQuincenal++).padStart(4, '0');
+      document.getElementById('cert-quincenal-titulo').textContent = certId + ' generada · 01/06 — 15/06/2026';
+      var ul = document.getElementById('cert-quincenal-detalle');
+      ul.innerHTML = '';
+      validados.forEach(function (v) {
+        var li = document.createElement('li');
+        li.textContent = v.id + ' · ' + v.nombre + ' (' + v.obrero + ') — ' + formatMonedaOperativo(v.importe);
+        ul.appendChild(li);
+      });
+      document.getElementById('cert-quincenal-total').textContent = formatMonedaOperativo(total);
+      res.classList.remove('hidden');
+    }
+
+    function actualizarHistorialPagosObrero() {
+      var vista = document.getElementById('vista-operativo').value;
+      document.querySelectorAll('.fila-pago-obrero').forEach(function (fila) {
+        fila.classList.toggle('hidden', fila.getAttribute('data-obrero') !== vista);
+      });
+      var pendiente = vista === 'maria' ? 150500 : vista === 'carlos' ? 122400 : 0;
+      document.getElementById('pagos-pendientes-resumen').textContent = 'Pendiente de liberación: ' + formatMonedaOperativo(pendiente);
+    }
 
     function activarOperativoTab(tab) {
       opTabActivo = tab;
@@ -1238,18 +1498,25 @@
       });
       document.getElementById('operativo-planificacion').classList.toggle('hidden', tab !== 'planificacion');
       document.getElementById('operativo-avances').classList.toggle('hidden', tab !== 'avances');
+      document.getElementById('operativo-validacion').classList.toggle('hidden', tab !== 'validacion');
       document.getElementById('btn-nueva-tarea').classList.toggle('hidden', tab !== 'planificacion' || document.getElementById('vista-operativo').value !== 'admin');
       actualizarSubtituloOperativo();
       if (tab === 'avances') {
         poblarSelectTareasAvance();
         aplicarFiltrosAvances();
       }
+      if (tab === 'validacion') {
+        calcularAvancePonderado();
+        renderValidacionPendientes();
+      }
     }
 
     function actualizarSubtituloOperativo() {
       var vista = document.getElementById('vista-operativo').value;
       var esAdmin = vista === 'admin';
-      if (opTabActivo === 'avances') {
+      if (opTabActivo === 'validacion') {
+        document.getElementById('operativo-subtitulo').textContent = 'Validación de avances y certificación quincenal';
+      } else if (opTabActivo === 'avances') {
         document.getElementById('operativo-subtitulo').textContent = esAdmin
           ? 'Registro y seguimiento de avances de obra'
           : 'Mis avances — ' + nombresObrero[vista];
@@ -1288,26 +1555,39 @@
       var vista = document.getElementById('vista-operativo').value;
       var esAdmin = vista === 'admin';
       var visibles = 0;
+      actualizarTabsOperativo();
       document.querySelectorAll('.col-obrero-av').forEach(function (c) {
         c.classList.toggle('hidden', !esAdmin);
       });
-      document.querySelectorAll('.fila-avance').forEach(function (fila) {
+      document.querySelectorAll('#avances-body .fila-avance').forEach(function (fila) {
         var ok = esAdmin || fila.getAttribute('data-obrero') === vista;
         fila.classList.toggle('hidden', !ok);
         if (ok) visibles++;
       });
+      document.querySelectorAll('#avances-cards .fila-avance').forEach(function (fila) {
+        var ok = esAdmin || fila.getAttribute('data-obrero') === vista;
+        fila.classList.toggle('hidden', !ok);
+      });
       document.getElementById('contador-avances').textContent = visibles + (visibles === 1 ? ' registro' : ' registros');
       document.getElementById('avances-vacio').classList.toggle('hidden', visibles > 0);
       document.getElementById('avances-hint-vista').textContent = esAdmin
-        ? 'Vista administrador: todos los avances pendientes de validación'
-        : 'Solo tus tareas y avances enviados';
+        ? 'Vista administrador: revisá avances en la pestaña Validación y certificación'
+        : 'Registrá el avance de tus tareas asignadas';
+      if (!esAdmin) actualizarHistorialPagosObrero();
     }
 
     function agregarAvance(datos) {
       var id = 'AV-2026-' + String(contadorAvance++).padStart(4, '0');
+      var importeEst = Math.round(parseFloat(datos.porcentaje) * 12000);
       var tr = document.createElement('tr');
       tr.className = 'fila-avance';
+      tr.setAttribute('data-avance-id', id);
       tr.setAttribute('data-obrero', datos.obrero);
+      tr.setAttribute('data-estado', 'pendiente');
+      tr.setAttribute('data-tarea-id', datos.tareaId);
+      tr.setAttribute('data-porcentaje', datos.porcentaje);
+      tr.setAttribute('data-importe', importeEst);
+      tr.setAttribute('data-global', datos.global || 'Recepción');
       tr.innerHTML =
         '<td class="px-4 py-3 font-mono text-xs text-slate-500">' + id + '</td>' +
         '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + datos.nombre + '</span>' +
@@ -1316,12 +1596,14 @@
         '<td class="px-4 py-3 text-slate-600">' + datos.periodo + '</td>' +
         '<td class="px-4 py-3">' + datos.porcentaje + '%</td>' +
         '<td class="px-4 py-3 text-slate-600">' + datos.fotos + '</td>' +
-        '<td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>';
+        '<td class="px-4 py-3">' + badgeEstadoAvance('pendiente') + '</td>';
       document.getElementById('avances-body').appendChild(tr);
 
       var card = document.createElement('article');
       card.className = 'fila-avance border border-slate-200 rounded-lg p-3';
+      card.setAttribute('data-avance-id', id);
       card.setAttribute('data-obrero', datos.obrero);
+      card.setAttribute('data-estado', 'pendiente');
       card.innerHTML =
         '<div class="flex justify-between items-start gap-2 mb-2">' +
         '<span class="font-mono text-xs text-slate-500">' + id + '</span>' +
@@ -1331,6 +1613,7 @@
         '<p class="text-xs text-slate-400 mt-2">' + datos.fotos + ' adjunta' + (datos.numFotos !== 1 ? 's' : '') + '</p>';
       document.getElementById('avances-cards').appendChild(card);
       aplicarFiltrosAvances();
+      if (opTabActivo === 'validacion') renderValidacionPendientes();
     }
 
     function formatearFecha(iso) {
@@ -1379,6 +1662,7 @@
     document.getElementById('vista-operativo').addEventListener('change', function () {
       var vista = document.getElementById('vista-operativo').value;
       if (vista !== 'admin') activarOperativoTab('avances');
+      actualizarTabsOperativo();
       aplicarFiltrosTareas();
       aplicarFiltrosAvances();
     });
@@ -1452,6 +1736,7 @@
       var numFotos = document.getElementById('avance-fotos').files.length;
       agregarAvance({
         obrero: opt.getAttribute('data-obrero'),
+        tareaId: opt.value,
         nombre: opt.textContent,
         porcentaje: document.getElementById('avance-porcentaje').value,
         cantidad: document.getElementById('avance-cantidad').value,
@@ -1459,13 +1744,24 @@
         fecha: formatearFecha(document.getElementById('avance-fecha').value),
         periodo: etiquetasPeriodo[document.getElementById('avance-periodo').value],
         fotos: numFotos + (numFotos === 1 ? ' foto' : ' fotos'),
-        numFotos: numFotos
+        numFotos: numFotos,
+        global: 'Recepción'
       });
       document.getElementById('avance-fotos').value = '';
       document.getElementById('avance-fotos-resumen').textContent = 'Sin archivos seleccionados';
     });
 
+    document.getElementById('btn-generar-cert-quincenal').addEventListener('click', generarCertificacionQuincenal);
+
+    document.getElementById('validacion-body').addEventListener('click', function (e) {
+      var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
+      if (!btn) return;
+      validarAvance(btn.getAttribute('data-avance-id'), btn.classList.contains('btn-aprobar-avance'));
+    });
+
     aplicarFiltrosTareas();
+    actualizarTabsOperativo();
+    calcularAvancePonderado();
     poblarSelectTareasAvance();
     aplicarFiltrosAvances();
   </script>
