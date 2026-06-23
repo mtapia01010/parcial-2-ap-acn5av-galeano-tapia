@@ -415,10 +415,37 @@
           </div>
         </section>
 
+        <section class="bg-slate-50 rounded-xl border border-slate-200 shadow-sm mb-6" id="guia-estados-coef">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800 text-sm">Estados del presupuesto y coeficientes</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Referencia comercial (HU-004) · tres capas de ajuste</p>
+          </div>
+          <div class="px-4 py-3 text-xs text-slate-600 overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[32rem]">
+              <thead>
+                <tr class="text-slate-500 border-b border-slate-200">
+                  <th class="py-2 pr-3 font-medium">Estado</th>
+                  <th class="py-2 pr-3 font-medium">Significado</th>
+                  <th class="py-2 pr-3 font-medium">Coef. negociación</th>
+                  <th class="py-2 font-medium">Recalc. pendientes</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                <tr><td class="py-2 pr-3">Borrador</td><td class="py-2 pr-3">Armado interno</td><td class="py-2 pr-3">Sí</td><td class="py-2">No</td></tr>
+                <tr><td class="py-2 pr-3">Enviado / En revisión</td><td class="py-2 pr-3">Negociación con cliente</td><td class="py-2 pr-3">Sí</td><td class="py-2">No</td></tr>
+                <tr><td class="py-2 pr-3">Aprobado</td><td class="py-2 pr-3">Aceptación comercial</td><td class="py-2 pr-3">Sí</td><td class="py-2">No</td></tr>
+                <tr><td class="py-2 pr-3">Rechazado</td><td class="py-2 pr-3">Renegociación</td><td class="py-2 pr-3">Sí</td><td class="py-2">No</td></tr>
+                <tr><td class="py-2 pr-3 font-medium">Confirmado</td><td class="py-2 pr-3">Certificados generados · comercial congelado</td><td class="py-2 pr-3">No</td><td class="py-2 pr-3 font-medium">Sí (ítems no cerrados en obra)</td></tr>
+              </tbody>
+            </table>
+            <p class="mt-3 text-slate-500">Coeficientes operativos (tarifas obrero por ítem) se editan en el módulo <strong>Operativo</strong>, capa distinta al presupuesto comercial.</p>
+          </div>
+        </section>
+
         <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6" id="seccion-coeficientes-0142">
           <div class="px-4 py-3 border-b border-slate-100">
             <h3 class="font-medium text-slate-800">Coeficientes de actualización</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Ajuste por inflación según tipo de ítem (MO, Materiales, Construcción)</p>
+            <p class="text-xs text-slate-500 mt-0.5">Coeficientes de negociación (pre-confirmación): actualizan precios al cliente por tipo MO / Mat / Constr.</p>
           </div>
           <div class="px-4 py-4 grid sm:grid-cols-4 gap-4 text-sm">
             <label class="block">
@@ -461,6 +488,18 @@
               </table>
             </div>
           </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 hidden" id="seccion-pendientes-0142">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Actualización de ítems no realizados</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Post-confirmación: recálculo comercial solo sobre ítems no cerrados en certificado de obra</p>
+          </div>
+          <div class="px-4 py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+            <p class="text-slate-600">Recalcula precios de ítems aún no cerrados en certificado de obra.</p>
+            <button type="button" id="btn-recalcular-pendientes" class="text-sm bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg">Recalcular ítems pendientes</button>
+          </div>
+          <p id="pendientes-msg" class="hidden px-4 pb-4 text-sm text-emerald-800"></p>
         </section>
 
         <section id="certificados-generados" class="hidden bg-white rounded-xl border border-emerald-200 shadow-sm mb-6">
@@ -678,434 +717,197 @@
 
       </div>
 
-      <div id="panel-operativo" class="modulo-panel">
+                  <div id="panel-operativo" class="modulo-panel">
         <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
             <h2 class="text-xl font-semibold text-slate-900">Operativo</h2>
-            <p class="text-sm text-slate-600 mt-1" id="operativo-subtitulo">Asignación de tareas según presupuesto confirmado</p>
+            <p class="text-sm text-slate-600 mt-1" id="operativo-subtitulo">Certificado de obra — espejo del presupuesto confirmado</p>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <label class="text-sm text-slate-600 flex items-center gap-2">
-              <span class="whitespace-nowrap">Vista</span>
-              <select id="vista-operativo" class="text-sm border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="admin">Administrador</option>
-                <option value="carlos">Carlos Ruiz — Obrero</option>
-                <option value="maria">María López — Obrero</option>
-                <option value="juan">Juan Pereyra — Obrero</option>
-              </select>
-            </label>
-            <button type="button" id="btn-nueva-tarea" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">+ Nueva tarea</button>
-          </div>
+          <label class="text-sm text-slate-600 flex items-center gap-2">
+            <span class="whitespace-nowrap">Vista</span>
+            <select id="vista-operativo" class="text-sm border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+              <option value="admin">Administrador</option>
+              <option value="cliente">Cliente / Arquitecto</option>
+              <option value="carlos">Carlos Ruiz — Obrero</option>
+              <option value="maria">María López — Obrero</option>
+              <option value="juan">Juan Pereyra — Obrero</option>
+            </select>
+          </label>
         </div>
 
-        <section class="bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4 text-sm text-blue-900">
-          <strong>Obra:</strong> Torre Rivadavia — 24 pisos · <strong>Certificado:</strong> CERT-OBR-2026-0007 · <strong>Presupuesto:</strong> PRES-2026-0142 (Confirmado)
+        <section id="banner-cert-obra" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-4 text-sm text-emerald-900">
+          Certificado de obra <strong>CERT-OBR-2026-0007</strong> generado automáticamente desde <strong>PRES-2026-0142</strong>.
+          <span class="block text-xs text-emerald-700 mt-1">Misma estructura que el presupuesto · tarifas obrero editables por el administrador</span>
         </section>
 
-        <div class="flex gap-1 mb-4 border-b border-slate-200 flex-wrap" id="operativo-tabs">
-          <button type="button" data-op-tab="planificacion" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-obrados-600 text-obrados-700">Planificación</button>
-          <button type="button" data-op-tab="avances" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Registro de avances</button>
-          <button type="button" data-op-tab="validacion" id="tab-validacion" class="op-tab hidden px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Validación y certificación</button>
-        </div>
+        <section id="operativo-sin-presupuesto" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-900">
+          Confirmá <strong>PRES-2026-0142</strong> (Torre Rivadavia) en el módulo <strong>Comercial</strong> — flujo completo hasta <strong>Aprobado</strong> y luego <strong>Confirmar presupuesto</strong> — para generar el certificado de obra.
+        </section>
 
-        <div id="operativo-planificacion">
-        <section id="filtros-tareas" class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
-          <div class="grid sm:grid-cols-3 gap-3 text-sm">
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Obra</span>
-              <select id="filtro-obra" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="">Todas</option>
-                <option value="rivadavia" selected>Torre Rivadavia — 24 pisos</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Obrero</span>
-              <select id="filtro-obrero" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="">Todos</option>
-                <option value="carlos">Carlos Ruiz</option>
-                <option value="maria">María López</option>
-                <option value="juan">Juan Pereyra</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Estado</span>
-              <select id="filtro-estado" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="">Todos</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="curso">En curso</option>
-                <option value="completada">Completada</option>
+        <div id="operativo-contenido" class="hidden">
+          <div class="flex flex-wrap items-center gap-3 mb-4 text-sm">
+            <label class="flex items-center gap-2 text-slate-600">
+              <span class="whitespace-nowrap font-medium">Certificado</span>
+              <select id="cert-operativo-select" class="border border-slate-300 rounded-lg px-3 py-1.5 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                <option value="CERT-OBR-2026-0007">CERT-OBR-2026-0007 · Torre Rivadavia</option>
               </select>
             </label>
           </div>
-        </section>
 
-        <section id="form-nueva-tarea" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
-          <div class="px-4 py-3 border-b border-slate-100">
-            <h3 class="font-medium text-slate-800">Nueva tarea</h3>
-            <p class="text-xs text-slate-500 mt-0.5">Vinculada a un ítem de trabajo del presupuesto confirmado</p>
+          <div class="flex gap-1 mb-4 border-b border-slate-200 flex-wrap" id="operativo-tabs">
+            <button type="button" data-op-tab="certificado" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-obrados-600 text-obrados-700">Certificado de obra</button>
+            <button type="button" data-op-tab="avances" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Avances</button>
+            <button type="button" data-op-tab="validacion" id="tab-validacion" class="op-tab hidden px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Validación y cierres</button>
           </div>
-          <form id="form-tarea" class="p-4 grid sm:grid-cols-2 gap-4 text-sm">
-            <label class="block sm:col-span-2">
-              <span class="text-slate-600 text-xs font-medium">Ítem de trabajo (presupuesto)</span>
-              <select id="tarea-item" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="">Seleccionar ítem…</option>
-                <option value="Recepción · Demolición y retiro de escombros">Recepción · Demolición y retiro de escombros</option>
-                <option value="Recepción · Replanteo y niveles">Recepción · Replanteo y niveles</option>
-                <option value="Recepción · Hormigón de limpieza">Recepción · Hormigón de limpieza</option>
-                <option value="Fachada · Revoque exterior hidrófugo">Fachada · Revoque exterior hidrófugo</option>
-                <option value="Fachada · Revestimiento símil piedra">Fachada · Revestimiento símil piedra</option>
-                <option value="Departamentos · Mampostería y tabiques">Departamentos · Mampostería y tabiques</option>
-                <option value="Departamentos · Instalaciones eléctricas">Departamentos · Instalaciones eléctricas</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Obrero responsable</span>
-              <select id="tarea-obrero" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="carlos">Carlos Ruiz</option>
-                <option value="maria">María López</option>
-                <option value="juan">Juan Pereyra</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Prioridad</span>
-              <select id="tarea-prioridad" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                <option value="alta">Alta</option>
-                <option value="media">Media</option>
-                <option value="baja">Baja</option>
-              </select>
-            </label>
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Fecha de inicio</span>
-              <input type="date" id="tarea-inicio" value="2026-06-18" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
-            </label>
-            <label class="block">
-              <span class="text-slate-600 text-xs font-medium">Fecha estimada de fin</span>
-              <input type="date" id="tarea-fin" value="2026-06-25" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
-            </label>
-            <div class="sm:col-span-2 flex gap-2 justify-end">
-              <button type="button" id="btn-cancelar-tarea" class="text-sm border border-slate-300 text-slate-700 px-3 py-1.5 rounded-lg hover:bg-slate-50">Cancelar</button>
-              <button type="submit" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-3 py-1.5 rounded-lg">Crear tarea</button>
-            </div>
-          </form>
-        </section>
 
-        <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
-          <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-            <h3 class="font-medium text-slate-800" id="titulo-lista-tareas">Tareas de obra</h3>
-            <span class="text-xs text-slate-500" id="contador-tareas">4 tareas</span>
-          </div>
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm" id="tabla-tareas">
-              <thead class="bg-slate-50 text-slate-600 text-left">
-                <tr>
-                  <th class="px-4 py-2 font-medium">Tarea / ítem presupuesto</th>
-                  <th class="px-4 py-2 font-medium col-obrero">Obrero</th>
-                  <th class="px-4 py-2 font-medium">Inicio</th>
-                  <th class="px-4 py-2 font-medium">Fin est.</th>
-                  <th class="px-4 py-2 font-medium">Prioridad</th>
-                  <th class="px-4 py-2 font-medium">Estado</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-slate-100" id="tareas-body">
-                <tr class="fila-tarea" data-tarea-id="tarea-1" data-unidad="m³" data-nombre="Demolición y retiro de escombros" data-obra="rivadavia" data-obrero="carlos" data-estado="pendiente" data-prioridad="alta">
-                  <td class="px-4 py-3">
-                    <span class="font-medium text-slate-800">Demolición y retiro de escombros</span>
-                    <p class="text-xs text-slate-500 mt-0.5">Recepción · PRES-2026-0142</p>
-                  </td>
-                  <td class="px-4 py-3 col-obrero">Carlos Ruiz</td>
-                  <td class="px-4 py-3 text-slate-600">18/06/2026</td>
-                  <td class="px-4 py-3 text-slate-600">25/06/2026</td>
-                  <td class="px-4 py-3"><span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Alta</span></td>
-                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente</span></td>
-                </tr>
-                <tr class="fila-tarea" data-tarea-id="tarea-2" data-unidad="gl" data-nombre="Replanteo y niveles" data-obra="rivadavia" data-obrero="maria" data-estado="curso" data-prioridad="media">
-                  <td class="px-4 py-3">
-                    <span class="font-medium text-slate-800">Replanteo y niveles</span>
-                    <p class="text-xs text-slate-500 mt-0.5">Recepción · PRES-2026-0142</p>
-                  </td>
-                  <td class="px-4 py-3 col-obrero">María López</td>
-                  <td class="px-4 py-3 text-slate-600">20/06/2026</td>
-                  <td class="px-4 py-3 text-slate-600">22/06/2026</td>
-                  <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Media</span></td>
-                  <td class="px-4 py-3"><span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">En curso</span></td>
-                </tr>
-                <tr class="fila-tarea" data-tarea-id="tarea-3" data-unidad="m²" data-nombre="Revoque exterior hidrófugo" data-obra="rivadavia" data-obrero="carlos" data-estado="pendiente" data-prioridad="alta">
-                  <td class="px-4 py-3">
-                    <span class="font-medium text-slate-800">Revoque exterior hidrófugo</span>
-                    <p class="text-xs text-slate-500 mt-0.5">Fachada · PRES-2026-0142</p>
-                  </td>
-                  <td class="px-4 py-3 col-obrero">Carlos Ruiz</td>
-                  <td class="px-4 py-3 text-slate-600">26/06/2026</td>
-                  <td class="px-4 py-3 text-slate-600">10/07/2026</td>
-                  <td class="px-4 py-3"><span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Alta</span></td>
-                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente</span></td>
-                </tr>
-                <tr class="fila-tarea" data-tarea-id="tarea-4" data-unidad="un" data-nombre="Instalaciones eléctricas por unidad" data-obra="rivadavia" data-obrero="juan" data-estado="pendiente" data-prioridad="baja">
-                  <td class="px-4 py-3">
-                    <span class="font-medium text-slate-800">Instalaciones eléctricas por unidad</span>
-                    <p class="text-xs text-slate-500 mt-0.5">Departamentos · PRES-2026-0142</p>
-                  </td>
-                  <td class="px-4 py-3 col-obrero">Juan Pereyra</td>
-                  <td class="px-4 py-3 text-slate-600">01/07/2026</td>
-                  <td class="px-4 py-3 text-slate-600">15/07/2026</td>
-                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Baja</span></td>
-                  <td class="px-4 py-3"><span class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <p id="tareas-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay tareas para los filtros seleccionados.</p>
-        </section>
-        </div>
-
-        <div id="operativo-avances" class="hidden">
-          <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
-              <div>
-                <p class="text-slate-600">Configuración de obra</p>
-                <p class="font-medium text-slate-800">Período habilitado: <span class="text-obrados-700">Quincenal</span> <span class="text-xs text-slate-400">(también diario y semanal)</span></p>
+          <div id="operativo-certificado">
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-4">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <h3 class="font-medium text-slate-800">CERT-OBR-2026-0007 · Torre Rivadavia</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Cliente libera ítems · Admin habilita obreros · Tarifas obrero ≠ presupuesto comercial</p>
               </div>
-              <p class="text-xs text-slate-500" id="avances-hint-vista">Registrá el avance de tus tareas asignadas</p>
-            </div>
-          </section>
+              <div id="cert-obra-grilla" class="text-sm"></div>
+            </section>
+          </div>
 
-          <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6" id="form-registro-avance">
-            <div class="px-4 py-3 border-b border-slate-100">
-              <h3 class="font-medium text-slate-800">Nuevo registro de avance</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Queda en estado Pendiente de validación hasta revisión del administrador</p>
+          <div id="operativo-avances" class="hidden">
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-4">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <h3 class="font-medium text-slate-800" id="avances-cert-titulo">CERT-OBR-2026-0007 · Torre Rivadavia</h3>
+                <p class="text-xs text-slate-500 mt-0.5" id="avances-cert-subtitulo">Misma estructura que el certificado de obra · registrá avance por ítem habilitado</p>
+              </div>
+              <div id="avances-grilla" class="text-sm"></div>
+            </section>
+          </div>
+
+          <div id="operativo-validacion" class="hidden">
+            <section class="grid sm:grid-cols-3 gap-4 mb-6">
+              <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p class="text-xs text-slate-500 uppercase tracking-wide">Ítem de trabajo</p>
+                <p class="text-sm text-slate-700 mt-1 truncate" id="kpi-item-nombre">—</p>
+                <p class="text-2xl font-semibold text-obrados-700 mt-2" id="kpi-item-pct">0%</p>
+                <p class="text-xs text-slate-400 mt-1">Avance acumulado validado</p>
+              </div>
+              <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p class="text-xs text-slate-500 uppercase tracking-wide">Ítem global</p>
+                <p class="text-sm text-slate-700 mt-1" id="kpi-global-nombre">Recepción</p>
+                <p class="text-2xl font-semibold text-obrados-700 mt-2" id="kpi-global-pct">0%</p>
+                <p class="text-xs text-slate-400 mt-1">Ponderado por peso de avance</p>
+              </div>
+              <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+                <p class="text-xs text-slate-500 uppercase tracking-wide">Obra completa</p>
+                <p class="text-sm text-slate-700 mt-1">Torre Rivadavia</p>
+                <p class="text-2xl font-semibold text-obrados-700 mt-2" id="kpi-obra-pct">0%</p>
+                <p class="text-xs text-slate-400 mt-1">Avance físico total de la obra</p>
+              </div>
+            </section>
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+              <div class="px-4 py-3 border-b border-slate-100 flex justify-between">
+                <h3 class="font-medium text-slate-800">Avances pendientes de validación</h3>
+                <span class="text-xs text-slate-500" id="contador-pendientes">0</span>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead class="bg-slate-50 text-slate-600 text-left">
+                    <tr>
+                      <th class="px-4 py-2 font-medium">ID</th>
+                      <th class="px-4 py-2 font-medium">Ítem / obrero</th>
+                      <th class="px-4 py-2 font-medium">Avance</th>
+                      <th class="px-4 py-2 font-medium">Importe est.</th>
+                      <th class="px-4 py-2 font-medium">Comentario</th>
+                      <th class="px-4 py-2 font-medium text-right">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="validacion-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+              </div>
+              <p id="validacion-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay avances pendientes.</p>
+            </section>
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+              <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 class="font-medium text-slate-800">Cierre de certificado obrero</h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Ancla el tramo validado · ítems del tramo pasan a cerrado en tramo</p>
+                </div>
+                <button type="button" id="btn-cierre-obrero" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg">Cerrar certificado obrero</button>
+              </div>
+              <div class="p-4 text-sm">
+                <p class="text-slate-600">Avances validados sin cerrar: <strong id="contador-validados-sin-cierre">0</strong></p>
+                <div id="cierre-resultado" class="hidden mt-4 border border-emerald-200 bg-emerald-50 rounded-lg p-4">
+                  <p class="font-medium text-emerald-900" id="cierre-titulo">Tramo cerrado</p>
+                  <p class="text-slate-700 mt-1">Monto a pagar obreros: <strong id="cierre-total">$ 0</strong></p>
+                  <p class="text-xs text-slate-500 mt-2">Los ítems del tramo quedan anclados. El obrero continúa en ítems pendientes.</p>
+                </div>
+                <p id="cierre-alerta" class="hidden mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">No hay avances validados pendientes de cierre.</p>
+              </div>
+            </section>
+          </div>
+        </div>
+
+        <div id="modal-habilitar" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl shadow-lg max-w-sm w-full p-5 text-sm">
+            <h3 class="font-medium text-slate-900">Habilitar ítem a obrero</h3>
+            <p class="text-xs text-slate-500 mt-1" id="modal-habilitar-item">—</p>
+            <label class="block mt-4">
+              <span class="text-slate-600 text-xs font-medium">Obrero responsable</span>
+              <select id="modal-habilitar-obrero" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2">
+                <option value="carlos">Carlos Ruiz</option>
+                <option value="maria">María López</option>
+                <option value="juan">Juan Pereyra</option>
+              </select>
+            </label>
+            <div class="flex gap-2 mt-4 justify-end">
+              <button type="button" id="modal-habilitar-cancelar" class="px-3 py-1.5 border border-slate-300 rounded-lg">Cancelar</button>
+              <button type="button" id="modal-habilitar-confirmar" class="px-3 py-1.5 bg-obrados-600 text-white rounded-lg">Habilitar</button>
             </div>
-            <form id="form-avance" class="p-4 grid sm:grid-cols-2 gap-4 text-sm max-w-3xl">
-              <label class="block">
-                <span class="text-slate-600 text-xs font-medium">Tipo de registro</span>
-                <select id="avance-periodo" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
-                  <option value="diario">Diario</option>
-                  <option value="semanal">Semanal</option>
-                  <option value="quincenal" selected>Quincenal</option>
-                </select>
-              </label>
-              <label class="block">
-                <span class="text-slate-600 text-xs font-medium">Fecha del registro</span>
-                <input type="date" id="avance-fecha" value="2026-06-17" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
-              </label>
-              <label class="block sm:col-span-2">
-                <span class="text-slate-600 text-xs font-medium">Tarea / ítem de trabajo</span>
-                <select id="avance-tarea" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none"></select>
-              </label>
+          </div>
+        </div>
+
+        <div id="modal-avance" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-5 text-sm">
+            <h3 class="font-medium text-slate-900">Registrar avance</h3>
+            <p class="text-xs text-slate-500 mt-1" id="modal-avance-item">—</p>
+            <div class="mt-4 grid gap-3">
               <label class="block">
                 <span class="text-slate-600 text-xs font-medium">% completado en el período</span>
-                <input type="number" id="avance-porcentaje" min="1" max="100" value="15" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+                <input type="number" id="modal-avance-porcentaje" min="1" max="100" value="15" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
               </label>
               <label class="block">
                 <span class="text-slate-600 text-xs font-medium">Cantidad ejecutada</span>
                 <div class="mt-1 flex gap-2">
-                  <input type="number" id="avance-cantidad" min="0" step="0.1" value="18" required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
-                  <span id="avance-unidad" class="inline-flex items-center px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 text-xs min-w-[3rem] justify-center">m³</span>
+                  <input type="number" id="modal-avance-cantidad" min="0" step="0.1" value="1" class="flex-1 border border-slate-300 rounded-lg px-3 py-2" />
+                  <span id="modal-avance-unidad" class="inline-flex items-center px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 text-xs min-w-[3rem] justify-center">—</span>
                 </div>
               </label>
-              <label class="block sm:col-span-2">
+              <label class="block">
                 <span class="text-slate-600 text-xs font-medium">Observaciones</span>
-                <textarea id="avance-obs" rows="2" placeholder="Detalle del trabajo realizado, condiciones, etc." class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">Avance conforme a plano. Sector norte finalizado.</textarea>
+                <textarea id="modal-avance-obs" rows="2" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></textarea>
               </label>
-              <label class="block sm:col-span-2">
+              <label class="block">
                 <span class="text-slate-600 text-xs font-medium">Evidencia fotográfica</span>
-                <input type="file" id="avance-fotos" accept="image/*" multiple class="mt-1 w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-100 file:text-slate-700" />
-                <p class="text-xs text-slate-400 mt-1" id="avance-fotos-resumen">Sin archivos seleccionados</p>
+                <input type="file" id="modal-avance-fotos" accept="image/*" multiple class="mt-1 w-full text-sm text-slate-600" />
               </label>
-              <div class="sm:col-span-2">
-                <button type="submit" class="w-full sm:w-auto text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2.5 rounded-lg font-medium">Enviar a validación</button>
-              </div>
-            </form>
-          </section>
-
-          <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
-            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-              <h3 class="font-medium text-slate-800">Avances registrados</h3>
-              <span class="text-xs text-slate-500" id="contador-avances">2 registros</span>
             </div>
-
-            <div class="hidden md:block overflow-x-auto">
-              <table class="w-full text-sm" id="tabla-avances">
-                <thead class="bg-slate-50 text-slate-600 text-left">
-                  <tr>
-                    <th class="px-4 py-2 font-medium">ID</th>
-                    <th class="px-4 py-2 font-medium">Tarea</th>
-                    <th class="px-4 py-2 font-medium col-obrero-av">Obrero</th>
-                    <th class="px-4 py-2 font-medium">Período</th>
-                    <th class="px-4 py-2 font-medium">Avance</th>
-                    <th class="px-4 py-2 font-medium">Fotos</th>
-                    <th class="px-4 py-2 font-medium">Estado</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100" id="avances-body">
-                  <tr class="fila-avance" data-avance-id="AV-2026-0041" data-obrero="maria" data-estado="pendiente" data-tarea-id="tarea-2" data-porcentaje="35" data-importe="150500" data-global="Recepción">
-                    <td class="px-4 py-3 font-mono text-xs text-slate-500">AV-2026-0041</td>
-                    <td class="px-4 py-3">
-                      <span class="font-medium text-slate-800">Replanteo y niveles</span>
-                      <p class="text-xs text-slate-500 mt-0.5">35% · 1 gl · 20/06/2026</p>
-                    </td>
-                    <td class="px-4 py-3 col-obrero-av">María López</td>
-                    <td class="px-4 py-3 text-slate-600">Semanal</td>
-                    <td class="px-4 py-3">35%</td>
-                    <td class="px-4 py-3 text-slate-600">1 foto</td>
-                    <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>
-                  </tr>
-                  <tr class="fila-avance" data-avance-id="AV-2026-0042" data-obrero="carlos" data-estado="pendiente" data-tarea-id="tarea-1" data-porcentaje="12" data-importe="122400" data-global="Recepción">
-                    <td class="px-4 py-3 font-mono text-xs text-slate-500">AV-2026-0042</td>
-                    <td class="px-4 py-3">
-                      <span class="font-medium text-slate-800">Demolición y retiro de escombros</span>
-                      <p class="text-xs text-slate-500 mt-0.5">12% · 18 m³ · 17/06/2026</p>
-                    </td>
-                    <td class="px-4 py-3 col-obrero-av">Carlos Ruiz</td>
-                    <td class="px-4 py-3 text-slate-600">Diario</td>
-                    <td class="px-4 py-3">12%</td>
-                    <td class="px-4 py-3 text-slate-600">2 fotos</td>
-                    <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="flex gap-2 mt-4 justify-end">
+              <button type="button" id="modal-avance-cancelar" class="px-3 py-1.5 border border-slate-300 rounded-lg">Cancelar</button>
+              <button type="button" id="modal-avance-confirmar" class="px-3 py-1.5 bg-obrados-600 text-white rounded-lg">Enviar a validación</button>
             </div>
-
-            <div class="md:hidden divide-y divide-slate-100 p-3 space-y-3" id="avances-cards">
-              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-avance-id="AV-2026-0041" data-obrero="maria" data-estado="pendiente">
-                <div class="flex justify-between items-start gap-2 mb-2">
-                  <span class="font-mono text-xs text-slate-500">AV-2026-0041</span>
-                  <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span>
-                </div>
-                <p class="font-medium text-slate-800">Replanteo y niveles</p>
-                <p class="text-xs text-slate-500 mt-1">35% · 1 gl · Semanal · 20/06/2026</p>
-                <p class="text-xs text-slate-400 mt-2">1 foto adjunta</p>
-              </article>
-              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-avance-id="AV-2026-0042" data-obrero="carlos" data-estado="pendiente">
-                <div class="flex justify-between items-start gap-2 mb-2">
-                  <span class="font-mono text-xs text-slate-500">AV-2026-0042</span>
-                  <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span>
-                </div>
-                <p class="font-medium text-slate-800">Demolición y retiro de escombros</p>
-                <p class="text-xs text-slate-500 mt-1">12% · 18 m³ · Diario · 17/06/2026</p>
-                <p class="text-xs text-slate-400 mt-2">2 fotos adjuntas</p>
-              </article>
-            </div>
-
-            <p id="avances-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay avances para mostrar.</p>
-          </section>
-
-          <section id="historial-pagos-obrero" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm mt-6">
-            <div class="px-4 py-3 border-b border-slate-100">
-              <h3 class="font-medium text-slate-800">Historial de pagos y liquidaciones</h3>
-              <p class="text-xs text-slate-500 mt-0.5">Certificaciones quincenales aprobadas y montos pendientes de liberación</p>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm">
-                <thead class="bg-slate-50 text-slate-600 text-left">
-                  <tr>
-                    <th class="px-4 py-2 font-medium">Certificación</th>
-                    <th class="px-4 py-2 font-medium">Período</th>
-                    <th class="px-4 py-2 font-medium text-right">Importe</th>
-                    <th class="px-4 py-2 font-medium">Estado</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100" id="pagos-obrero-body">
-                  <tr class="fila-pago-obrero" data-obrero="maria">
-                    <td class="px-4 py-3 font-mono text-xs">CERT-Q-2026-0012</td>
-                    <td class="px-4 py-3 text-slate-600">16/05 — 31/05/2026</td>
-                    <td class="px-4 py-3 text-right font-medium">$ 285.000</td>
-                    <td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Pagado</span></td>
-                  </tr>
-                  <tr class="fila-pago-obrero" data-obrero="carlos">
-                    <td class="px-4 py-3 font-mono text-xs">CERT-Q-2026-0012</td>
-                    <td class="px-4 py-3 text-slate-600">16/05 — 31/05/2026</td>
-                    <td class="px-4 py-3 text-right font-medium">$ 412.500</td>
-                    <td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Pagado</span></td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-            <div class="px-4 py-3 border-t border-slate-100 bg-slate-50 text-sm flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span class="text-slate-600" id="pagos-pendientes-resumen">Pendiente de liberación: $ 0</span>
-              <span class="text-xs text-slate-400">Los montos se liberan al generar la certificación quincenal</span>
-            </div>
-          </section>
-        </div>
-
-        <div id="operativo-validacion" class="hidden">
-          <section class="grid sm:grid-cols-3 gap-4 mb-6">
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-              <p class="text-xs text-slate-500 uppercase tracking-wide">Ítem de trabajo</p>
-              <p class="text-sm text-slate-700 mt-1 truncate" id="avance-item-nombre">Replanteo y niveles</p>
-              <p class="text-2xl font-semibold text-obrados-700 mt-2" id="avance-item-pct">35%</p>
-              <p class="text-xs text-slate-400 mt-1">Avance acumulado validado</p>
-            </div>
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-              <p class="text-xs text-slate-500 uppercase tracking-wide">Ítem global</p>
-              <p class="text-sm text-slate-700 mt-1" id="avance-global-nombre">Recepción</p>
-              <p class="text-2xl font-semibold text-obrados-700 mt-2" id="avance-global-pct">11,5%</p>
-              <p class="text-xs text-slate-400 mt-1">Ponderado por peso de avance</p>
-            </div>
-            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
-              <p class="text-xs text-slate-500 uppercase tracking-wide">Obra completa</p>
-              <p class="text-sm text-slate-700 mt-1">Torre Rivadavia</p>
-              <p class="text-2xl font-semibold text-obrados-700 mt-2" id="avance-obra-pct">4,2%</p>
-              <p class="text-xs text-slate-400 mt-1">Avance físico total de la obra</p>
-            </div>
-          </section>
-
-          <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
-            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
-              <div>
-                <h3 class="font-medium text-slate-800">Avances pendientes de validación</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Aprobá o rechazá con comentario al obrero</p>
-              </div>
-              <span class="text-xs text-slate-500" id="contador-pendientes">2 pendientes</span>
-            </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-sm" id="tabla-validacion">
-                <thead class="bg-slate-50 text-slate-600 text-left">
-                  <tr>
-                    <th class="px-4 py-2 font-medium">ID</th>
-                    <th class="px-4 py-2 font-medium">Tarea / obrero</th>
-                    <th class="px-4 py-2 font-medium">Avance</th>
-                    <th class="px-4 py-2 font-medium">Importe est.</th>
-                    <th class="px-4 py-2 font-medium">Comentario</th>
-                    <th class="px-4 py-2 font-medium text-right">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-slate-100" id="validacion-body"></tbody>
-              </table>
-            </div>
-            <p id="validacion-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay avances pendientes de validación.</p>
-          </section>
-
-          <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
-            <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 class="font-medium text-slate-800">Certificación quincenal</h3>
-                <p class="text-xs text-slate-500 mt-0.5">Consolidación cada 15 días de trabajos validados e importe a pagar</p>
-              </div>
-              <button type="button" id="btn-generar-cert-quincenal" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg whitespace-nowrap">Generar certificación quincenal</button>
-            </div>
-            <div class="p-4 text-sm" id="cert-quincenal-panel">
-              <p class="text-slate-600">Período actual: <strong>01/06 — 15/06/2026</strong></p>
-              <p class="text-xs text-slate-400 mt-1">Solo incluye avances en estado Validado dentro del período</p>
-              <div id="cert-quincenal-resultado" class="hidden mt-4 border border-emerald-200 bg-emerald-50 rounded-lg p-4">
-                <p class="font-medium text-emerald-900" id="cert-quincenal-titulo">CERT-Q-2026-0013 generada</p>
-                <ul class="mt-2 space-y-1 text-slate-700 text-sm" id="cert-quincenal-detalle"></ul>
-                <p class="mt-3 font-semibold text-slate-900">Total a pagar obreros: <span id="cert-quincenal-total">$ 0</span></p>
-              </div>
-              <p id="cert-quincenal-alerta" class="hidden mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">No hay avances validados en el período para consolidar.</p>
-            </div>
-          </section>
+          </div>
         </div>
       </div>
+
+
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.7">
-    © 2026 ObraDOS · Versión 0.9.7
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.8">
+    © 2026 ObraDOS · Versión 0.9.8
   </footer>
 
   <script>
     var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
+    var presCertOperativo = '0142';
     var totalAnteriorCoef = 48750000;
 
     var estilosEstado = {
@@ -1186,9 +988,9 @@
       if (!cont || !estado) return;
       cont.innerHTML = '';
       if (estado === 'confirmado') {
-        var confirmMsg = presId === '0142'
+        var confirmMsg = presId === presCertOperativo
           ? 'Presupuesto confirmado. Certificados de obra y administrativo generados.'
-          : 'Presupuesto confirmado.';
+          : 'Presupuesto confirmado. En esta demo el certificado de obra se genera al confirmar PRES-2026-0142.';
         cont.innerHTML = '<p class="text-sm text-emerald-700">' + confirmMsg + '</p>';
         return;
       }
@@ -1238,14 +1040,14 @@
       actualizarBadgesEstado(presId);
       actualizarWorkflowVisual(presId);
       renderAccionesEstado(presId);
-      if (presId === '0142' && nuevo === 'confirmado') {
+      if (presId === presCertOperativo && nuevo === 'confirmado') {
         var total = actualizarTotal0142();
         document.getElementById('cert-obra-monto').textContent = formatMoneda(total);
         document.getElementById('cert-adm-monto').textContent = formatMoneda(total);
         document.getElementById('certificados-generados').classList.remove('hidden');
         bloquearEdicion0142(true);
-        if (typeof actualizarBannerCertObra === 'function') actualizarBannerCertObra();
       }
+      actualizarBannerCertObra();
     }
 
     function aplicarCoeficientes() {
@@ -1306,6 +1108,7 @@
         document.querySelectorAll('.modulo-panel').forEach(function (panel) {
           panel.classList.toggle('activo', panel.id === 'panel-' + modulo);
         });
+        if (modulo === 'operativo') actualizarBannerCertObra();
       });
     });
 
@@ -1324,167 +1127,520 @@
       }
     });
 
-    var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan Pereyra' };
-    var etiquetasPrioridad = { alta: 'Alta', media: 'Media', baja: 'Baja' };
-    var clasesPrioridad = { alta: 'bg-red-100 text-red-800', media: 'bg-amber-100 text-amber-800', baja: 'bg-slate-200 text-slate-700' };
-    var etiquetasEstadoTarea = { pendiente: 'Pendiente', curso: 'En curso', completada: 'Completada' };
-    var clasesEstadoTarea = { pendiente: 'bg-slate-200 text-slate-700', curso: 'bg-blue-100 text-blue-800', completada: 'bg-emerald-100 text-emerald-800' };
-    var etiquetasPeriodo = { diario: 'Diario', semanal: 'Semanal', quincenal: 'Quincenal' };
-    var contadorAvance = 43;
-    var opTabActivo = 'planificacion';
-    var contadorTareaId = 5;
-    var contadorCertQuincenal = 13;
-    var avanceAcumuladoTarea = { 'tarea-1': 0, 'tarea-2': 35, 'tarea-3': 0, 'tarea-4': 0 };
-    var pesoTareaObra = { 'tarea-1': 8.5, 'tarea-2': 6.2, 'tarea-3': 12.4, 'tarea-4': 18.6 };
-    var pesoGlobalRecepcion = { 'tarea-1': 40, 'tarea-2': 30, 'tarea-3': 0, 'tarea-4': 0 };
 
-    function formatMonedaOperativo(n) {
-      return '$ ' + Math.round(n).toLocaleString('es-AR');
+
+    function actualizarBannerCertObra() {
+      var confirmado = estadosPres[presCertOperativo] === 'confirmado';
+      var banner = document.getElementById('banner-cert-obra');
+      var sinPres = document.getElementById('operativo-sin-presupuesto');
+      var contenido = document.getElementById('operativo-contenido');
+      var secPend = document.getElementById('seccion-pendientes-0142');
+      if (banner) banner.classList.toggle('hidden', !confirmado);
+      if (sinPres) {
+        sinPres.classList.toggle('hidden', confirmado);
+        if (!confirmado) {
+          var otroConfirmado = Object.keys(estadosPres).some(function (id) {
+            return id !== presCertOperativo && estadosPres[id] === 'confirmado';
+          });
+          sinPres.innerHTML = otroConfirmado
+            ? 'Confirmaste otro presupuesto, pero en esta demo el <strong>certificado de obra</strong> (CERT-OBR-2026-0007) se genera al confirmar <strong>PRES-2026-0142</strong> · Torre Rivadavia. Abrilo en Comercial y completá el flujo hasta <strong>Confirmar presupuesto</strong>.'
+            : 'Confirmá <strong>PRES-2026-0142</strong> (Torre Rivadavia) en el módulo <strong>Comercial</strong> — flujo completo hasta <strong>Aprobado</strong> y luego <strong>Confirmar presupuesto</strong> — para generar el certificado de obra.';
+        }
+      }
+      if (contenido) contenido.classList.toggle('hidden', !confirmado);
+      if (secPend) secPend.classList.toggle('hidden', !confirmado);
+      if (confirmado && typeof renderGrillasOperativo === 'function') {
+        renderGrillasOperativo();
+        calcularKpisOperativo();
+      }
+    }
+
+    document.getElementById('btn-recalcular-pendientes').addEventListener('click', function () {
+      if (typeof recalcularItemsPendientes === 'function') recalcularItemsPendientes();
+    });
+
+var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan Pereyra' };
+    var opTabActivo = 'certificado';
+    var contadorAvance = 42;
+    var contadorCierre = 1;
+    var itemHabilitarId = null;
+
+    var etiquetasEstadoItem = {
+      no_liberado: 'No liberado',
+      liberado: 'Liberado',
+      habilitado: 'Habilitado',
+      avance_pendiente: 'Avance pendiente',
+      avance_validado: 'Avance validado',
+      cerrado_tramo: 'Cerrado en tramo'
+    };
+
+    var clasesEstadoItem = {
+      no_liberado: 'bg-slate-200 text-slate-700',
+      liberado: 'bg-blue-100 text-blue-800',
+      habilitado: 'bg-emerald-100 text-emerald-800',
+      avance_pendiente: 'bg-amber-100 text-amber-800',
+      avance_validado: 'bg-teal-100 text-teal-800',
+      cerrado_tramo: 'bg-purple-100 text-purple-800'
+    };
+
+    var clasesCoef = { MO: 'bg-blue-100 text-blue-800', Mat: 'bg-green-100 text-green-800', Constr: 'bg-purple-100 text-purple-800' };
+
+    var globalesCert = [
+      { id: 'g-rec', nombre: 'Recepción', subtotal: 2450000 },
+      { id: 'g-fac', nombre: 'Fachada', subtotal: 18200000 },
+      { id: 'g-dep', nombre: 'Departamentos', subtotal: 28100000 }
+    ];
+
+    var itemsCert = [
+      { id: 'i1', globalId: 'g-rec', global: 'Recepción', nombre: 'Demolición y retiro de escombros', unidad: 'm³', cant: 120, punitPres: 8500, punitObrero: 7200, coef: 'MO', peso: 40, pesoObra: 8.5, estado: 'habilitado', obrero: 'carlos', avanceAcum: 0 },
+      { id: 'i2', globalId: 'g-rec', global: 'Recepción', nombre: 'Replanteo y niveles', unidad: 'gl', cant: 1, punitPres: 430000, punitObrero: 380000, coef: 'Mat', peso: 30, pesoObra: 6.2, estado: 'avance_pendiente', obrero: 'maria', avanceAcum: 0 },
+      { id: 'i3', globalId: 'g-rec', global: 'Recepción', nombre: 'Hormigón de limpieza', unidad: 'm³', cant: 25, punitPres: 40000, punitObrero: 35000, coef: 'Constr', peso: 30, pesoObra: 5.0, estado: 'liberado', obrero: '', avanceAcum: 0 },
+      { id: 'i4', globalId: 'g-fac', global: 'Fachada', nombre: 'Revoque exterior hidrófugo', unidad: 'm²', cant: 2400, punitPres: 5200, punitObrero: 4500, coef: 'MO', peso: 55, pesoObra: 12.4, estado: 'no_liberado', obrero: '', avanceAcum: 0 },
+      { id: 'i5', globalId: 'g-fac', global: 'Fachada', nombre: 'Aplicación de revestimiento símil piedra', unidad: 'm²', cant: 1800, punitPres: 3200, punitObrero: 2800, coef: 'Mat', peso: 45, pesoObra: 10.1, estado: 'no_liberado', obrero: '', avanceAcum: 0 },
+      { id: 'i6', globalId: 'g-dep', global: 'Departamentos', nombre: 'Mampostería y tabiques interiores', unidad: 'm²', cant: 3200, punitPres: 4800, punitObrero: 4100, coef: 'Constr', peso: 50, pesoObra: 15.2, estado: 'no_liberado', obrero: '', avanceAcum: 0 },
+      { id: 'i7', globalId: 'g-dep', global: 'Departamentos', nombre: 'Instalaciones eléctricas por unidad', unidad: 'un', cant: 48, punitPres: 265000, punitObrero: 220000, coef: 'MO', peso: 50, pesoObra: 18.6, estado: 'no_liberado', obrero: '', avanceAcum: 0 }
+    ];
+
+    var avancesOperativo = [
+      { id: 'AV-2026-0041', itemId: 'i2', obrero: 'maria', porcentaje: 35, cantidad: 1, unidad: 'gl', estado: 'pendiente', importe: 133000, obs: 'Replanteo sector norte', fecha: '20/06/2026', fotos: 1, cerrado: false }
+    ];
+
+    function getItem(id) {
+      return itemsCert.find(function (it) { return it.id === id; });
+    }
+
+    function itemsDeGlobal(globalId) {
+      return itemsCert.filter(function (it) { return it.globalId === globalId; });
+    }
+
+    function badgeCoef(coef, itemId, editable) {
+      if (editable) {
+        return '<select class="coef-select text-xs border border-slate-200 rounded px-1 py-0.5" data-item-id="' + itemId + '">' +
+          ['MO', 'Mat', 'Constr'].map(function (c) {
+            return '<option value="' + c + '"' + (c === coef ? ' selected' : '') + '>' + c + '</option>';
+          }).join('') + '</select>';
+      }
+      var cls = clasesCoef[coef] || 'bg-slate-100 text-slate-700';
+      var label = coef === 'Constr' ? 'Constr.' : coef;
+      return '<span class="text-xs ' + cls + ' px-1.5 py-0.5 rounded">' + label + '</span>';
+    }
+
+    function badgeEstadoItem(estado) {
+      return '<span class="text-xs ' + (clasesEstadoItem[estado] || 'bg-slate-100') + ' px-2 py-0.5 rounded-full">' + (etiquetasEstadoItem[estado] || estado) + '</span>';
     }
 
     function badgeEstadoAvance(estado) {
-      if (estado === 'aprobado') return '<span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Validado</span>';
+      if (estado === 'validado') return '<span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Validado</span>';
       if (estado === 'rechazado') return '<span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Rechazado</span>';
+      if (estado === 'cerrado') return '<span class="text-xs bg-purple-100 text-purple-800 px-2 py-0.5 rounded-full">Cerrado en tramo</span>';
       return '<span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span>';
     }
 
-    function actualizarTabsOperativo() {
-      var esAdmin = document.getElementById('vista-operativo').value === 'admin';
-      document.getElementById('tab-validacion').classList.toggle('hidden', !esAdmin);
-      document.getElementById('form-registro-avance').classList.toggle('hidden', esAdmin);
-      document.getElementById('historial-pagos-obrero').classList.toggle('hidden', esAdmin);
-      if (!esAdmin && opTabActivo === 'validacion') activarOperativoTab('avances');
+    function sincronizarEstadoItem(itemId) {
+      var it = getItem(itemId);
+      if (!it || it.estado === 'cerrado_tramo') return;
+      var pend = avancesOperativo.some(function (a) { return a.itemId === itemId && a.estado === 'pendiente'; });
+      var valid = avancesOperativo.some(function (a) { return a.itemId === itemId && a.estado === 'validado' && !a.cerrado; });
+      if (pend) it.estado = 'avance_pendiente';
+      else if (valid) it.estado = 'avance_validado';
+      else if (it.obrero && it.estado !== 'liberado') it.estado = 'habilitado';
     }
 
-    function calcularAvancePonderado() {
-      var sumaObra = 0;
-      Object.keys(pesoTareaObra).forEach(function (tid) {
-        sumaObra += (avanceAcumuladoTarea[tid] || 0) * pesoTareaObra[tid] / 100;
-      });
-      var sumaRecepcion = 0;
-      var pesoTotalRec = 0;
-      Object.keys(pesoGlobalRecepcion).forEach(function (tid) {
-        if (pesoGlobalRecepcion[tid] > 0) {
-          sumaRecepcion += (avanceAcumuladoTarea[tid] || 0) * pesoGlobalRecepcion[tid];
-          pesoTotalRec += pesoGlobalRecepcion[tid];
+    function renderAccionesItem(it, vista) {
+      if (it.estado === 'cerrado_tramo') return '—';
+      if (vista === 'cliente') {
+        if (it.estado === 'no_liberado') {
+          return '<button type="button" class="btn-liberar text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg" data-item-id="' + it.id + '">Liberar</button>';
         }
+        return '—';
+      }
+      if (vista === 'admin' && it.estado === 'liberado') {
+        return '<button type="button" class="btn-habilitar text-xs bg-obrados-600 hover:bg-obrados-700 text-white px-2 py-1 rounded-lg" data-item-id="' + it.id + '">Habilitar</button>';
+      }
+      return '—';
+    }
+
+    function renderAccionesGlobal(g, vista) {
+      if (vista !== 'cliente') return '';
+      var hijos = itemsDeGlobal(g.id);
+      var todosNoLib = hijos.every(function (it) { return it.estado === 'no_liberado'; });
+      if (!todosNoLib) return '';
+      return '<button type="button" class="btn-liberar-global text-xs bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded-lg" data-global-id="' + g.id + '">Liberar todo</button>';
+    }
+
+    function subtotalAsignadoObrero(globalId, obreroId) {
+      var sum = 0;
+      itemsDeGlobal(globalId).forEach(function (it) {
+        if (it.obrero === obreroId) sum += it.cant * (it.punitObrero || 0);
       });
-      var pctGlobal = pesoTotalRec ? (sumaRecepcion / pesoTotalRec) : 0;
-      document.getElementById('avance-obra-pct').textContent = sumaObra.toFixed(1).replace('.', ',') + '%';
-      document.getElementById('avance-global-pct').textContent = pctGlobal.toFixed(1).replace('.', ',') + '%';
-      var itemDestacado = 'tarea-2';
-      var filaTarea = document.querySelector('.fila-tarea[data-tarea-id="' + itemDestacado + '"]');
-      document.getElementById('avance-item-nombre').textContent = filaTarea ? filaTarea.getAttribute('data-nombre') : '—';
-      document.getElementById('avance-item-pct').textContent = (avanceAcumuladoTarea[itemDestacado] || 0) + '%';
+      return sum;
+    }
+
+    function avancesDeItem(itemId) {
+      return avancesOperativo.filter(function (a) { return a.itemId === itemId; });
+    }
+
+    function resumenAvancesItem(itemId) {
+      var avs = avancesDeItem(itemId);
+      if (!avs.length) return '<span class="text-xs text-slate-400">Sin registros</span>';
+      return avs.map(function (a) {
+        return '<span class="block text-xs text-slate-600 mt-0.5">' + a.id + ' · ' + a.porcentaje + '% · ' + a.fecha + '</span>';
+      }).join('');
+    }
+
+    function puedeRegistrarAvance(it, vista) {
+      if (it.obrero !== vista || it.estado === 'cerrado_tramo') return false;
+      return ['habilitado', 'avance_pendiente', 'avance_validado'].indexOf(it.estado) >= 0;
+    }
+
+    function renderGrillasOperativo() {
+      renderGrillaOperativo('cert-obra-grilla', false);
+      if (document.getElementById('avances-grilla')) renderGrillaOperativo('avances-grilla', true);
+    }
+
+    function renderCertObraGrilla() {
+      renderGrillasOperativo();
+    }
+
+    function renderGrillaOperativo(contId, modoAvances) {
+      var vista = document.getElementById('vista-operativo').value;
+      var esAdmin = vista === 'admin';
+      var esCliente = vista === 'cliente';
+      var esObrero = !esAdmin && !esCliente;
+      var cont = document.getElementById(contId);
+      if (!cont) return;
+
+      var cols;
+      if (modoAvances) {
+        cols = esAdmin
+          ? '<th class="px-3 py-2 font-medium">Ítem de trabajo</th><th class="px-3 py-2">Unidad</th><th class="px-3 py-2">Cant.</th><th class="px-3 py-2">Estado</th><th class="px-3 py-2">Obrero</th><th class="px-3 py-2">Avance acum.</th><th class="px-3 py-2">Registros</th>'
+          : '<th class="px-3 py-2 font-medium">Ítem de trabajo</th><th class="px-3 py-2">Unidad</th><th class="px-3 py-2">Cant.</th><th class="px-3 py-2">Estado</th><th class="px-3 py-2">Avance acum.</th><th class="px-3 py-2">Registros</th><th class="px-3 py-2">Acciones</th>';
+      } else if (esAdmin) {
+        cols = '<th class="px-3 py-2 font-medium">Ítem de trabajo</th><th class="px-3 py-2">Unidad</th><th class="px-3 py-2">Cant.</th><th class="px-3 py-2">P. unit. presup.</th><th class="px-3 py-2">P. unit. obrero</th><th class="px-3 py-2">Coef.</th><th class="px-3 py-2">Estado</th><th class="px-3 py-2">Obrero</th><th class="px-3 py-2">Acciones</th>';
+      } else if (esCliente) {
+        cols = '<th class="px-3 py-2 font-medium">Ítem de trabajo</th><th class="px-3 py-2">Unidad</th><th class="px-3 py-2">Cant.</th><th class="px-3 py-2">Estado</th><th class="px-3 py-2">Acciones</th>';
+      } else {
+        cols = '<th class="px-3 py-2 font-medium">Ítem de trabajo</th><th class="px-3 py-2">Unidad</th><th class="px-3 py-2">Cant.</th><th class="px-3 py-2">Estado</th><th class="px-3 py-2">Avance acum.</th>';
+      }
+
+      var html = '';
+      globalesCert.forEach(function (g) {
+        var filas = '';
+        itemsDeGlobal(g.id).forEach(function (it) {
+          sincronizarEstadoItem(it.id);
+          if (esObrero && it.obrero !== vista) return;
+          var fila = '';
+          if (modoAvances) {
+            if (esAdmin) {
+              fila = '<tr data-item-id="' + it.id + '">' +
+                '<td class="px-3 py-2">' + it.nombre + '</td>' +
+                '<td class="px-3 py-2 text-slate-600">' + it.unidad + '</td>' +
+                '<td class="px-3 py-2">' + it.cant.toLocaleString('es-AR') + '</td>' +
+                '<td class="px-3 py-2">' + badgeEstadoItem(it.estado) + '</td>' +
+                '<td class="px-3 py-2 text-slate-600">' + (it.obrero ? nombresObrero[it.obrero] : '—') + '</td>' +
+                '<td class="px-3 py-2">' + (it.avanceAcum || 0) + '%</td>' +
+                '<td class="px-3 py-2">' + resumenAvancesItem(it.id) + '</td></tr>';
+            } else {
+              fila = '<tr data-item-id="' + it.id + '">' +
+                '<td class="px-3 py-2">' + it.nombre + '</td>' +
+                '<td class="px-3 py-2 text-slate-600">' + it.unidad + '</td>' +
+                '<td class="px-3 py-2">' + it.cant.toLocaleString('es-AR') + '</td>' +
+                '<td class="px-3 py-2">' + badgeEstadoItem(it.estado) + '</td>' +
+                '<td class="px-3 py-2">' + (it.avanceAcum || 0) + '%</td>' +
+                '<td class="px-3 py-2">' + resumenAvancesItem(it.id) + '</td>' +
+                '<td class="px-3 py-2">' + (puedeRegistrarAvance(it, vista)
+                  ? '<button type="button" class="btn-cargar-avance text-xs bg-obrados-600 hover:bg-obrados-700 text-white px-2 py-1 rounded-lg" data-item-id="' + it.id + '">Cargar avance</button>'
+                  : '—') + '</td></tr>';
+            }
+          } else if (esAdmin) {
+            var punitObreroCell = '<input type="number" class="punit-obrero w-24 border border-slate-200 rounded px-1 py-0.5 text-right" data-item-id="' + it.id + '" value="' + (it.punitObrero || '') + '" min="0" step="100" />';
+            fila = '<tr data-item-id="' + it.id + '">' +
+              '<td class="px-3 py-2">' + it.nombre + '</td>' +
+              '<td class="px-3 py-2 text-slate-600">' + it.unidad + '</td>' +
+              '<td class="px-3 py-2">' + it.cant.toLocaleString('es-AR') + '</td>' +
+              '<td class="px-3 py-2 text-slate-600">' + formatMoneda(it.punitPres) + '</td>' +
+              '<td class="px-3 py-2">' + punitObreroCell + '</td>' +
+              '<td class="px-3 py-2">' + badgeCoef(it.coef, it.id, true) + '</td>' +
+              '<td class="px-3 py-2">' + badgeEstadoItem(it.estado) + '</td>' +
+              '<td class="px-3 py-2 text-slate-600">' + (it.obrero ? nombresObrero[it.obrero] : '—') + '</td>' +
+              '<td class="px-3 py-2">' + renderAccionesItem(it, vista) + '</td></tr>';
+          } else if (esCliente) {
+            fila = '<tr data-item-id="' + it.id + '">' +
+              '<td class="px-3 py-2">' + it.nombre + '</td>' +
+              '<td class="px-3 py-2 text-slate-600">' + it.unidad + '</td>' +
+              '<td class="px-3 py-2">' + it.cant.toLocaleString('es-AR') + '</td>' +
+              '<td class="px-3 py-2">' + badgeEstadoItem(it.estado) + '</td>' +
+              '<td class="px-3 py-2">' + renderAccionesItem(it, vista) + '</td></tr>';
+          } else {
+            fila = '<tr data-item-id="' + it.id + '">' +
+              '<td class="px-3 py-2">' + it.nombre + '</td>' +
+              '<td class="px-3 py-2 text-slate-600">' + it.unidad + '</td>' +
+              '<td class="px-3 py-2">' + it.cant.toLocaleString('es-AR') + '</td>' +
+              '<td class="px-3 py-2">' + badgeEstadoItem(it.estado) + '</td>' +
+              '<td class="px-3 py-2">' + (it.avanceAcum || 0) + '%</td></tr>';
+          }
+          filas += fila;
+        });
+        if (!filas && esObrero) return;
+        var subtotal = esObrero ? subtotalAsignadoObrero(g.id, vista) : g.subtotal;
+        var subtotalEtq = esObrero ? 'Subtotal asignado' : 'Subtotal';
+        html += '<div class="border-b border-slate-100">' +
+          '<div class="px-4 py-2 bg-slate-50 flex items-center justify-between gap-2">' +
+          '<span class="font-medium text-slate-800 text-sm">' + g.nombre + '</span>' +
+          '<div class="flex items-center gap-2">' +
+          '<span class="text-sm text-slate-600">' + subtotalEtq + ': <strong>' + formatMoneda(subtotal) + '</strong></span>' +
+          (modoAvances ? '' : renderAccionesGlobal(g, vista)) +
+          '</div></div>' +
+          '<div class="overflow-x-auto"><table class="w-full text-sm"><thead class="text-slate-500 text-left text-xs"><tr>' + cols + '</tr></thead><tbody class="divide-y divide-slate-50">' +
+          filas +
+          '</tbody></table></div></div>';
+      });
+
+      if (!html && esObrero) {
+        html = '<p class="px-4 py-8 text-center text-sm text-slate-400">' +
+          (modoAvances ? 'No tenés ítems habilitados en este certificado.' : 'No tenés ítems asignados.') +
+          '</p>';
+      }
+      cont.innerHTML = html;
+    }
+
+    function liberarItem(itemId) {
+      var it = getItem(itemId);
+      if (!it || it.estado !== 'no_liberado') return;
+      it.estado = 'liberado';
+      renderGrillasOperativo();
+    }
+
+    function liberarGlobal(globalId) {
+      itemsDeGlobal(globalId).forEach(function (it) {
+        if (it.estado === 'no_liberado') it.estado = 'liberado';
+      });
+      renderGrillasOperativo();
+    }
+
+    function abrirModalHabilitar(itemId) {
+      var it = getItem(itemId);
+      if (!it || it.estado !== 'liberado') return;
+      itemHabilitarId = itemId;
+      document.getElementById('modal-habilitar-item').textContent = it.global + ' · ' + it.nombre;
+      document.getElementById('modal-habilitar').classList.remove('hidden');
+    }
+
+    function confirmarHabilitar() {
+      if (!itemHabilitarId) return;
+      var it = getItem(itemHabilitarId);
+      if (!it) return;
+      it.obrero = document.getElementById('modal-habilitar-obrero').value;
+      it.estado = 'habilitado';
+      itemHabilitarId = null;
+      document.getElementById('modal-habilitar').classList.add('hidden');
+      renderGrillasOperativo();
+    }
+
+    function calcularKpisOperativo() {
+      var itemDestacado = 'i2';
+      var it = getItem(itemDestacado);
+      document.getElementById('kpi-item-nombre').textContent = it ? it.nombre : '—';
+      document.getElementById('kpi-item-pct').textContent = (it ? it.avanceAcum : 0) + '%';
+
+      var sumaRec = 0;
+      var pesoRec = 0;
+      itemsDeGlobal('g-rec').forEach(function (i) {
+        sumaRec += (i.avanceAcum || 0) * i.peso;
+        pesoRec += i.peso;
+      });
+      var pctGlobal = pesoRec ? sumaRec / pesoRec : 0;
+      document.getElementById('kpi-global-nombre').textContent = 'Recepción';
+      document.getElementById('kpi-global-pct').textContent = pctGlobal.toFixed(1).replace('.', ',') + '%';
+
+      var sumaObra = 0;
+      itemsCert.forEach(function (i) {
+        sumaObra += (i.avanceAcum || 0) * i.pesoObra / 100;
+      });
+      document.getElementById('kpi-obra-pct').textContent = sumaObra.toFixed(1).replace('.', ',') + '%';
+
+      var validadosSinCierre = avancesOperativo.filter(function (a) { return a.estado === 'validado' && !a.cerrado; }).length;
+      document.getElementById('contador-validados-sin-cierre').textContent = validadosSinCierre;
     }
 
     function renderValidacionPendientes() {
       var body = document.getElementById('validacion-body');
       body.innerHTML = '';
-      var pendientes = 0;
-      document.querySelectorAll('#avances-body .fila-avance[data-estado="pendiente"]').forEach(function (fila) {
-        pendientes++;
-        var id = fila.getAttribute('data-avance-id');
+      var pendientes = avancesOperativo.filter(function (a) { return a.estado === 'pendiente'; });
+      pendientes.forEach(function (a) {
+        var it = getItem(a.itemId);
         var tr = document.createElement('tr');
         tr.innerHTML =
-          '<td class="px-4 py-3 font-mono text-xs text-slate-500">' + id + '</td>' +
-          '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + fila.querySelector('.font-medium').textContent + '</span>' +
-          '<p class="text-xs text-slate-500 mt-0.5">' + nombresObrero[fila.getAttribute('data-obrero')] + '</p></td>' +
-          '<td class="px-4 py-3">' + fila.getAttribute('data-porcentaje') + '%</td>' +
-          '<td class="px-4 py-3">' + formatMonedaOperativo(parseFloat(fila.getAttribute('data-importe'))) + '</td>' +
-          '<td class="px-4 py-3"><input type="text" class="comentario-validacion w-full min-w-[8rem] border border-slate-300 rounded-lg px-2 py-1 text-xs focus:ring-2 focus:ring-obrados-500 focus:outline-none" placeholder="Observación al obrero…" data-avance-id="' + id + '" /></td>' +
+          '<td class="px-4 py-3 font-mono text-xs text-slate-500">' + a.id + '</td>' +
+          '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + (it ? it.nombre : '—') + '</span>' +
+          '<p class="text-xs text-slate-500 mt-0.5">' + nombresObrero[a.obrero] + '</p></td>' +
+          '<td class="px-4 py-3">' + a.porcentaje + '%</td>' +
+          '<td class="px-4 py-3">' + formatMoneda(a.importe) + '</td>' +
+          '<td class="px-4 py-3"><input type="text" class="comentario-validacion w-full min-w-[8rem] border border-slate-300 rounded-lg px-2 py-1 text-xs" placeholder="Observación…" data-avance-id="' + a.id + '" /></td>' +
           '<td class="px-4 py-3 text-right whitespace-nowrap">' +
-          '<button type="button" class="btn-aprobar-avance text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg mr-1" data-avance-id="' + id + '">Aprobar</button>' +
-          '<button type="button" class="btn-rechazar-avance text-xs border border-red-300 text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg" data-avance-id="' + id + '">Rechazar</button></td>';
+          '<button type="button" class="btn-aprobar-avance text-xs bg-emerald-600 hover:bg-emerald-700 text-white px-2 py-1 rounded-lg mr-1" data-avance-id="' + a.id + '">Aprobar</button>' +
+          '<button type="button" class="btn-rechazar-avance text-xs border border-red-300 text-red-700 hover:bg-red-50 px-2 py-1 rounded-lg" data-avance-id="' + a.id + '">Rechazar</button></td>';
         body.appendChild(tr);
       });
-      document.getElementById('contador-pendientes').textContent = pendientes + (pendientes === 1 ? ' pendiente' : ' pendientes');
-      document.getElementById('validacion-vacio').classList.toggle('hidden', pendientes > 0);
-    }
-
-    function sincronizarEstadoAvance(id, estado, comentario) {
-      document.querySelectorAll('.fila-avance[data-avance-id="' + id + '"]').forEach(function (el) {
-        el.setAttribute('data-estado', estado);
-        var badge = el.querySelector('.rounded-full');
-        if (badge) {
-          if (estado === 'aprobado') {
-            badge.className = 'text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full shrink-0';
-            badge.textContent = 'Validado';
-          } else if (estado === 'rechazado') {
-            badge.className = 'text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full shrink-0';
-            badge.textContent = 'Rechazado';
-          }
-        }
-        var tdEstado = el.querySelector('td:last-child');
-        if (tdEstado && el.tagName === 'TR') tdEstado.innerHTML = badgeEstadoAvance(estado);
-        if (comentario && estado === 'rechazado') {
-          var det = el.querySelector('.text-xs.text-slate-500');
-          if (det) det.textContent += ' · Rechazado: ' + comentario;
-        }
-      });
+      document.getElementById('contador-pendientes').textContent = pendientes.length + (pendientes.length === 1 ? ' pendiente' : ' pendientes');
+      document.getElementById('validacion-vacio').classList.toggle('hidden', pendientes.length > 0);
     }
 
     function validarAvance(id, aprobar) {
-      var fila = document.querySelector('#avances-body .fila-avance[data-avance-id="' + id + '"]');
-      if (!fila || fila.getAttribute('data-estado') !== 'pendiente') return;
+      var av = avancesOperativo.find(function (a) { return a.id === id; });
+      if (!av || av.estado !== 'pendiente') return;
       var inputCom = document.querySelector('.comentario-validacion[data-avance-id="' + id + '"]');
       var comentario = inputCom ? inputCom.value : '';
       if (!aprobar && !comentario.trim()) {
         alert('Indicá un comentario para el obrero al rechazar el avance.');
         return;
       }
-      var tareaId = fila.getAttribute('data-tarea-id');
-      var pct = parseFloat(fila.getAttribute('data-porcentaje'));
+      var it = getItem(av.itemId);
       if (aprobar) {
-        avanceAcumuladoTarea[tareaId] = Math.min(100, (avanceAcumuladoTarea[tareaId] || 0) + pct);
-        sincronizarEstadoAvance(id, 'aprobado');
+        av.estado = 'validado';
+        if (it) it.avanceAcum = Math.min(100, (it.avanceAcum || 0) + av.porcentaje);
       } else {
-        sincronizarEstadoAvance(id, 'rechazado', comentario);
+        av.estado = 'rechazado';
+        av.obs = comentario;
       }
-      calcularAvancePonderado();
+      sincronizarEstadoItem(av.itemId);
+      calcularKpisOperativo();
+      renderGrillasOperativo();
       renderValidacionPendientes();
-      aplicarFiltrosAvances();
     }
 
-    function generarCertificacionQuincenal() {
-      var validados = [];
-      var total = 0;
-      document.querySelectorAll('#avances-body .fila-avance[data-estado="aprobado"]').forEach(function (fila) {
-        var imp = parseFloat(fila.getAttribute('data-importe')) || 0;
-        if (!fila.getAttribute('data-certificado')) {
-          validados.push({ id: fila.getAttribute('data-avance-id'), nombre: fila.querySelector('.font-medium').textContent, obrero: nombresObrero[fila.getAttribute('data-obrero')], importe: imp });
-          total += imp;
-          fila.setAttribute('data-certificado', 'si');
-        }
-      });
-      var res = document.getElementById('cert-quincenal-resultado');
-      var alerta = document.getElementById('cert-quincenal-alerta');
+    function cerrarTramoObrero() {
+      var validados = avancesOperativo.filter(function (a) { return a.estado === 'validado' && !a.cerrado; });
+      var res = document.getElementById('cierre-resultado');
+      var alerta = document.getElementById('cierre-alerta');
       if (!validados.length) {
         res.classList.add('hidden');
         alerta.classList.remove('hidden');
         return;
       }
       alerta.classList.add('hidden');
-      var certId = 'CERT-Q-2026-' + String(contadorCertQuincenal++).padStart(4, '0');
-      document.getElementById('cert-quincenal-titulo').textContent = certId + ' generada · 01/06 — 15/06/2026';
-      var ul = document.getElementById('cert-quincenal-detalle');
-      ul.innerHTML = '';
-      validados.forEach(function (v) {
-        var li = document.createElement('li');
-        li.textContent = v.id + ' · ' + v.nombre + ' (' + v.obrero + ') — ' + formatMonedaOperativo(v.importe);
-        ul.appendChild(li);
+      var total = 0;
+      var itemsCerrados = {};
+      validados.forEach(function (a) {
+        total += a.importe;
+        a.cerrado = true;
+        a.estado = 'cerrado';
+        itemsCerrados[a.itemId] = true;
       });
-      document.getElementById('cert-quincenal-total').textContent = formatMonedaOperativo(total);
+      Object.keys(itemsCerrados).forEach(function (itemId) {
+        var it = getItem(itemId);
+        if (it) it.estado = 'cerrado_tramo';
+      });
+      var certId = 'CIERRE-OBR-2026-' + String(contadorCierre++).padStart(4, '0');
+      document.getElementById('cierre-titulo').textContent = certId + ' · Tramo cerrado';
+      document.getElementById('cierre-total').textContent = formatMoneda(total);
       res.classList.remove('hidden');
+      calcularKpisOperativo();
+      renderGrillasOperativo();
+      renderValidacionPendientes();
     }
 
-    function actualizarHistorialPagosObrero() {
-      var vista = document.getElementById('vista-operativo').value;
-      document.querySelectorAll('.fila-pago-obrero').forEach(function (fila) {
-        fila.classList.toggle('hidden', fila.getAttribute('data-obrero') !== vista);
+    function recalcularItemsPendientes() {
+      if (estadosPres['0142'] !== 'confirmado') {
+        var msg = document.getElementById('pendientes-msg');
+        msg.textContent = 'El presupuesto debe estar confirmado para recalcular ítems pendientes.';
+        msg.className = 'px-4 pb-4 text-sm text-amber-800';
+        msg.classList.remove('hidden');
+        return;
+      }
+      var coefs = {
+        MO: parseFloat(document.getElementById('coef-mo').value) || 1,
+        Mat: parseFloat(document.getElementById('coef-mat').value) || 1,
+        Constr: parseFloat(document.getElementById('coef-constr').value) || 1
+      };
+      var totalPend = 0;
+      var count = 0;
+      itemsCert.forEach(function (it) {
+        if (it.estado !== 'cerrado_tramo') {
+          var c = coefs[it.coef] || 1;
+          totalPend += it.cant * it.punitPres * c;
+          count++;
+        }
       });
-      var pendiente = vista === 'maria' ? 150500 : vista === 'carlos' ? 122400 : 0;
-      document.getElementById('pagos-pendientes-resumen').textContent = 'Pendiente de liberación: ' + formatMonedaOperativo(pendiente);
+      var msgEl = document.getElementById('pendientes-msg');
+      msgEl.textContent = count + ' ítems pendientes recalculados con coef. MO ' + coefs.MO + ' · Mat ' + coefs.Mat + ' · Constr. ' + coefs.Constr + ' — Total actualizado: ' + formatMoneda(totalPend);
+      msgEl.className = 'px-4 pb-4 text-sm text-emerald-800';
+      msgEl.classList.remove('hidden');
+    }
+
+    var itemAvanceId = null;
+
+    function abrirModalAvance(itemId) {
+      var it = getItem(itemId);
+      var vista = document.getElementById('vista-operativo').value;
+      if (!it || !puedeRegistrarAvance(it, vista)) return;
+      itemAvanceId = itemId;
+      document.getElementById('modal-avance-item').textContent = it.global + ' · ' + it.nombre;
+      document.getElementById('modal-avance-unidad').textContent = it.unidad;
+      document.getElementById('modal-avance-porcentaje').value = '15';
+      document.getElementById('modal-avance-cantidad').value = '1';
+      document.getElementById('modal-avance-obs').value = '';
+      document.getElementById('modal-avance-fotos').value = '';
+      document.getElementById('modal-avance').classList.remove('hidden');
+    }
+
+    function confirmarAvanceModal() {
+      if (!itemAvanceId) return;
+      var vista = document.getElementById('vista-operativo').value;
+      var numFotos = document.getElementById('modal-avance-fotos').files.length;
+      agregarAvance({
+        itemId: itemAvanceId,
+        obrero: vista,
+        porcentaje: document.getElementById('modal-avance-porcentaje').value,
+        cantidad: document.getElementById('modal-avance-cantidad').value,
+        unidad: document.getElementById('modal-avance-unidad').textContent,
+        fecha: formatearFecha(new Date().toISOString().slice(0, 10)),
+        obs: document.getElementById('modal-avance-obs').value,
+        numFotos: numFotos
+      });
+      itemAvanceId = null;
+      document.getElementById('modal-avance').classList.add('hidden');
+    }
+
+    function onGrillaOperativoClick(e) {
+      var btnLib = e.target.closest('.btn-liberar');
+      if (btnLib) { liberarItem(btnLib.getAttribute('data-item-id')); return; }
+      var btnLibG = e.target.closest('.btn-liberar-global');
+      if (btnLibG) { liberarGlobal(btnLibG.getAttribute('data-global-id')); return; }
+      var btnHab = e.target.closest('.btn-habilitar');
+      if (btnHab) { abrirModalHabilitar(btnHab.getAttribute('data-item-id')); return; }
+      var btnAv = e.target.closest('.btn-cargar-avance');
+      if (btnAv) abrirModalAvance(btnAv.getAttribute('data-item-id'));
+    }
+
+    function onGrillaOperativoChange(e) {
+      if (e.target.classList.contains('punit-obrero')) {
+        var it = getItem(e.target.getAttribute('data-item-id'));
+        if (it) it.punitObrero = parseFloat(e.target.value) || 0;
+      }
+      if (e.target.classList.contains('coef-select')) {
+        var it2 = getItem(e.target.getAttribute('data-item-id'));
+        if (it2) it2.coef = e.target.value;
+        renderGrillasOperativo();
+      }
+    }
+
+    function actualizarTabsOperativo() {
+      var vista = document.getElementById('vista-operativo').value;
+      var esAdmin = vista === 'admin';
+      var esCliente = vista === 'cliente';
+      document.getElementById('tab-validacion').classList.toggle('hidden', !esAdmin);
+      document.querySelectorAll('#operativo-tabs .op-tab').forEach(function (btn) {
+        var tab = btn.getAttribute('data-op-tab');
+        if (tab === 'validacion') btn.classList.toggle('hidden', !esAdmin);
+        if (tab === 'avances') btn.classList.toggle('hidden', esCliente);
+        if (tab === 'certificado' && esObreroVista(vista)) btn.classList.toggle('hidden', false);
+      });
+      if (!esAdmin && opTabActivo === 'validacion') activarOperativoTab(esCliente ? 'certificado' : 'avances');
+    }
+
+    function esObreroVista(v) {
+      return v === 'carlos' || v === 'maria' || v === 'juan';
     }
 
     function activarOperativoTab(tab) {
@@ -1496,124 +1652,31 @@
         btn.classList.toggle('border-transparent', !activo);
         btn.classList.toggle('text-slate-500', !activo);
       });
-      document.getElementById('operativo-planificacion').classList.toggle('hidden', tab !== 'planificacion');
+      document.getElementById('operativo-certificado').classList.toggle('hidden', tab !== 'certificado');
       document.getElementById('operativo-avances').classList.toggle('hidden', tab !== 'avances');
       document.getElementById('operativo-validacion').classList.toggle('hidden', tab !== 'validacion');
-      document.getElementById('btn-nueva-tarea').classList.toggle('hidden', tab !== 'planificacion' || document.getElementById('vista-operativo').value !== 'admin');
       actualizarSubtituloOperativo();
-      if (tab === 'avances') {
-        poblarSelectTareasAvance();
-        aplicarFiltrosAvances();
-      }
+      if (tab === 'certificado' || tab === 'avances') renderGrillasOperativo();
       if (tab === 'validacion') {
-        calcularAvancePonderado();
+        calcularKpisOperativo();
         renderValidacionPendientes();
       }
     }
 
     function actualizarSubtituloOperativo() {
       var vista = document.getElementById('vista-operativo').value;
-      var esAdmin = vista === 'admin';
+      var sub = document.getElementById('operativo-subtitulo');
       if (opTabActivo === 'validacion') {
-        document.getElementById('operativo-subtitulo').textContent = 'Validación de avances y certificación quincenal';
+        sub.textContent = 'Validación de avances y cierre de tramo obrero';
       } else if (opTabActivo === 'avances') {
-        document.getElementById('operativo-subtitulo').textContent = esAdmin
-          ? 'Registro y seguimiento de avances de obra'
-          : 'Mis avances — ' + nombresObrero[vista];
-      } else if (esAdmin) {
-        document.getElementById('operativo-subtitulo').textContent = 'Asignación de tareas según presupuesto confirmado';
+        sub.textContent = vista === 'admin' ? 'Seguimiento de avances de obra' : 'Mis avances — ' + nombresObrero[vista];
+      } else if (vista === 'cliente') {
+        sub.textContent = 'Liberación de ítems para ejecución en obra';
+      } else if (vista === 'admin') {
+        sub.textContent = 'Certificado de obra — habilitación y tarifas obrero';
       } else {
-        document.getElementById('operativo-subtitulo').textContent = 'Mis tareas asignadas — ' + nombresObrero[vista];
+        sub.textContent = 'Resumen de ítems asignados';
       }
-    }
-
-    function poblarSelectTareasAvance() {
-      var vista = document.getElementById('vista-operativo').value;
-      var select = document.getElementById('avance-tarea');
-      var prev = select.value;
-      select.innerHTML = '';
-      document.querySelectorAll('.fila-tarea').forEach(function (fila) {
-        if (vista !== 'admin' && fila.getAttribute('data-obrero') !== vista) return;
-        var opt = document.createElement('option');
-        opt.value = fila.getAttribute('data-tarea-id');
-        opt.textContent = fila.getAttribute('data-nombre');
-        opt.setAttribute('data-unidad', fila.getAttribute('data-unidad'));
-        opt.setAttribute('data-obrero', fila.getAttribute('data-obrero'));
-        select.appendChild(opt);
-      });
-      if (prev) select.value = prev;
-      actualizarUnidadAvance();
-    }
-
-    function actualizarUnidadAvance() {
-      var sel = document.getElementById('avance-tarea');
-      var opt = sel.options[sel.selectedIndex];
-      document.getElementById('avance-unidad').textContent = opt ? (opt.getAttribute('data-unidad') || '—') : '—';
-    }
-
-    function aplicarFiltrosAvances() {
-      var vista = document.getElementById('vista-operativo').value;
-      var esAdmin = vista === 'admin';
-      var visibles = 0;
-      actualizarTabsOperativo();
-      document.querySelectorAll('.col-obrero-av').forEach(function (c) {
-        c.classList.toggle('hidden', !esAdmin);
-      });
-      document.querySelectorAll('#avances-body .fila-avance').forEach(function (fila) {
-        var ok = esAdmin || fila.getAttribute('data-obrero') === vista;
-        fila.classList.toggle('hidden', !ok);
-        if (ok) visibles++;
-      });
-      document.querySelectorAll('#avances-cards .fila-avance').forEach(function (fila) {
-        var ok = esAdmin || fila.getAttribute('data-obrero') === vista;
-        fila.classList.toggle('hidden', !ok);
-      });
-      document.getElementById('contador-avances').textContent = visibles + (visibles === 1 ? ' registro' : ' registros');
-      document.getElementById('avances-vacio').classList.toggle('hidden', visibles > 0);
-      document.getElementById('avances-hint-vista').textContent = esAdmin
-        ? 'Vista administrador: revisá avances en la pestaña Validación y certificación'
-        : 'Registrá el avance de tus tareas asignadas';
-      if (!esAdmin) actualizarHistorialPagosObrero();
-    }
-
-    function agregarAvance(datos) {
-      var id = 'AV-2026-' + String(contadorAvance++).padStart(4, '0');
-      var importeEst = Math.round(parseFloat(datos.porcentaje) * 12000);
-      var tr = document.createElement('tr');
-      tr.className = 'fila-avance';
-      tr.setAttribute('data-avance-id', id);
-      tr.setAttribute('data-obrero', datos.obrero);
-      tr.setAttribute('data-estado', 'pendiente');
-      tr.setAttribute('data-tarea-id', datos.tareaId);
-      tr.setAttribute('data-porcentaje', datos.porcentaje);
-      tr.setAttribute('data-importe', importeEst);
-      tr.setAttribute('data-global', datos.global || 'Recepción');
-      tr.innerHTML =
-        '<td class="px-4 py-3 font-mono text-xs text-slate-500">' + id + '</td>' +
-        '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + datos.nombre + '</span>' +
-        '<p class="text-xs text-slate-500 mt-0.5">' + datos.porcentaje + '% · ' + datos.cantidad + ' ' + datos.unidad + ' · ' + datos.fecha + '</p></td>' +
-        '<td class="px-4 py-3 col-obrero-av">' + nombresObrero[datos.obrero] + '</td>' +
-        '<td class="px-4 py-3 text-slate-600">' + datos.periodo + '</td>' +
-        '<td class="px-4 py-3">' + datos.porcentaje + '%</td>' +
-        '<td class="px-4 py-3 text-slate-600">' + datos.fotos + '</td>' +
-        '<td class="px-4 py-3">' + badgeEstadoAvance('pendiente') + '</td>';
-      document.getElementById('avances-body').appendChild(tr);
-
-      var card = document.createElement('article');
-      card.className = 'fila-avance border border-slate-200 rounded-lg p-3';
-      card.setAttribute('data-avance-id', id);
-      card.setAttribute('data-obrero', datos.obrero);
-      card.setAttribute('data-estado', 'pendiente');
-      card.innerHTML =
-        '<div class="flex justify-between items-start gap-2 mb-2">' +
-        '<span class="font-mono text-xs text-slate-500">' + id + '</span>' +
-        '<span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span></div>' +
-        '<p class="font-medium text-slate-800">' + datos.nombre + '</p>' +
-        '<p class="text-xs text-slate-500 mt-1">' + datos.porcentaje + '% · ' + datos.cantidad + ' ' + datos.unidad + ' · ' + datos.periodo + ' · ' + datos.fecha + '</p>' +
-        '<p class="text-xs text-slate-400 mt-2">' + datos.fotos + ' adjunta' + (datos.numFotos !== 1 ? 's' : '') + '</p>';
-      document.getElementById('avances-cards').appendChild(card);
-      aplicarFiltrosAvances();
-      if (opTabActivo === 'validacion') renderValidacionPendientes();
     }
 
     function formatearFecha(iso) {
@@ -1622,95 +1685,52 @@
       return p[2] + '/' + p[1] + '/' + p[0];
     }
 
-    function aplicarFiltrosTareas() {
-      var vista = document.getElementById('vista-operativo').value;
-      var esAdmin = vista === 'admin';
-      var filtroObra = document.getElementById('filtro-obra').value;
-      var filtroObrero = esAdmin ? document.getElementById('filtro-obrero').value : vista;
-      var filtroEstado = document.getElementById('filtro-estado').value;
-      var visibles = 0;
-
-      document.getElementById('filtros-tareas').classList.toggle('hidden', !esAdmin);
-      document.getElementById('btn-nueva-tarea').classList.toggle('hidden', !esAdmin);
-      if (!esAdmin) document.getElementById('form-nueva-tarea').classList.add('hidden');
-      document.querySelectorAll('#tabla-tareas .col-obrero').forEach(function (c) {
-        c.classList.toggle('hidden', !esAdmin);
+    function agregarAvance(datos) {
+      var id = 'AV-2026-' + String(contadorAvance++).padStart(4, '0');
+      var it = getItem(datos.itemId);
+      var importeEst = it ? Math.round(it.punitObrero * datos.cantidad) : 0;
+      avancesOperativo.push({
+        id: id,
+        itemId: datos.itemId,
+        obrero: datos.obrero,
+        porcentaje: parseFloat(datos.porcentaje),
+        cantidad: parseFloat(datos.cantidad),
+        unidad: datos.unidad,
+        estado: 'pendiente',
+        importe: importeEst,
+        obs: datos.obs || '',
+        fecha: datos.fecha,
+        fotos: datos.numFotos || 0,
+        cerrado: false
       });
-
-      if (esAdmin) {
-        document.getElementById('titulo-lista-tareas').textContent = 'Tareas de obra';
-      } else {
-        document.getElementById('titulo-lista-tareas').textContent = 'Mis tareas';
-      }
-
-      document.querySelectorAll('.fila-tarea').forEach(function (fila) {
-        var ok = true;
-        if (filtroObra && fila.getAttribute('data-obra') !== filtroObra) ok = false;
-        if (filtroObrero && fila.getAttribute('data-obrero') !== filtroObrero) ok = false;
-        if (filtroEstado && fila.getAttribute('data-estado') !== filtroEstado) ok = false;
-        fila.classList.toggle('hidden', !ok);
-        if (ok) visibles++;
-      });
-
-      document.getElementById('contador-tareas').textContent = visibles + (visibles === 1 ? ' tarea' : ' tareas');
-      document.getElementById('tareas-vacio').classList.toggle('hidden', visibles > 0);
-      actualizarSubtituloOperativo();
-      document.getElementById('btn-nueva-tarea').classList.toggle('hidden', !esAdmin || opTabActivo !== 'planificacion');
-      if (opTabActivo === 'avances') poblarSelectTareasAvance();
+      sincronizarEstadoItem(datos.itemId);
+      renderGrillasOperativo();
+      if (opTabActivo === 'validacion') renderValidacionPendientes();
     }
+
+    document.getElementById('cert-obra-grilla').addEventListener('click', onGrillaOperativoClick);
+    document.getElementById('cert-obra-grilla').addEventListener('change', onGrillaOperativoChange);
+    document.getElementById('avances-grilla').addEventListener('click', onGrillaOperativoClick);
+
+    document.getElementById('modal-habilitar-cancelar').addEventListener('click', function () {
+      itemHabilitarId = null;
+      document.getElementById('modal-habilitar').classList.add('hidden');
+    });
+    document.getElementById('modal-habilitar-confirmar').addEventListener('click', confirmarHabilitar);
+
+    document.getElementById('modal-avance-cancelar').addEventListener('click', function () {
+      itemAvanceId = null;
+      document.getElementById('modal-avance').classList.add('hidden');
+    });
+    document.getElementById('modal-avance-confirmar').addEventListener('click', confirmarAvanceModal);
 
     document.getElementById('vista-operativo').addEventListener('change', function () {
       var vista = document.getElementById('vista-operativo').value;
-      if (vista !== 'admin') activarOperativoTab('avances');
+      if (esObreroVista(vista)) activarOperativoTab('avances');
+      else if (vista === 'cliente') activarOperativoTab('certificado');
+      else activarOperativoTab('certificado');
       actualizarTabsOperativo();
-      aplicarFiltrosTareas();
-      aplicarFiltrosAvances();
-    });
-    document.getElementById('filtro-obra').addEventListener('change', aplicarFiltrosTareas);
-    document.getElementById('filtro-obrero').addEventListener('change', aplicarFiltrosTareas);
-    document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosTareas);
-
-    document.getElementById('btn-nueva-tarea').addEventListener('click', function () {
-      document.getElementById('form-nueva-tarea').classList.remove('hidden');
-    });
-    document.getElementById('btn-cancelar-tarea').addEventListener('click', function () {
-      document.getElementById('form-nueva-tarea').classList.add('hidden');
-    });
-
-    document.getElementById('form-tarea').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var item = document.getElementById('tarea-item').value;
-      var partes = item.split(' · ');
-      var global = partes[0] || '';
-      var nombre = partes[1] || item;
-      var obrero = document.getElementById('tarea-obrero').value;
-      var prioridad = document.getElementById('tarea-prioridad').value;
-      var inicio = formatearFecha(document.getElementById('tarea-inicio').value);
-      var fin = formatearFecha(document.getElementById('tarea-fin').value);
-      var tr = document.createElement('tr');
-      var tareaId = 'tarea-' + contadorTareaId++;
-      tr.className = 'fila-tarea';
-      tr.setAttribute('data-tarea-id', tareaId);
-      tr.setAttribute('data-nombre', nombre);
-      tr.setAttribute('data-unidad', '—');
-      tr.setAttribute('data-obra', 'rivadavia');
-      tr.setAttribute('data-obrero', obrero);
-      tr.setAttribute('data-estado', 'pendiente');
-      tr.setAttribute('data-prioridad', prioridad);
-      tr.innerHTML =
-        '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + nombre + '</span>' +
-        '<p class="text-xs text-slate-500 mt-0.5">' + global + ' · PRES-2026-0142</p></td>' +
-        '<td class="px-4 py-3 col-obrero">' + nombresObrero[obrero] + '</td>' +
-        '<td class="px-4 py-3 text-slate-600">' + inicio + '</td>' +
-        '<td class="px-4 py-3 text-slate-600">' + fin + '</td>' +
-        '<td class="px-4 py-3"><span class="text-xs ' + clasesPrioridad[prioridad] + ' px-2 py-0.5 rounded-full">' + etiquetasPrioridad[prioridad] + '</span></td>' +
-        '<td class="px-4 py-3"><span class="text-xs ' + clasesEstadoTarea.pendiente + ' px-2 py-0.5 rounded-full">Pendiente</span></td>';
-      document.getElementById('tareas-body').appendChild(tr);
-      document.getElementById('form-nueva-tarea').classList.add('hidden');
-      document.getElementById('form-tarea').reset();
-      document.getElementById('tarea-inicio').value = '2026-06-18';
-      document.getElementById('tarea-fin').value = '2026-06-25';
-      aplicarFiltrosTareas();
+      renderGrillasOperativo();
     });
 
     document.querySelectorAll('#operativo-tabs .op-tab').forEach(function (btn) {
@@ -1719,39 +1739,7 @@
       });
     });
 
-    document.getElementById('avance-tarea').addEventListener('change', actualizarUnidadAvance);
-
-    document.getElementById('avance-fotos').addEventListener('change', function () {
-      var n = this.files.length;
-      document.getElementById('avance-fotos-resumen').textContent = n
-        ? n + (n === 1 ? ' foto seleccionada' : ' fotos seleccionadas')
-        : 'Sin archivos seleccionados';
-    });
-
-    document.getElementById('form-avance').addEventListener('submit', function (e) {
-      e.preventDefault();
-      var sel = document.getElementById('avance-tarea');
-      var opt = sel.options[sel.selectedIndex];
-      if (!opt) return;
-      var numFotos = document.getElementById('avance-fotos').files.length;
-      agregarAvance({
-        obrero: opt.getAttribute('data-obrero'),
-        tareaId: opt.value,
-        nombre: opt.textContent,
-        porcentaje: document.getElementById('avance-porcentaje').value,
-        cantidad: document.getElementById('avance-cantidad').value,
-        unidad: document.getElementById('avance-unidad').textContent,
-        fecha: formatearFecha(document.getElementById('avance-fecha').value),
-        periodo: etiquetasPeriodo[document.getElementById('avance-periodo').value],
-        fotos: numFotos + (numFotos === 1 ? ' foto' : ' fotos'),
-        numFotos: numFotos,
-        global: 'Recepción'
-      });
-      document.getElementById('avance-fotos').value = '';
-      document.getElementById('avance-fotos-resumen').textContent = 'Sin archivos seleccionados';
-    });
-
-    document.getElementById('btn-generar-cert-quincenal').addEventListener('click', generarCertificacionQuincenal);
+    document.getElementById('btn-cierre-obrero').addEventListener('click', cerrarTramoObrero);
 
     document.getElementById('validacion-body').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
@@ -1759,11 +1747,11 @@
       validarAvance(btn.getAttribute('data-avance-id'), btn.classList.contains('btn-aprobar-avance'));
     });
 
-    aplicarFiltrosTareas();
     actualizarTabsOperativo();
-    calcularAvancePonderado();
-    poblarSelectTareasAvance();
-    aplicarFiltrosAvances();
+    actualizarBannerCertObra();
+    activarOperativoTab('certificado');
+    calcularKpisOperativo();
+    renderGrillasOperativo();
   </script>
 
 </body>
