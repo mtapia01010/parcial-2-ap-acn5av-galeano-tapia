@@ -22,6 +22,11 @@
     .nav-item.activo { background-color: #ea580c; color: white; }
     .nav-item:not(.activo) { color: rgb(203 213 225); }
     .nav-item:not(.activo):hover { background-color: rgb(51 65 85); }
+    @media print {
+      header, aside, footer, .no-print { display: none !important; }
+      #panel-orden-imprimible { display: block !important; position: static; box-shadow: none; border: none; }
+      body { background: white; }
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen">
@@ -54,10 +59,9 @@
         <button type="button" data-modulo="operativo" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Operativo
         </button>
-        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+        <button type="button" data-modulo="financiero" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Financiero
-          <span class="text-xs text-slate-600">Próximamente</span>
-        </span>
+        </button>
         <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
           Dashboard
           <span class="text-xs text-slate-600">Próximamente</span>
@@ -742,7 +746,7 @@
 
         <section id="banner-cierre-mensual" class="hidden bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4 text-sm text-blue-900">
           Cierre mensual ejecutado · Nuevo certificado de obra <strong id="banner-cert-v2-id">CERT-OBR-2026-0008</strong> generado.
-          <span class="block text-xs text-blue-700 mt-1">Coeficientes aplicados a ítems no liberados · Certificado administrativo listo para facturación (HU-009)</span>
+          <span class="block text-xs text-blue-700 mt-1">Coeficientes aplicados a ítems no liberados · Generá la orden de pago en el módulo <strong>Financiero</strong></span>
         </section>
 
         <section id="operativo-sin-presupuesto" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-900">
@@ -996,13 +1000,88 @@
         </div>
       </div>
 
+      <div id="panel-financiero" class="modulo-panel">
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold text-slate-900">Financiero</h2>
+          <p class="text-sm text-slate-600 mt-1">Órdenes de pago al cliente desde certificados administrativos aprobados</p>
+        </div>
+
+        <section id="fin-aviso-sin-cert" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-900">
+          Para generar una orden de pago, el certificado administrativo debe estar <strong>aprobado por el arquitecto</strong> (Operativo → Cert. administrativo). Consolidá el mes y completá la validación antes de facturar.
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-medium text-slate-800">Generar orden de pago</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Origen: <span id="fin-cert-origen">CERT-ADM-2026-0003</span> · v<span id="fin-cert-version">1</span> · <span id="fin-cert-estado">—</span></p>
+            </div>
+            <button type="button" id="btn-generar-orden-pago" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>Generar orden de pago</button>
+          </div>
+          <div class="p-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 text-sm border-b border-slate-100">
+            <div>
+              <p class="text-xs text-slate-500">Cliente</p>
+              <p class="font-medium text-slate-800 mt-0.5">Inmobiliaria del Plata</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500">Obra</p>
+              <p class="font-medium text-slate-800 mt-0.5">Torre Rivadavia — 24 pisos</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500">Importe base (período)</p>
+              <p class="font-medium text-slate-800 mt-0.5" id="fin-importe-base">$ 0</p>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500">Vencimiento propuesto</p>
+              <p class="font-medium text-slate-800 mt-0.5" id="fin-vencimiento-propuesto">—</p>
+            </div>
+          </div>
+          <p id="fin-generar-msg" class="hidden px-4 py-3 text-sm text-emerald-800 bg-emerald-50 border-t border-emerald-100"></p>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Órdenes de pago emitidas</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Vinculadas al certificado administrativo que las originó</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Nº orden</th>
+                  <th class="px-4 py-2 font-medium">Certificado</th>
+                  <th class="px-4 py-2 font-medium">Emisión</th>
+                  <th class="px-4 py-2 font-medium">Neto</th>
+                  <th class="px-4 py-2 font-medium">Vencimiento</th>
+                  <th class="px-4 py-2 font-medium">Estado</th>
+                  <th class="px-4 py-2 font-medium text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="fin-ordenes-body" class="divide-y divide-slate-100">
+                <tr id="fin-ordenes-vacio">
+                  <td colspan="7" class="px-4 py-8 text-center text-slate-400">No hay órdenes de pago generadas.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="panel-orden-imprimible" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm p-6 text-sm max-w-2xl">
+          <div class="no-print flex justify-end gap-2 mb-4">
+            <button type="button" id="btn-cerrar-orden-print" class="px-3 py-1.5 border border-slate-300 rounded-lg text-slate-700">Cerrar</button>
+            <button type="button" id="btn-imprimir-orden" class="px-3 py-1.5 bg-obrados-600 text-white rounded-lg">Imprimir / PDF</button>
+          </div>
+          <div id="orden-print-contenido"></div>
+        </section>
+      </div>
+
 
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.9">
-    © 2026 ObraDOS · Versión 0.9.9
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.10.0">
+    © 2026 ObraDOS · Versión 0.10.0
   </footer>
 
   <script>
@@ -1209,6 +1288,7 @@
           panel.classList.toggle('activo', panel.id === 'panel-' + modulo);
         });
         if (modulo === 'operativo') actualizarBannerCertObra();
+        if (modulo === 'financiero') renderFinanciero();
       });
     });
 
@@ -1318,6 +1398,11 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     ];
     var certObraActivo = 'CERT-OBR-2026-0007';
     var contadorCertObr = 8;
+    var certAdmId = 'CERT-ADM-2026-0003';
+
+    var ordenesPago = [];
+    var contadorOrdenPago = 1;
+    var ordenPrintActiva = null;
 
     var etiquetasCertAdm = {
       pendiente_avances: 'Pendiente de avances',
@@ -1455,6 +1540,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
         v.obs = pendientes.length + ' tramo(s) obrero consolidado(s)';
       }
       renderCertAdministrativo();
+      renderFinanciero();
     }
 
     function aprobarCertAdm() {
@@ -1466,6 +1552,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
         v.obs = 'Aprobado por arquitecto';
       }
       renderCertAdministrativo();
+      renderFinanciero();
     }
 
     function solicitarRevisionCertAdm() {
@@ -1524,6 +1611,114 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       }
       renderGrillasOperativo();
       renderCertAdministrativo();
+      renderFinanciero();
+    }
+
+    function puedeGenerarOrdenPago() {
+      return (certAdmEstado === 'aprobado' || certAdmEstado === 'cerrado_mes') && certAdmMontoPeriodo > 0;
+    }
+
+    function calcularVencimientoOrden(dias) {
+      var d = new Date();
+      d.setDate(d.getDate() + (dias || 30));
+      return formatearFecha(d.toISOString().slice(0, 10));
+    }
+
+    function renderOrdenImprimible(orden) {
+      var html =
+        '<div class="border-b border-slate-200 pb-4 mb-4">' +
+        '<p class="text-xs text-slate-500 uppercase tracking-wide">ObraDOS — Orden de pago</p>' +
+        '<p class="text-2xl font-bold text-slate-900 mt-1">' + orden.id + '</p>' +
+        '<p class="text-sm text-slate-600 mt-1">Emitida el ' + orden.fecha + ' · Vence el ' + orden.vencimiento + '</p></div>' +
+        '<div class="grid grid-cols-2 gap-4 mb-6 text-sm">' +
+        '<div><p class="text-xs text-slate-500">Cliente</p><p class="font-medium">' + orden.cliente + '</p></div>' +
+        '<div><p class="text-xs text-slate-500">Obra</p><p class="font-medium">' + orden.obra + '</p></div>' +
+        '<div><p class="text-xs text-slate-500">Presupuesto</p><p class="font-medium">' + orden.pres + '</p></div>' +
+        '<div><p class="text-xs text-slate-500">Certificado administrativo</p><p class="font-medium">' + orden.certAdmId + ' (v' + orden.certVersion + ')</p></div></div>' +
+        '<table class="w-full text-sm mb-4"><tbody>' +
+        '<tr class="border-b border-slate-100"><td class="py-2 text-slate-600">Importe base certificado (período)</td><td class="py-2 text-right font-medium">' + formatMoneda(orden.base) + '</td></tr>' +
+        '<tr class="border-b border-slate-100"><td class="py-2 text-slate-600">IVA 21%</td><td class="py-2 text-right">' + formatMoneda(orden.iva) + '</td></tr>' +
+        '<tr class="border-b border-slate-100"><td class="py-2 text-slate-600">Percepciones IIBB (demo 1,5%)</td><td class="py-2 text-right">' + formatMoneda(orden.percepciones) + '</td></tr>' +
+        '<tr><td class="py-2 font-semibold text-slate-900">Neto a facturar</td><td class="py-2 text-right font-bold text-lg">' + formatMoneda(orden.neto) + '</td></tr>' +
+        '</tbody></table>' +
+        '<p class="text-xs text-slate-500">Documento generado desde ObraDOS · Vinculado a ' + orden.certAdmId + ' · No válido como comprobante fiscal</p>';
+      document.getElementById('orden-print-contenido').innerHTML = html;
+      document.getElementById('panel-orden-imprimible').classList.remove('hidden');
+      ordenPrintActiva = orden.id;
+    }
+
+    function renderFinanciero() {
+      var puede = puedeGenerarOrdenPago();
+      var aviso = document.getElementById('fin-aviso-sin-cert');
+      var btn = document.getElementById('btn-generar-orden-pago');
+      if (aviso) aviso.classList.toggle('hidden', puede);
+      if (btn) {
+        btn.disabled = !puede;
+        var yaExiste = ordenesPago.some(function (o) {
+          return o.certAdmId === certAdmId && o.certVersion === certAdmVersion;
+        });
+        if (yaExiste) btn.disabled = true;
+      }
+      var estEl = document.getElementById('fin-cert-estado');
+      if (estEl) estEl.textContent = etiquetasCertAdm[certAdmEstado] || '—';
+      document.getElementById('fin-cert-version').textContent = certAdmVersion;
+      document.getElementById('fin-importe-base').textContent = formatMoneda(certAdmMontoPeriodo);
+      document.getElementById('fin-vencimiento-propuesto').textContent = puede ? calcularVencimientoOrden(30) : '—';
+
+      var body = document.getElementById('fin-ordenes-body');
+      var vacio = document.getElementById('fin-ordenes-vacio');
+      if (!ordenesPago.length) {
+        if (vacio) vacio.classList.remove('hidden');
+        body.querySelectorAll('tr:not(#fin-ordenes-vacio)').forEach(function (r) { r.remove(); });
+      } else {
+        if (vacio) vacio.classList.add('hidden');
+        body.innerHTML = ordenesPago.map(function (o) {
+          return '<tr><td class="px-4 py-3 font-mono text-xs font-medium">' + o.id + '</td>' +
+            '<td class="px-4 py-3 text-slate-600">' + o.certAdmId + ' v' + o.certVersion + '</td>' +
+            '<td class="px-4 py-3 text-slate-600">' + o.fecha + '</td>' +
+            '<td class="px-4 py-3 font-medium">' + formatMoneda(o.neto) + '</td>' +
+            '<td class="px-4 py-3 text-slate-600">' + o.vencimiento + '</td>' +
+            '<td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">' + o.estado + '</span></td>' +
+            '<td class="px-4 py-3 text-right"><button type="button" class="btn-ver-orden text-obrados-600 hover:underline font-medium" data-orden-id="' + o.id + '">Ver / Imprimir</button></td></tr>';
+        }).join('');
+      }
+    }
+
+    function generarOrdenPago() {
+      if (!puedeGenerarOrdenPago()) {
+        alert('El certificado administrativo debe estar aprobado por el arquitecto y tener importe consolidado.');
+        return;
+      }
+      if (ordenesPago.some(function (o) { return o.certAdmId === certAdmId && o.certVersion === certAdmVersion; })) {
+        alert('Ya existe una orden de pago para esta versión del certificado.');
+        return;
+      }
+      var base = certAdmMontoPeriodo;
+      var iva = Math.round(base * 0.21);
+      var percepciones = Math.round(base * 0.015);
+      var neto = base + iva + percepciones;
+      var id = 'OP-2026-' + String(contadorOrdenPago++).padStart(4, '0');
+      var orden = {
+        id: id,
+        certAdmId: certAdmId,
+        certVersion: certAdmVersion,
+        cliente: 'Inmobiliaria del Plata',
+        obra: 'Torre Rivadavia — 24 pisos',
+        pres: 'PRES-2026-0142',
+        base: base,
+        iva: iva,
+        percepciones: percepciones,
+        neto: neto,
+        vencimiento: calcularVencimientoOrden(30),
+        estado: 'Emitida',
+        fecha: formatearFecha(new Date().toISOString().slice(0, 10))
+      };
+      ordenesPago.push(orden);
+      var msg = document.getElementById('fin-generar-msg');
+      msg.textContent = 'Orden ' + id + ' generada por ' + formatMoneda(neto) + ' · Vinculada a ' + certAdmId + ' v' + certAdmVersion;
+      msg.classList.remove('hidden');
+      renderFinanciero();
+      renderOrdenImprimible(orden);
     }
 
     function getItem(id) {
@@ -1999,6 +2194,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
 
     function actualizarSubtituloOperativo() {
       var vista = document.getElementById('vista-operativo').value;
+      var esCliente = vista === 'cliente';
       var sub = document.getElementById('operativo-subtitulo');
       if (opTabActivo === 'validacion') {
         sub.textContent = 'Validación de avances y cierre de tramo obrero';
@@ -2083,6 +2279,19 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     document.getElementById('btn-nueva-version-cert-adm').addEventListener('click', generarNuevaVersionCertAdm);
     document.getElementById('btn-cierre-mensual').addEventListener('click', ejecutarCierreMensual);
 
+    document.getElementById('btn-generar-orden-pago').addEventListener('click', generarOrdenPago);
+    document.getElementById('fin-ordenes-body').addEventListener('click', function (e) {
+      var btn = e.target.closest('.btn-ver-orden');
+      if (!btn) return;
+      var orden = ordenesPago.find(function (o) { return o.id === btn.getAttribute('data-orden-id'); });
+      if (orden) renderOrdenImprimible(orden);
+    });
+    document.getElementById('btn-imprimir-orden').addEventListener('click', function () { window.print(); });
+    document.getElementById('btn-cerrar-orden-print').addEventListener('click', function () {
+      document.getElementById('panel-orden-imprimible').classList.add('hidden');
+      ordenPrintActiva = null;
+    });
+
     document.getElementById('validacion-body').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
       if (!btn) return;
@@ -2095,6 +2304,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     calcularKpisOperativo();
     renderGrillasOperativo();
     renderCertAdministrativo();
+    renderFinanciero();
   </script>
 
 </body>
