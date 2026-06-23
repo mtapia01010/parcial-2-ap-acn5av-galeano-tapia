@@ -677,6 +677,7 @@
         </div>
 
       </div>
+
       <div id="panel-operativo" class="modulo-panel">
         <div class="mb-6 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
           <div>
@@ -701,6 +702,12 @@
           <strong>Obra:</strong> Torre Rivadavia — 24 pisos · <strong>Certificado:</strong> CERT-OBR-2026-0007 · <strong>Presupuesto:</strong> PRES-2026-0142 (Confirmado)
         </section>
 
+        <div class="flex gap-1 mb-4 border-b border-slate-200" id="operativo-tabs">
+          <button type="button" data-op-tab="planificacion" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-obrados-600 text-obrados-700">Planificación</button>
+          <button type="button" data-op-tab="avances" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Registro de avances</button>
+        </div>
+
+        <div id="operativo-planificacion">
         <section id="filtros-tareas" class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
           <div class="grid sm:grid-cols-3 gap-3 text-sm">
             <label class="block">
@@ -848,28 +855,150 @@
           </div>
           <p id="tareas-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay tareas para los filtros seleccionados.</p>
         </section>
+        </div>
+
+        <div id="operativo-avances" class="hidden">
+          <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6 p-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-sm">
+              <div>
+                <p class="text-slate-600">Configuración de obra</p>
+                <p class="font-medium text-slate-800">Período habilitado: <span class="text-obrados-700">Quincenal</span> <span class="text-xs text-slate-400">(también diario y semanal)</span></p>
+              </div>
+              <p class="text-xs text-slate-500" id="avances-hint-vista">Registrá el avance de tus tareas asignadas</p>
+            </div>
+          </section>
+
+          <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6" id="form-registro-avance">
+            <div class="px-4 py-3 border-b border-slate-100">
+              <h3 class="font-medium text-slate-800">Nuevo registro de avance</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Queda en estado Pendiente de validación hasta revisión del administrador</p>
+            </div>
+            <form id="form-avance" class="p-4 grid sm:grid-cols-2 gap-4 text-sm max-w-3xl">
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Tipo de registro</span>
+                <select id="avance-periodo" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">
+                  <option value="diario">Diario</option>
+                  <option value="semanal">Semanal</option>
+                  <option value="quincenal" selected>Quincenal</option>
+                </select>
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Fecha del registro</span>
+                <input type="date" id="avance-fecha" value="2026-06-17" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-slate-600 text-xs font-medium">Tarea / ítem de trabajo</span>
+                <select id="avance-tarea" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none"></select>
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">% completado en el período</span>
+                <input type="number" id="avance-porcentaje" min="1" max="100" value="15" required class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Cantidad ejecutada</span>
+                <div class="mt-1 flex gap-2">
+                  <input type="number" id="avance-cantidad" min="0" step="0.1" value="18" required class="flex-1 border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none" />
+                  <span id="avance-unidad" class="inline-flex items-center px-3 py-2 bg-slate-100 border border-slate-200 rounded-lg text-slate-600 text-xs min-w-[3rem] justify-center">m³</span>
+                </div>
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-slate-600 text-xs font-medium">Observaciones</span>
+                <textarea id="avance-obs" rows="2" placeholder="Detalle del trabajo realizado, condiciones, etc." class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-obrados-500 focus:outline-none">Avance conforme a plano. Sector norte finalizado.</textarea>
+              </label>
+              <label class="block sm:col-span-2">
+                <span class="text-slate-600 text-xs font-medium">Evidencia fotográfica</span>
+                <input type="file" id="avance-fotos" accept="image/*" multiple class="mt-1 w-full text-sm text-slate-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:bg-slate-100 file:text-slate-700" />
+                <p class="text-xs text-slate-400 mt-1" id="avance-fotos-resumen">Sin archivos seleccionados</p>
+              </label>
+              <div class="sm:col-span-2">
+                <button type="submit" class="w-full sm:w-auto text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2.5 rounded-lg font-medium">Enviar a validación</button>
+              </div>
+            </form>
+          </section>
+
+          <section class="bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div class="px-4 py-3 border-b border-slate-100 flex items-center justify-between">
+              <h3 class="font-medium text-slate-800">Avances registrados</h3>
+              <span class="text-xs text-slate-500" id="contador-avances">2 registros</span>
+            </div>
+
+            <div class="hidden md:block overflow-x-auto">
+              <table class="w-full text-sm" id="tabla-avances">
+                <thead class="bg-slate-50 text-slate-600 text-left">
+                  <tr>
+                    <th class="px-4 py-2 font-medium">ID</th>
+                    <th class="px-4 py-2 font-medium">Tarea</th>
+                    <th class="px-4 py-2 font-medium col-obrero-av">Obrero</th>
+                    <th class="px-4 py-2 font-medium">Período</th>
+                    <th class="px-4 py-2 font-medium">Avance</th>
+                    <th class="px-4 py-2 font-medium">Fotos</th>
+                    <th class="px-4 py-2 font-medium">Estado</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-100" id="avances-body">
+                  <tr class="fila-avance" data-obrero="maria">
+                    <td class="px-4 py-3 font-mono text-xs text-slate-500">AV-2026-0041</td>
+                    <td class="px-4 py-3">
+                      <span class="font-medium text-slate-800">Replanteo y niveles</span>
+                      <p class="text-xs text-slate-500 mt-0.5">35% · 1 gl · 20/06/2026</p>
+                    </td>
+                    <td class="px-4 py-3 col-obrero-av">María López</td>
+                    <td class="px-4 py-3 text-slate-600">Semanal</td>
+                    <td class="px-4 py-3">35%</td>
+                    <td class="px-4 py-3 text-slate-600">1 foto</td>
+                    <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>
+                  </tr>
+                  <tr class="fila-avance" data-obrero="carlos">
+                    <td class="px-4 py-3 font-mono text-xs text-slate-500">AV-2026-0042</td>
+                    <td class="px-4 py-3">
+                      <span class="font-medium text-slate-800">Demolición y retiro de escombros</span>
+                      <p class="text-xs text-slate-500 mt-0.5">12% · 18 m³ · 17/06/2026</p>
+                    </td>
+                    <td class="px-4 py-3 col-obrero-av">Carlos Ruiz</td>
+                    <td class="px-4 py-3 text-slate-600">Diario</td>
+                    <td class="px-4 py-3">12%</td>
+                    <td class="px-4 py-3 text-slate-600">2 fotos</td>
+                    <td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="md:hidden divide-y divide-slate-100 p-3 space-y-3" id="avances-cards">
+              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-obrero="maria">
+                <div class="flex justify-between items-start gap-2 mb-2">
+                  <span class="font-mono text-xs text-slate-500">AV-2026-0041</span>
+                  <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span>
+                </div>
+                <p class="font-medium text-slate-800">Replanteo y niveles</p>
+                <p class="text-xs text-slate-500 mt-1">35% · 1 gl · Semanal · 20/06/2026</p>
+                <p class="text-xs text-slate-400 mt-2">1 foto adjunta</p>
+              </article>
+              <article class="fila-avance border border-slate-200 rounded-lg p-3" data-obrero="carlos">
+                <div class="flex justify-between items-start gap-2 mb-2">
+                  <span class="font-mono text-xs text-slate-500">AV-2026-0042</span>
+                  <span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span>
+                </div>
+                <p class="font-medium text-slate-800">Demolición y retiro de escombros</p>
+                <p class="text-xs text-slate-500 mt-1">12% · 18 m³ · Diario · 17/06/2026</p>
+                <p class="text-xs text-slate-400 mt-2">2 fotos adjuntas</p>
+              </article>
+            </div>
+
+            <p id="avances-vacio" class="hidden px-4 py-8 text-center text-sm text-slate-400">No hay avances para mostrar.</p>
+          </section>
+        </div>
       </div>
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.5">
-    © 2026 ObraDOS · Versión 0.9.5
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.6">
+    © 2026 ObraDOS · Versión 0.9.6
   </footer>
 
   <script>
-    document.querySelectorAll('#nav-modulos .nav-item').forEach(function (btn) {
-      btn.addEventListener('click', function () {
-        var modulo = btn.getAttribute('data-modulo');
-        document.querySelectorAll('#nav-modulos .nav-item').forEach(function (b) {
-          b.classList.toggle('activo', b === btn);
-        });
-        document.querySelectorAll('.modulo-panel').forEach(function (panel) {
-          panel.classList.toggle('activo', panel.id === 'panel-' + modulo);
-        });
-      });
-    });
-var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
+    var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
     var totalAnteriorCoef = 48750000;
 
     var estilosEstado = {
@@ -1088,18 +1217,121 @@ var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
       }
     });
 
-    
-    document.querySelectorAll('[data-pres-tab]').forEach(function (el) {
-      el.addEventListener('click', function () {
-        activarPresupuesto(el.getAttribute('data-pres-tab'));
-      });
-    });
     var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan Pereyra' };
     var etiquetasPrioridad = { alta: 'Alta', media: 'Media', baja: 'Baja' };
     var clasesPrioridad = { alta: 'bg-red-100 text-red-800', media: 'bg-amber-100 text-amber-800', baja: 'bg-slate-200 text-slate-700' };
     var etiquetasEstadoTarea = { pendiente: 'Pendiente', curso: 'En curso', completada: 'Completada' };
     var clasesEstadoTarea = { pendiente: 'bg-slate-200 text-slate-700', curso: 'bg-blue-100 text-blue-800', completada: 'bg-emerald-100 text-emerald-800' };
+    var etiquetasPeriodo = { diario: 'Diario', semanal: 'Semanal', quincenal: 'Quincenal' };
+    var contadorAvance = 43;
+    var opTabActivo = 'planificacion';
     var contadorTareaId = 5;
+
+    function activarOperativoTab(tab) {
+      opTabActivo = tab;
+      document.querySelectorAll('#operativo-tabs .op-tab').forEach(function (btn) {
+        var activo = btn.getAttribute('data-op-tab') === tab;
+        btn.classList.toggle('border-obrados-600', activo);
+        btn.classList.toggle('text-obrados-700', activo);
+        btn.classList.toggle('border-transparent', !activo);
+        btn.classList.toggle('text-slate-500', !activo);
+      });
+      document.getElementById('operativo-planificacion').classList.toggle('hidden', tab !== 'planificacion');
+      document.getElementById('operativo-avances').classList.toggle('hidden', tab !== 'avances');
+      document.getElementById('btn-nueva-tarea').classList.toggle('hidden', tab !== 'planificacion' || document.getElementById('vista-operativo').value !== 'admin');
+      actualizarSubtituloOperativo();
+      if (tab === 'avances') {
+        poblarSelectTareasAvance();
+        aplicarFiltrosAvances();
+      }
+    }
+
+    function actualizarSubtituloOperativo() {
+      var vista = document.getElementById('vista-operativo').value;
+      var esAdmin = vista === 'admin';
+      if (opTabActivo === 'avances') {
+        document.getElementById('operativo-subtitulo').textContent = esAdmin
+          ? 'Registro y seguimiento de avances de obra'
+          : 'Mis avances — ' + nombresObrero[vista];
+      } else if (esAdmin) {
+        document.getElementById('operativo-subtitulo').textContent = 'Asignación de tareas según presupuesto confirmado';
+      } else {
+        document.getElementById('operativo-subtitulo').textContent = 'Mis tareas asignadas — ' + nombresObrero[vista];
+      }
+    }
+
+    function poblarSelectTareasAvance() {
+      var vista = document.getElementById('vista-operativo').value;
+      var select = document.getElementById('avance-tarea');
+      var prev = select.value;
+      select.innerHTML = '';
+      document.querySelectorAll('.fila-tarea').forEach(function (fila) {
+        if (vista !== 'admin' && fila.getAttribute('data-obrero') !== vista) return;
+        var opt = document.createElement('option');
+        opt.value = fila.getAttribute('data-tarea-id');
+        opt.textContent = fila.getAttribute('data-nombre');
+        opt.setAttribute('data-unidad', fila.getAttribute('data-unidad'));
+        opt.setAttribute('data-obrero', fila.getAttribute('data-obrero'));
+        select.appendChild(opt);
+      });
+      if (prev) select.value = prev;
+      actualizarUnidadAvance();
+    }
+
+    function actualizarUnidadAvance() {
+      var sel = document.getElementById('avance-tarea');
+      var opt = sel.options[sel.selectedIndex];
+      document.getElementById('avance-unidad').textContent = opt ? (opt.getAttribute('data-unidad') || '—') : '—';
+    }
+
+    function aplicarFiltrosAvances() {
+      var vista = document.getElementById('vista-operativo').value;
+      var esAdmin = vista === 'admin';
+      var visibles = 0;
+      document.querySelectorAll('.col-obrero-av').forEach(function (c) {
+        c.classList.toggle('hidden', !esAdmin);
+      });
+      document.querySelectorAll('.fila-avance').forEach(function (fila) {
+        var ok = esAdmin || fila.getAttribute('data-obrero') === vista;
+        fila.classList.toggle('hidden', !ok);
+        if (ok) visibles++;
+      });
+      document.getElementById('contador-avances').textContent = visibles + (visibles === 1 ? ' registro' : ' registros');
+      document.getElementById('avances-vacio').classList.toggle('hidden', visibles > 0);
+      document.getElementById('avances-hint-vista').textContent = esAdmin
+        ? 'Vista administrador: todos los avances pendientes de validación'
+        : 'Solo tus tareas y avances enviados';
+    }
+
+    function agregarAvance(datos) {
+      var id = 'AV-2026-' + String(contadorAvance++).padStart(4, '0');
+      var tr = document.createElement('tr');
+      tr.className = 'fila-avance';
+      tr.setAttribute('data-obrero', datos.obrero);
+      tr.innerHTML =
+        '<td class="px-4 py-3 font-mono text-xs text-slate-500">' + id + '</td>' +
+        '<td class="px-4 py-3"><span class="font-medium text-slate-800">' + datos.nombre + '</span>' +
+        '<p class="text-xs text-slate-500 mt-0.5">' + datos.porcentaje + '% · ' + datos.cantidad + ' ' + datos.unidad + ' · ' + datos.fecha + '</p></td>' +
+        '<td class="px-4 py-3 col-obrero-av">' + nombresObrero[datos.obrero] + '</td>' +
+        '<td class="px-4 py-3 text-slate-600">' + datos.periodo + '</td>' +
+        '<td class="px-4 py-3">' + datos.porcentaje + '%</td>' +
+        '<td class="px-4 py-3 text-slate-600">' + datos.fotos + '</td>' +
+        '<td class="px-4 py-3"><span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full">Pendiente de validación</span></td>';
+      document.getElementById('avances-body').appendChild(tr);
+
+      var card = document.createElement('article');
+      card.className = 'fila-avance border border-slate-200 rounded-lg p-3';
+      card.setAttribute('data-obrero', datos.obrero);
+      card.innerHTML =
+        '<div class="flex justify-between items-start gap-2 mb-2">' +
+        '<span class="font-mono text-xs text-slate-500">' + id + '</span>' +
+        '<span class="text-xs bg-amber-100 text-amber-800 px-2 py-0.5 rounded-full shrink-0">Pendiente</span></div>' +
+        '<p class="font-medium text-slate-800">' + datos.nombre + '</p>' +
+        '<p class="text-xs text-slate-500 mt-1">' + datos.porcentaje + '% · ' + datos.cantidad + ' ' + datos.unidad + ' · ' + datos.periodo + ' · ' + datos.fecha + '</p>' +
+        '<p class="text-xs text-slate-400 mt-2">' + datos.fotos + ' adjunta' + (datos.numFotos !== 1 ? 's' : '') + '</p>';
+      document.getElementById('avances-cards').appendChild(card);
+      aplicarFiltrosAvances();
+    }
 
     function formatearFecha(iso) {
       if (!iso) return '';
@@ -1123,10 +1355,8 @@ var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
       });
 
       if (esAdmin) {
-        document.getElementById('operativo-subtitulo').textContent = 'Asignación de tareas según presupuesto confirmado';
         document.getElementById('titulo-lista-tareas').textContent = 'Tareas de obra';
       } else {
-        document.getElementById('operativo-subtitulo').textContent = 'Mis tareas asignadas — ' + nombresObrero[vista];
         document.getElementById('titulo-lista-tareas').textContent = 'Mis tareas';
       }
 
@@ -1141,9 +1371,17 @@ var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
 
       document.getElementById('contador-tareas').textContent = visibles + (visibles === 1 ? ' tarea' : ' tareas');
       document.getElementById('tareas-vacio').classList.toggle('hidden', visibles > 0);
+      actualizarSubtituloOperativo();
+      document.getElementById('btn-nueva-tarea').classList.toggle('hidden', !esAdmin || opTabActivo !== 'planificacion');
+      if (opTabActivo === 'avances') poblarSelectTareasAvance();
     }
 
-    document.getElementById('vista-operativo').addEventListener('change', aplicarFiltrosTareas);
+    document.getElementById('vista-operativo').addEventListener('change', function () {
+      var vista = document.getElementById('vista-operativo').value;
+      if (vista !== 'admin') activarOperativoTab('avances');
+      aplicarFiltrosTareas();
+      aplicarFiltrosAvances();
+    });
     document.getElementById('filtro-obra').addEventListener('change', aplicarFiltrosTareas);
     document.getElementById('filtro-obrero').addEventListener('change', aplicarFiltrosTareas);
     document.getElementById('filtro-estado').addEventListener('change', aplicarFiltrosTareas);
@@ -1191,8 +1429,45 @@ var estadosPres = { '0142': 'borrador', '0138': 'enviado' };
       aplicarFiltrosTareas();
     });
 
-    aplicarFiltrosTareas();
+    document.querySelectorAll('#operativo-tabs .op-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activarOperativoTab(btn.getAttribute('data-op-tab'));
+      });
+    });
 
+    document.getElementById('avance-tarea').addEventListener('change', actualizarUnidadAvance);
+
+    document.getElementById('avance-fotos').addEventListener('change', function () {
+      var n = this.files.length;
+      document.getElementById('avance-fotos-resumen').textContent = n
+        ? n + (n === 1 ? ' foto seleccionada' : ' fotos seleccionadas')
+        : 'Sin archivos seleccionados';
+    });
+
+    document.getElementById('form-avance').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var sel = document.getElementById('avance-tarea');
+      var opt = sel.options[sel.selectedIndex];
+      if (!opt) return;
+      var numFotos = document.getElementById('avance-fotos').files.length;
+      agregarAvance({
+        obrero: opt.getAttribute('data-obrero'),
+        nombre: opt.textContent,
+        porcentaje: document.getElementById('avance-porcentaje').value,
+        cantidad: document.getElementById('avance-cantidad').value,
+        unidad: document.getElementById('avance-unidad').textContent,
+        fecha: formatearFecha(document.getElementById('avance-fecha').value),
+        periodo: etiquetasPeriodo[document.getElementById('avance-periodo').value],
+        fotos: numFotos + (numFotos === 1 ? ' foto' : ' fotos'),
+        numFotos: numFotos
+      });
+      document.getElementById('avance-fotos').value = '';
+      document.getElementById('avance-fotos-resumen').textContent = 'Sin archivos seleccionados';
+    });
+
+    aplicarFiltrosTareas();
+    poblarSelectTareasAvance();
+    aplicarFiltrosAvances();
   </script>
 
 </body>
