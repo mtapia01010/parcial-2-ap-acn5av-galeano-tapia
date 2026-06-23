@@ -520,7 +520,7 @@
               <p class="text-xs text-slate-500 uppercase tracking-wide">Certificado administrativo</p>
               <p class="font-semibold text-slate-900 mt-1">CERT-ADM-2026-0003</p>
               <p class="text-slate-600 mt-2">Vinculado a PRES-2026-0142</p>
-              <p class="text-slate-600">Estado inicial: Pendiente de avances</p>
+              <p class="text-slate-600">Estado: <span id="cert-adm-estado-lista">Pendiente de avances</span></p>
               <p class="text-slate-600">Monto contratado: <span id="cert-adm-monto">$ 48.750.000</span></p>
               <p class="text-xs text-slate-400 mt-2">Generado el 17/06/2026</p>
             </div>
@@ -736,8 +736,13 @@
         </div>
 
         <section id="banner-cert-obra" class="hidden bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 mb-4 text-sm text-emerald-900">
-          Certificado de obra <strong>CERT-OBR-2026-0007</strong> generado automáticamente desde <strong>PRES-2026-0142</strong>.
+          Certificado de obra <strong id="banner-cert-obra-id">CERT-OBR-2026-0007</strong> generado automáticamente desde <strong>PRES-2026-0142</strong>.
           <span class="block text-xs text-emerald-700 mt-1">Misma estructura que el presupuesto · tarifas obrero editables por el administrador</span>
+        </section>
+
+        <section id="banner-cierre-mensual" class="hidden bg-blue-50 border border-blue-200 rounded-xl px-4 py-3 mb-4 text-sm text-blue-900">
+          Cierre mensual ejecutado · Nuevo certificado de obra <strong id="banner-cert-v2-id">CERT-OBR-2026-0008</strong> generado.
+          <span class="block text-xs text-blue-700 mt-1">Coeficientes aplicados a ítems no liberados · Certificado administrativo listo para facturación (HU-009)</span>
         </section>
 
         <section id="operativo-sin-presupuesto" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-900">
@@ -758,6 +763,7 @@
             <button type="button" data-op-tab="certificado" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-obrados-600 text-obrados-700">Certificado de obra</button>
             <button type="button" data-op-tab="avances" class="op-tab px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Avances</button>
             <button type="button" data-op-tab="validacion" id="tab-validacion" class="op-tab hidden px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Validación y cierres</button>
+            <button type="button" data-op-tab="administrativo" id="tab-administrativo" class="op-tab hidden px-4 py-2 text-sm font-medium border-b-2 border-transparent text-slate-500 hover:text-slate-700">Cert. administrativo</button>
           </div>
 
           <div id="operativo-certificado">
@@ -842,6 +848,100 @@
               </div>
             </section>
           </div>
+
+          <div id="operativo-administrativo" class="hidden">
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-4">
+              <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 class="font-medium text-slate-800"><span id="cert-adm-titulo">CERT-ADM-2026-0003</span> · <span id="cert-adm-periodo">Junio 2026</span></h3>
+                  <p class="text-xs text-slate-500 mt-0.5">Vinculado a PRES-2026-0142 · Versión <span id="cert-adm-version">1</span> · <span id="cert-adm-estado-badge" class="text-xs bg-slate-200 text-slate-700 px-2 py-0.5 rounded-full">Pendiente de avances</span></p>
+                </div>
+                <div id="cert-adm-acciones-admin" class="flex flex-wrap gap-2">
+                  <button type="button" id="btn-consolidar-cert-adm" class="text-sm bg-obrados-600 hover:bg-obrados-700 text-white px-4 py-2 rounded-lg">Consolidar certificado mensual</button>
+                  <button type="button" id="btn-nueva-version-cert-adm" class="hidden text-sm border border-slate-300 text-slate-700 hover:bg-slate-50 px-4 py-2 rounded-lg">Generar versión 2</button>
+                  <button type="button" id="btn-cierre-mensual" class="hidden text-sm bg-slate-800 hover:bg-slate-900 text-white px-4 py-2 rounded-lg">Cierre mensual</button>
+                </div>
+              </div>
+              <div class="p-4 grid sm:grid-cols-4 gap-4 border-b border-slate-100 text-sm">
+                <div>
+                  <p class="text-xs text-slate-500 uppercase tracking-wide">Avance del período</p>
+                  <p class="text-2xl font-semibold text-obrados-700 mt-1" id="cert-adm-avance-periodo">0%</p>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 uppercase tracking-wide">Avance acumulado</p>
+                  <p class="text-2xl font-semibold text-slate-800 mt-1" id="cert-adm-avance-acum">0%</p>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 uppercase tracking-wide">Monto del período</p>
+                  <p class="text-2xl font-semibold text-slate-800 mt-1" id="cert-adm-monto-periodo">$ 0</p>
+                </div>
+                <div>
+                  <p class="text-xs text-slate-500 uppercase tracking-wide">Monto acumulado</p>
+                  <p class="text-2xl font-semibold text-slate-800 mt-1" id="cert-adm-monto-acum">$ 0</p>
+                </div>
+              </div>
+              <div class="px-4 py-3 border-b border-slate-100">
+                <h4 class="text-sm font-medium text-slate-800">Cierres obrero alimentando el certificado</h4>
+                <p class="text-xs text-slate-500 mt-0.5">Los tramos cerrados en Validación y cierres se consolidan en el certificado mensual</p>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                    <tr>
+                      <th class="px-4 py-2 font-medium">Tramo</th>
+                      <th class="px-4 py-2 font-medium">Fecha</th>
+                      <th class="px-4 py-2 font-medium">Avances</th>
+                      <th class="px-4 py-2 font-medium">Monto obrero</th>
+                      <th class="px-4 py-2 font-medium">Estado</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cert-adm-cierres-body" class="divide-y divide-slate-100">
+                    <tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 text-sm">Sin cierres obrero registrados. Cerrá un tramo en Validación y cierres.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="cert-adm-panel-arquitecto" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm mb-4">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <h3 class="font-medium text-slate-800">Validación del arquitecto</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Revisión contractual del avance mensual frente al cliente</p>
+              </div>
+              <div class="p-4 text-sm">
+                <p id="cert-adm-revision-msg" class="hidden mb-4 text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2"></p>
+                <label class="block mb-4">
+                  <span class="text-slate-600 text-xs font-medium">Observaciones (obligatorias al solicitar revisión)</span>
+                  <textarea id="cert-adm-obs-arquitecto" rows="3" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" placeholder="Detalle de ajustes solicitados…"></textarea>
+                </label>
+                <div class="flex flex-wrap gap-2">
+                  <button type="button" id="btn-aprobar-cert-adm" class="text-sm bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg">Aprobar certificado</button>
+                  <button type="button" id="btn-revision-cert-adm" class="text-sm border border-amber-300 text-amber-800 hover:bg-amber-50 px-4 py-2 rounded-lg">Solicitar revisión</button>
+                </div>
+              </div>
+            </section>
+
+            <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-4">
+              <div class="px-4 py-3 border-b border-slate-100">
+                <h3 class="font-medium text-slate-800">Historial de versiones</h3>
+                <p class="text-xs text-slate-500 mt-0.5">Trazabilidad de cada versión del certificado administrativo</p>
+              </div>
+              <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                  <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                    <tr>
+                      <th class="px-4 py-2 font-medium">Versión</th>
+                      <th class="px-4 py-2 font-medium">Fecha</th>
+                      <th class="px-4 py-2 font-medium">Estado</th>
+                      <th class="px-4 py-2 font-medium">Avance período</th>
+                      <th class="px-4 py-2 font-medium">Monto</th>
+                      <th class="px-4 py-2 font-medium">Observaciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="cert-adm-historial-body" class="divide-y divide-slate-100"></tbody>
+                </table>
+              </div>
+            </section>
+          </div>
         </div>
 
         <div id="modal-habilitar" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
@@ -901,8 +1001,8 @@
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.8">
-    © 2026 ObraDOS · Versión 0.9.8
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.9.9">
+    © 2026 ObraDOS · Versión 0.9.9
   </footer>
 
   <script>
@@ -1152,6 +1252,7 @@
       if (confirmado && typeof renderGrillasOperativo === 'function') {
         renderGrillasOperativo();
         calcularKpisOperativo();
+        renderCertAdministrativo();
       }
     }
 
@@ -1204,6 +1305,226 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     var avancesOperativo = [
       { id: 'AV-2026-0041', itemId: 'i2', obrero: 'maria', porcentaje: 35, cantidad: 1, unidad: 'gl', estado: 'pendiente', importe: 133000, obs: 'Replanteo sector norte', fecha: '20/06/2026', fotos: 1, cerrado: false }
     ];
+
+    var cierresObrero = [];
+    var certAdmEstado = 'pendiente_avances';
+    var certAdmVersion = 1;
+    var certAdmMontoPeriodo = 0;
+    var certAdmMontoAcum = 0;
+    var certAdmAvancePeriodo = 0;
+    var certAdmAvanceAcum = 0;
+    var certAdmHistorial = [
+      { version: 1, estado: 'borrador', fecha: '17/06/2026', monto: 0, avancePeriodo: 0, obs: 'Versión inicial al confirmar presupuesto' }
+    ];
+    var certObraActivo = 'CERT-OBR-2026-0007';
+    var contadorCertObr = 8;
+
+    var etiquetasCertAdm = {
+      pendiente_avances: 'Pendiente de avances',
+      pendiente_arquitecto: 'Pendiente arquitecto',
+      en_revision: 'En revisión',
+      aprobado: 'Aprobado',
+      cerrado_mes: 'Cerrado mensual'
+    };
+
+    var clasesCertAdm = {
+      pendiente_avances: 'bg-slate-200 text-slate-700',
+      pendiente_arquitecto: 'bg-amber-100 text-amber-800',
+      en_revision: 'bg-red-100 text-red-800',
+      aprobado: 'bg-emerald-100 text-emerald-800',
+      cerrado_mes: 'bg-blue-100 text-blue-800'
+    };
+
+    function calcularAvanceObraPct() {
+      var sumaObra = 0;
+      itemsCert.forEach(function (i) {
+        sumaObra += (i.avanceAcum || 0) * i.pesoObra / 100;
+      });
+      return sumaObra;
+    }
+
+    function actualizarCertAdmComercial() {
+      var el = document.getElementById('cert-adm-estado-lista');
+      if (el) el.textContent = etiquetasCertAdm[certAdmEstado] || certAdmEstado;
+    }
+
+    function renderCertAdmHistorial() {
+      var body = document.getElementById('cert-adm-historial-body');
+      if (!body) return;
+      body.innerHTML = certAdmHistorial.map(function (v) {
+        return '<tr><td class="px-4 py-2 font-medium">v' + v.version + '</td>' +
+          '<td class="px-4 py-2 text-slate-600">' + v.fecha + '</td>' +
+          '<td class="px-4 py-2">' + v.estado + '</td>' +
+          '<td class="px-4 py-2">' + v.avancePeriodo.toFixed(1).replace('.', ',') + '%</td>' +
+          '<td class="px-4 py-2">' + formatMoneda(v.monto) + '</td>' +
+          '<td class="px-4 py-2 text-slate-600 text-xs">' + (v.obs || '—') + '</td></tr>';
+      }).join('');
+    }
+
+    function renderCertAdministrativo() {
+      if (estadosPres[presCertOperativo] !== 'confirmado') return;
+      var vista = document.getElementById('vista-operativo').value;
+      var esAdmin = vista === 'admin';
+      var esCliente = vista === 'cliente';
+
+      certAdmAvanceAcum = calcularAvanceObraPct();
+
+      document.getElementById('cert-adm-version').textContent = certAdmVersion;
+      var badge = document.getElementById('cert-adm-estado-badge');
+      badge.textContent = etiquetasCertAdm[certAdmEstado];
+      badge.className = 'text-xs px-2 py-0.5 rounded-full ' + (clasesCertAdm[certAdmEstado] || 'bg-slate-200 text-slate-700');
+
+      document.getElementById('cert-adm-avance-periodo').textContent = certAdmAvancePeriodo.toFixed(1).replace('.', ',') + '%';
+      document.getElementById('cert-adm-avance-acum').textContent = certAdmAvanceAcum.toFixed(1).replace('.', ',') + '%';
+      document.getElementById('cert-adm-monto-periodo').textContent = formatMoneda(certAdmMontoPeriodo);
+      document.getElementById('cert-adm-monto-acum').textContent = formatMoneda(certAdmMontoAcum);
+
+      var cBody = document.getElementById('cert-adm-cierres-body');
+      if (!cierresObrero.length) {
+        cBody.innerHTML = '<tr><td colspan="5" class="px-4 py-6 text-center text-slate-400 text-sm">Sin cierres obrero registrados. Cerrá un tramo en Validación y cierres.</td></tr>';
+      } else {
+        cBody.innerHTML = cierresObrero.map(function (c) {
+          return '<tr><td class="px-4 py-2 font-mono text-xs">' + c.id + '</td>' +
+            '<td class="px-4 py-2 text-slate-600">' + c.fecha + '</td>' +
+            '<td class="px-4 py-2">' + c.avances + '</td>' +
+            '<td class="px-4 py-2 font-medium">' + formatMoneda(c.monto) + '</td>' +
+            '<td class="px-4 py-2"><span class="text-xs ' + (c.consolidado ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800') + ' px-2 py-0.5 rounded-full">' +
+            (c.consolidado ? 'Consolidado' : 'Pendiente') + '</span></td></tr>';
+        }).join('');
+      }
+
+      var btnCons = document.getElementById('btn-consolidar-cert-adm');
+      var btnVer = document.getElementById('btn-nueva-version-cert-adm');
+      var btnMes = document.getElementById('btn-cierre-mensual');
+      var panelArq = document.getElementById('cert-adm-panel-arquitecto');
+      var accAdmin = document.getElementById('cert-adm-acciones-admin');
+
+      accAdmin.classList.toggle('hidden', !esAdmin);
+      panelArq.classList.toggle('hidden', !esCliente || certAdmEstado === 'pendiente_avances' || certAdmEstado === 'cerrado_mes');
+
+      var pendientes = cierresObrero.some(function (c) { return !c.consolidado; });
+      btnCons.classList.toggle('hidden', !esAdmin || certAdmEstado === 'cerrado_mes' || !pendientes || certAdmEstado === 'pendiente_arquitecto' || certAdmEstado === 'aprobado');
+      btnVer.classList.toggle('hidden', !esAdmin || certAdmEstado !== 'en_revision');
+      btnVer.textContent = 'Generar versión ' + (certAdmVersion + 1);
+      btnMes.classList.toggle('hidden', !esAdmin || certAdmEstado !== 'aprobado');
+
+      var revMsg = document.getElementById('cert-adm-revision-msg');
+      if (esCliente && certAdmEstado === 'pendiente_arquitecto') {
+        revMsg.classList.add('hidden');
+        document.getElementById('btn-aprobar-cert-adm').classList.remove('hidden');
+        document.getElementById('btn-revision-cert-adm').classList.remove('hidden');
+      } else if (esCliente && certAdmEstado === 'aprobado') {
+        panelArq.classList.remove('hidden');
+        revMsg.textContent = 'Certificado aprobado. El administrador puede ejecutar el cierre mensual.';
+        revMsg.classList.remove('hidden');
+        document.getElementById('btn-aprobar-cert-adm').classList.add('hidden');
+        document.getElementById('btn-revision-cert-adm').classList.add('hidden');
+      } else if (esCliente && certAdmEstado === 'en_revision') {
+        revMsg.textContent = 'Revisión solicitada. El administrador generará una nueva versión.';
+        revMsg.classList.remove('hidden');
+        document.getElementById('btn-aprobar-cert-adm').classList.add('hidden');
+        document.getElementById('btn-revision-cert-adm').classList.add('hidden');
+      }
+
+      renderCertAdmHistorial();
+      actualizarCertAdmComercial();
+    }
+
+    function consolidarCertAdm() {
+      var pendientes = cierresObrero.filter(function (c) { return !c.consolidado; });
+      if (!pendientes.length) return;
+      var monto = 0;
+      var avanceSum = 0;
+      pendientes.forEach(function (c) {
+        monto += c.monto;
+        c.consolidado = true;
+      });
+      itemsCert.forEach(function (it) {
+        if (it.estado === 'cerrado_tramo') avanceSum += (it.avanceAcum || 0) * it.pesoObra / 100;
+      });
+      certAdmMontoPeriodo = monto;
+      certAdmMontoAcum += monto;
+      certAdmAvancePeriodo = avanceSum;
+      certAdmEstado = 'pendiente_arquitecto';
+      var v = certAdmHistorial.find(function (h) { return h.version === certAdmVersion; });
+      if (v) {
+        v.estado = 'pendiente arquitecto';
+        v.monto = monto;
+        v.avancePeriodo = certAdmAvancePeriodo;
+        v.fecha = formatearFecha(new Date().toISOString().slice(0, 10));
+        v.obs = pendientes.length + ' tramo(s) obrero consolidado(s)';
+      }
+      renderCertAdministrativo();
+    }
+
+    function aprobarCertAdm() {
+      if (certAdmEstado !== 'pendiente_arquitecto') return;
+      certAdmEstado = 'aprobado';
+      var v = certAdmHistorial.find(function (h) { return h.version === certAdmVersion; });
+      if (v) {
+        v.estado = 'aprobado';
+        v.obs = 'Aprobado por arquitecto';
+      }
+      renderCertAdministrativo();
+    }
+
+    function solicitarRevisionCertAdm() {
+      if (certAdmEstado !== 'pendiente_arquitecto') return;
+      var obs = document.getElementById('cert-adm-obs-arquitecto').value.trim();
+      if (!obs) {
+        alert('Indicá observaciones para solicitar la revisión.');
+        return;
+      }
+      certAdmEstado = 'en_revision';
+      var v = certAdmHistorial.find(function (h) { return h.version === certAdmVersion; });
+      if (v) {
+        v.estado = 'en revisión';
+        v.obs = obs;
+      }
+      renderCertAdministrativo();
+    }
+
+    function generarNuevaVersionCertAdm() {
+      if (certAdmEstado !== 'en_revision') return;
+      certAdmVersion++;
+      certAdmEstado = 'pendiente_arquitecto';
+      certAdmHistorial.push({
+        version: certAdmVersion,
+        estado: 'pendiente arquitecto',
+        fecha: formatearFecha(new Date().toISOString().slice(0, 10)),
+        monto: certAdmMontoPeriodo,
+        avancePeriodo: certAdmAvancePeriodo,
+        obs: 'Ajustes admin tras revisión del arquitecto'
+      });
+      document.getElementById('cert-adm-obs-arquitecto').value = '';
+      renderCertAdministrativo();
+    }
+
+    function ejecutarCierreMensual() {
+      if (certAdmEstado !== 'aprobado') return;
+      var nuevoCert = 'CERT-OBR-2026-' + String(contadorCertObr++).padStart(4, '0');
+      certObraActivo = nuevoCert;
+      var sel = document.getElementById('cert-operativo-select');
+      var opt = document.createElement('option');
+      opt.value = nuevoCert;
+      opt.textContent = nuevoCert + ' · Torre Rivadavia (v2)';
+      sel.appendChild(opt);
+      sel.value = nuevoCert;
+      document.getElementById('banner-cert-obra-id').textContent = nuevoCert;
+      document.getElementById('banner-cert-v2-id').textContent = nuevoCert;
+      document.getElementById('banner-cierre-mensual').classList.remove('hidden');
+      itemsCert.forEach(function (it) {
+        if (it.estado === 'no_liberado') it.punitPres = Math.round(it.punitPres * 1.05);
+      });
+      certAdmEstado = 'cerrado_mes';
+      var v = certAdmHistorial.find(function (h) { return h.version === certAdmVersion; });
+      if (v) {
+        v.estado = 'cerrado mensual';
+        v.obs = 'Cierre mensual · ' + nuevoCert + ' generado · coef. +5% ítems no liberados';
+      }
+      renderGrillasOperativo();
+      renderCertAdministrativo();
+    }
 
     function getItem(id) {
       return itemsCert.find(function (it) { return it.id === id; });
@@ -1532,12 +1853,20 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
         if (it) it.estado = 'cerrado_tramo';
       });
       var certId = 'CIERRE-OBR-2026-' + String(contadorCierre++).padStart(4, '0');
+      cierresObrero.push({
+        id: certId,
+        monto: total,
+        fecha: formatearFecha(new Date().toISOString().slice(0, 10)),
+        avances: validados.length,
+        consolidado: false
+      });
       document.getElementById('cierre-titulo').textContent = certId + ' · Tramo cerrado';
       document.getElementById('cierre-total').textContent = formatMoneda(total);
       res.classList.remove('hidden');
       calcularKpisOperativo();
       renderGrillasOperativo();
       renderValidacionPendientes();
+      renderCertAdministrativo();
     }
 
     function recalcularItemsPendientes() {
@@ -1630,13 +1959,16 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       var esAdmin = vista === 'admin';
       var esCliente = vista === 'cliente';
       document.getElementById('tab-validacion').classList.toggle('hidden', !esAdmin);
+      document.getElementById('tab-administrativo').classList.toggle('hidden', !esAdmin && !esCliente);
       document.querySelectorAll('#operativo-tabs .op-tab').forEach(function (btn) {
         var tab = btn.getAttribute('data-op-tab');
         if (tab === 'validacion') btn.classList.toggle('hidden', !esAdmin);
+        if (tab === 'administrativo') btn.classList.toggle('hidden', !esAdmin && !esCliente);
         if (tab === 'avances') btn.classList.toggle('hidden', esCliente);
         if (tab === 'certificado' && esObreroVista(vista)) btn.classList.toggle('hidden', false);
       });
-      if (!esAdmin && opTabActivo === 'validacion') activarOperativoTab(esCliente ? 'certificado' : 'avances');
+      if (!esAdmin && opTabActivo === 'validacion') activarOperativoTab(esCliente ? 'administrativo' : 'avances');
+      if (esObreroVista(vista) && (opTabActivo === 'administrativo' || opTabActivo === 'validacion')) activarOperativoTab('avances');
     }
 
     function esObreroVista(v) {
@@ -1655,12 +1987,14 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       document.getElementById('operativo-certificado').classList.toggle('hidden', tab !== 'certificado');
       document.getElementById('operativo-avances').classList.toggle('hidden', tab !== 'avances');
       document.getElementById('operativo-validacion').classList.toggle('hidden', tab !== 'validacion');
+      document.getElementById('operativo-administrativo').classList.toggle('hidden', tab !== 'administrativo');
       actualizarSubtituloOperativo();
       if (tab === 'certificado' || tab === 'avances') renderGrillasOperativo();
       if (tab === 'validacion') {
         calcularKpisOperativo();
         renderValidacionPendientes();
       }
+      if (tab === 'administrativo') renderCertAdministrativo();
     }
 
     function actualizarSubtituloOperativo() {
@@ -1668,6 +2002,8 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       var sub = document.getElementById('operativo-subtitulo');
       if (opTabActivo === 'validacion') {
         sub.textContent = 'Validación de avances y cierre de tramo obrero';
+      } else if (opTabActivo === 'administrativo') {
+        sub.textContent = esCliente ? 'Validación contractual del certificado administrativo mensual' : 'Certificado administrativo mensual — consolidación y cierre';
       } else if (opTabActivo === 'avances') {
         sub.textContent = vista === 'admin' ? 'Seguimiento de avances de obra' : 'Mis avances — ' + nombresObrero[vista];
       } else if (vista === 'cliente') {
@@ -1741,6 +2077,12 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
 
     document.getElementById('btn-cierre-obrero').addEventListener('click', cerrarTramoObrero);
 
+    document.getElementById('btn-consolidar-cert-adm').addEventListener('click', consolidarCertAdm);
+    document.getElementById('btn-aprobar-cert-adm').addEventListener('click', aprobarCertAdm);
+    document.getElementById('btn-revision-cert-adm').addEventListener('click', solicitarRevisionCertAdm);
+    document.getElementById('btn-nueva-version-cert-adm').addEventListener('click', generarNuevaVersionCertAdm);
+    document.getElementById('btn-cierre-mensual').addEventListener('click', ejecutarCierreMensual);
+
     document.getElementById('validacion-body').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
       if (!btn) return;
@@ -1752,6 +2094,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     activarOperativoTab('certificado');
     calcularKpisOperativo();
     renderGrillasOperativo();
+    renderCertAdministrativo();
   </script>
 
 </body>
