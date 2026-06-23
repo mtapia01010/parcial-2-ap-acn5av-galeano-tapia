@@ -1003,7 +1003,7 @@
       <div id="panel-financiero" class="modulo-panel">
         <div class="mb-6">
           <h2 class="text-xl font-semibold text-slate-900">Financiero</h2>
-          <p class="text-sm text-slate-600 mt-1">Órdenes de pago al cliente desde certificados administrativos aprobados</p>
+          <p class="text-sm text-slate-600 mt-1">Órdenes de pago y registro de cobranzas al cliente</p>
         </div>
 
         <section id="fin-aviso-sin-cert" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-900">
@@ -1052,19 +1052,95 @@
                   <th class="px-4 py-2 font-medium">Certificado</th>
                   <th class="px-4 py-2 font-medium">Emisión</th>
                   <th class="px-4 py-2 font-medium">Neto</th>
+                  <th class="px-4 py-2 font-medium">Saldo</th>
                   <th class="px-4 py-2 font-medium">Vencimiento</th>
-                  <th class="px-4 py-2 font-medium">Estado</th>
+                  <th class="px-4 py-2 font-medium">Cobranza</th>
                   <th class="px-4 py-2 font-medium text-right">Acciones</th>
                 </tr>
               </thead>
               <tbody id="fin-ordenes-body" class="divide-y divide-slate-100">
                 <tr id="fin-ordenes-vacio">
-                  <td colspan="7" class="px-4 py-8 text-center text-slate-400">No hay órdenes de pago generadas.</td>
+                  <td colspan="8" class="px-4 py-8 text-center text-slate-400">No hay órdenes de pago generadas.</td>
                 </tr>
               </tbody>
             </table>
           </div>
         </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Medios de pago configurados</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Retención demo 1% en cheque y e-cheq (HU-010 CA-5)</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Medio</th>
+                  <th class="px-4 py-2 font-medium">Código</th>
+                  <th class="px-4 py-2 font-medium">Retención</th>
+                </tr>
+              </thead>
+              <tbody id="fin-medios-body" class="divide-y divide-slate-100"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Historial de cobranzas</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Pagos registrados y confirmados por orden de pago</p>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Fecha</th>
+                  <th class="px-4 py-2 font-medium">Orden</th>
+                  <th class="px-4 py-2 font-medium">Medio</th>
+                  <th class="px-4 py-2 font-medium">Importe</th>
+                  <th class="px-4 py-2 font-medium">Retención</th>
+                  <th class="px-4 py-2 font-medium">Neto aplicado</th>
+                  <th class="px-4 py-2 font-medium">Confirmado</th>
+                </tr>
+              </thead>
+              <tbody id="fin-cobranzas-body" class="divide-y divide-slate-100">
+                <tr id="fin-cobranzas-vacio"><td colspan="7" class="px-4 py-8 text-center text-slate-400">Sin cobranzas registradas.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <div id="modal-cobranza" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-5 text-sm">
+            <h3 class="font-medium text-slate-900">Registrar cobro</h3>
+            <p class="text-xs text-slate-500 mt-1" id="modal-cobranza-orden">—</p>
+            <p class="text-sm text-slate-700 mt-2">Saldo pendiente: <strong id="modal-cobranza-saldo">$ 0</strong></p>
+            <div class="mt-4 grid gap-3">
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Medio de pago</span>
+                <select id="modal-cobranza-medio" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></select>
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Importe recibido</span>
+                <input type="number" id="modal-cobranza-monto" min="1" step="1" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Fecha de cobro</span>
+                <input type="date" id="modal-cobranza-fecha" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" id="modal-cobranza-confirmar" class="rounded border-slate-300" />
+                <span class="text-slate-700">Confirmo la recepción del pago en el sistema</span>
+              </label>
+              <p id="modal-cobranza-retencion" class="hidden text-xs text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2"></p>
+            </div>
+            <div class="flex gap-2 mt-4 justify-end">
+              <button type="button" id="modal-cobranza-cancelar" class="px-3 py-1.5 border border-slate-300 rounded-lg">Cancelar</button>
+              <button type="button" id="modal-cobranza-registrar" class="px-3 py-1.5 bg-obrados-600 text-white rounded-lg">Registrar cobro</button>
+            </div>
+          </div>
+        </div>
 
         <section id="panel-orden-imprimible" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm p-6 text-sm max-w-2xl">
           <div class="no-print flex justify-end gap-2 mb-4">
@@ -1080,8 +1156,8 @@
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.10.0">
-    © 2026 ObraDOS · Versión 0.10.0
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.10.1">
+    © 2026 ObraDOS · Versión 0.10.1
   </footer>
 
   <script>
@@ -1403,6 +1479,173 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     var ordenesPago = [];
     var contadorOrdenPago = 1;
     var ordenPrintActiva = null;
+    var ordenCobranzaActiva = null;
+    var contadorCobranza = 1;
+
+    var mediosPago = [
+      { id: 'transferencia', label: 'Transferencia', retencion: false },
+      { id: 'cheque', label: 'Cheque', retencion: true },
+      { id: 'echeq', label: 'E-cheq', retencion: true },
+      { id: 'efectivo', label: 'Efectivo', retencion: false },
+      { id: 'otros', label: 'Otros', retencion: false }
+    ];
+
+    var etiquetasCobranza = {
+      pendiente: 'Pendiente',
+      parcial: 'Parcial',
+      cobrado: 'Cobrado',
+      vencido: 'Vencido'
+    };
+
+    var clasesCobranza = {
+      pendiente: 'bg-slate-200 text-slate-700',
+      parcial: 'bg-amber-100 text-amber-800',
+      cobrado: 'bg-emerald-100 text-emerald-800',
+      vencido: 'bg-red-100 text-red-800'
+    };
+
+    function parseFechaAr(s) {
+      if (!s) return null;
+      var p = s.split('/');
+      return new Date(parseInt(p[2], 10), parseInt(p[1], 10) - 1, parseInt(p[0], 10));
+    }
+
+    function saldoOrden(orden) {
+      return Math.max(0, orden.neto - (orden.cobradoAcum || 0));
+    }
+
+    function actualizarEstadoCobranzaOrden(orden) {
+      if ((orden.cobradoAcum || 0) >= orden.neto) {
+        orden.estadoCobranza = 'cobrado';
+        return;
+      }
+      if ((orden.cobradoAcum || 0) > 0) {
+        orden.estadoCobranza = 'parcial';
+        return;
+      }
+      var venc = parseFechaAr(orden.vencimiento);
+      var hoy = new Date();
+      hoy.setHours(0, 0, 0, 0);
+      orden.estadoCobranza = venc && venc < hoy ? 'vencido' : 'pendiente';
+    }
+
+    function getMedioPago(id) {
+      return mediosPago.find(function (m) { return m.id === id; });
+    }
+
+    function badgeCobranza(estado) {
+      return '<span class="text-xs ' + (clasesCobranza[estado] || 'bg-slate-200') + ' px-2 py-0.5 rounded-full">' + (etiquetasCobranza[estado] || estado) + '</span>';
+    }
+
+    function renderMediosPago() {
+      var body = document.getElementById('fin-medios-body');
+      if (!body) return;
+      body.innerHTML = mediosPago.map(function (m) {
+        return '<tr><td class="px-4 py-2 font-medium">' + m.label + '</td>' +
+          '<td class="px-4 py-2 text-slate-600 font-mono text-xs">' + m.id + '</td>' +
+          '<td class="px-4 py-2">' + (m.retencion ? 'Sí (1% demo)' : 'No') + '</td></tr>';
+      }).join('');
+    }
+
+    function renderHistorialCobranzas() {
+      var body = document.getElementById('fin-cobranzas-body');
+      var vacio = document.getElementById('fin-cobranzas-vacio');
+      var todos = [];
+      ordenesPago.forEach(function (o) {
+        (o.pagos || []).forEach(function (p) { todos.push(p); });
+      });
+      todos.sort(function (a, b) { return b.id.localeCompare(a.id); });
+      if (!todos.length) {
+        if (vacio) vacio.classList.remove('hidden');
+        body.querySelectorAll('tr:not(#fin-cobranzas-vacio)').forEach(function (r) { r.remove(); });
+        return;
+      }
+      if (vacio) vacio.classList.add('hidden');
+      body.innerHTML = todos.map(function (p) {
+        var medio = getMedioPago(p.medio);
+        return '<tr><td class="px-4 py-2 text-slate-600">' + p.fecha + '</td>' +
+          '<td class="px-4 py-2 font-mono text-xs">' + p.ordenId + '</td>' +
+          '<td class="px-4 py-2">' + (medio ? medio.label : p.medio) + '</td>' +
+          '<td class="px-4 py-2">' + formatMoneda(p.importe) + '</td>' +
+          '<td class="px-4 py-2">' + (p.retencion ? formatMoneda(p.retencion) : '—') + '</td>' +
+          '<td class="px-4 py-2 font-medium">' + formatMoneda(p.netoAplicado) + '</td>' +
+          '<td class="px-4 py-2"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">Sí</span></td></tr>';
+      }).join('');
+    }
+
+    function abrirModalCobranza(ordenId) {
+      var orden = ordenesPago.find(function (o) { return o.id === ordenId; });
+      if (!orden || orden.estadoCobranza === 'cobrado') return;
+      ordenCobranzaActiva = ordenId;
+      actualizarEstadoCobranzaOrden(orden);
+      var saldo = saldoOrden(orden);
+      document.getElementById('modal-cobranza-orden').textContent = orden.id + ' · ' + orden.cliente;
+      document.getElementById('modal-cobranza-saldo').textContent = formatMoneda(saldo);
+      var sel = document.getElementById('modal-cobranza-medio');
+      sel.innerHTML = mediosPago.map(function (m) {
+        return '<option value="' + m.id + '">' + m.label + '</option>';
+      }).join('');
+      document.getElementById('modal-cobranza-monto').value = saldo;
+      document.getElementById('modal-cobranza-fecha').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('modal-cobranza-confirmar').checked = false;
+      document.getElementById('modal-cobranza-retencion').classList.add('hidden');
+      document.getElementById('modal-cobranza').classList.remove('hidden');
+      actualizarRetencionModalCobranza();
+    }
+
+    function actualizarRetencionModalCobranza() {
+      var medio = getMedioPago(document.getElementById('modal-cobranza-medio').value);
+      var monto = parseFloat(document.getElementById('modal-cobranza-monto').value) || 0;
+      var el = document.getElementById('modal-cobranza-retencion');
+      if (medio && medio.retencion && monto > 0) {
+        var ret = Math.round(monto * 0.01);
+        el.textContent = 'Retención demo 1%: ' + formatMoneda(ret) + ' · Neto aplicado al saldo: ' + formatMoneda(monto - ret);
+        el.classList.remove('hidden');
+      } else {
+        el.classList.add('hidden');
+      }
+    }
+
+    function confirmarCobranza() {
+      if (!ordenCobranzaActiva) return;
+      if (!document.getElementById('modal-cobranza-confirmar').checked) {
+        alert('Debés confirmar la recepción del pago antes de registrar la cobranza.');
+        return;
+      }
+      var orden = ordenesPago.find(function (o) { return o.id === ordenCobranzaActiva; });
+      if (!orden) return;
+      var importe = parseFloat(document.getElementById('modal-cobranza-monto').value);
+      if (!importe || importe <= 0) {
+        alert('Indicá un importe válido.');
+        return;
+      }
+      var saldo = saldoOrden(orden);
+      if (importe > saldo) {
+        alert('El importe no puede superar el saldo pendiente (' + formatMoneda(saldo) + ').');
+        return;
+      }
+      var medioId = document.getElementById('modal-cobranza-medio').value;
+      var medio = getMedioPago(medioId);
+      var retencion = medio && medio.retencion ? Math.round(importe * 0.01) : 0;
+      var netoAplicado = importe - retencion;
+      var fechaIso = document.getElementById('modal-cobranza-fecha').value;
+      if (!orden.pagos) orden.pagos = [];
+      orden.pagos.push({
+        id: 'COB-2026-' + String(contadorCobranza++).padStart(4, '0'),
+        ordenId: orden.id,
+        fecha: formatearFecha(fechaIso),
+        medio: medioId,
+        importe: importe,
+        retencion: retencion,
+        netoAplicado: netoAplicado,
+        confirmado: true
+      });
+      orden.cobradoAcum = (orden.cobradoAcum || 0) + netoAplicado;
+      actualizarEstadoCobranzaOrden(orden);
+      ordenCobranzaActiva = null;
+      document.getElementById('modal-cobranza').classList.add('hidden');
+      renderFinanciero();
+    }
 
     var etiquetasCertAdm = {
       pendiente_avances: 'Pendiente de avances',
@@ -1672,16 +1915,26 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
         body.querySelectorAll('tr:not(#fin-ordenes-vacio)').forEach(function (r) { r.remove(); });
       } else {
         if (vacio) vacio.classList.add('hidden');
+        ordenesPago.forEach(actualizarEstadoCobranzaOrden);
         body.innerHTML = ordenesPago.map(function (o) {
+          var saldo = saldoOrden(o);
+          var btnCobro = o.estadoCobranza === 'cobrado'
+            ? '<span class="text-xs text-slate-400">—</span>'
+            : '<button type="button" class="btn-registrar-cobro text-xs bg-obrados-600 hover:bg-obrados-700 text-white px-2 py-1 rounded-lg" data-orden-id="' + o.id + '">Registrar cobro</button>';
           return '<tr><td class="px-4 py-3 font-mono text-xs font-medium">' + o.id + '</td>' +
             '<td class="px-4 py-3 text-slate-600">' + o.certAdmId + ' v' + o.certVersion + '</td>' +
             '<td class="px-4 py-3 text-slate-600">' + o.fecha + '</td>' +
             '<td class="px-4 py-3 font-medium">' + formatMoneda(o.neto) + '</td>' +
+            '<td class="px-4 py-3">' + formatMoneda(saldo) + '</td>' +
             '<td class="px-4 py-3 text-slate-600">' + o.vencimiento + '</td>' +
-            '<td class="px-4 py-3"><span class="text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full">' + o.estado + '</span></td>' +
-            '<td class="px-4 py-3 text-right"><button type="button" class="btn-ver-orden text-obrados-600 hover:underline font-medium" data-orden-id="' + o.id + '">Ver / Imprimir</button></td></tr>';
+            '<td class="px-4 py-3">' + badgeCobranza(o.estadoCobranza) + '</td>' +
+            '<td class="px-4 py-3 text-right whitespace-nowrap">' +
+            btnCobro +
+            ' <button type="button" class="btn-ver-orden text-obrados-600 hover:underline font-medium ml-2" data-orden-id="' + o.id + '">Imprimir</button></td></tr>';
         }).join('');
       }
+      renderMediosPago();
+      renderHistorialCobranzas();
     }
 
     function generarOrdenPago() {
@@ -1711,6 +1964,9 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
         neto: neto,
         vencimiento: calcularVencimientoOrden(30),
         estado: 'Emitida',
+        estadoCobranza: 'pendiente',
+        cobradoAcum: 0,
+        pagos: [],
         fecha: formatearFecha(new Date().toISOString().slice(0, 10))
       };
       ordenesPago.push(orden);
@@ -2281,16 +2537,28 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
 
     document.getElementById('btn-generar-orden-pago').addEventListener('click', generarOrdenPago);
     document.getElementById('fin-ordenes-body').addEventListener('click', function (e) {
-      var btn = e.target.closest('.btn-ver-orden');
-      if (!btn) return;
-      var orden = ordenesPago.find(function (o) { return o.id === btn.getAttribute('data-orden-id'); });
-      if (orden) renderOrdenImprimible(orden);
+      var btnVer = e.target.closest('.btn-ver-orden');
+      if (btnVer) {
+        var orden = ordenesPago.find(function (o) { return o.id === btnVer.getAttribute('data-orden-id'); });
+        if (orden) renderOrdenImprimible(orden);
+        return;
+      }
+      var btnCob = e.target.closest('.btn-registrar-cobro');
+      if (btnCob) abrirModalCobranza(btnCob.getAttribute('data-orden-id'));
     });
     document.getElementById('btn-imprimir-orden').addEventListener('click', function () { window.print(); });
     document.getElementById('btn-cerrar-orden-print').addEventListener('click', function () {
       document.getElementById('panel-orden-imprimible').classList.add('hidden');
       ordenPrintActiva = null;
     });
+
+    document.getElementById('modal-cobranza-cancelar').addEventListener('click', function () {
+      ordenCobranzaActiva = null;
+      document.getElementById('modal-cobranza').classList.add('hidden');
+    });
+    document.getElementById('modal-cobranza-registrar').addEventListener('click', confirmarCobranza);
+    document.getElementById('modal-cobranza-medio').addEventListener('change', actualizarRetencionModalCobranza);
+    document.getElementById('modal-cobranza-monto').addEventListener('input', actualizarRetencionModalCobranza);
 
     document.getElementById('validacion-body').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
