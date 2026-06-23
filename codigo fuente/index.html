@@ -1003,7 +1003,7 @@
       <div id="panel-financiero" class="modulo-panel">
         <div class="mb-6">
           <h2 class="text-xl font-semibold text-slate-900">Financiero</h2>
-          <p class="text-sm text-slate-600 mt-1">Órdenes de pago y registro de cobranzas al cliente</p>
+          <p class="text-sm text-slate-600 mt-1">Órdenes de pago, cobranzas al cliente y jornales quincenales a obradores</p>
         </div>
 
         <section id="fin-aviso-sin-cert" class="bg-amber-50 border border-amber-200 rounded-xl px-4 py-3 mb-4 text-sm text-amber-900">
@@ -1111,6 +1111,66 @@
           </div>
         </section>
 
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100">
+            <h3 class="font-medium text-slate-800">Jornales quincenales a obradores</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Obligaciones al cerrar certificado obrero · Cert. de obra activo: <span id="fin-jornal-cert-obra" class="font-mono">CERT-OBR-2026-0007</span></p>
+          </div>
+          <p id="fin-jornales-aviso" class="px-4 py-3 text-sm text-amber-800 bg-amber-50 border-b border-amber-100">Cerrá un tramo en Operativo → Validación y cierres para generar obligaciones <strong>JOR-*</strong> por obrero.</p>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Nº obligación</th>
+                  <th class="px-4 py-2 font-medium">Obrero</th>
+                  <th class="px-4 py-2 font-medium">Cierre obrero</th>
+                  <th class="px-4 py-2 font-medium">Emisión</th>
+                  <th class="px-4 py-2 font-medium">Monto</th>
+                  <th class="px-4 py-2 font-medium">Saldo</th>
+                  <th class="px-4 py-2 font-medium">Estado</th>
+                  <th class="px-4 py-2 font-medium text-right">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="fin-jornales-body" class="divide-y divide-slate-100">
+                <tr id="fin-jornales-vacio">
+                  <td colspan="8" class="px-4 py-8 text-center text-slate-400">Sin obligaciones de jornales.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="bg-white rounded-xl border border-slate-200 shadow-sm mb-6">
+          <div class="px-4 py-3 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h3 class="font-medium text-slate-800">Historial por obrero</h3>
+              <p class="text-xs text-slate-500 mt-0.5">Liquidaciones quincenales, pagos registrados y saldo pendiente</p>
+            </div>
+            <select id="fin-jornal-filtro-obrero" class="text-sm border border-slate-300 rounded-lg px-3 py-1.5">
+              <option value="">Todos los obreros</option>
+            </select>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+              <thead class="bg-slate-50 text-slate-600 text-left text-xs">
+                <tr>
+                  <th class="px-4 py-2 font-medium">Fecha</th>
+                  <th class="px-4 py-2 font-medium">Obrero</th>
+                  <th class="px-4 py-2 font-medium">Concepto</th>
+                  <th class="px-4 py-2 font-medium">Debe</th>
+                  <th class="px-4 py-2 font-medium">Haber</th>
+                  <th class="px-4 py-2 font-medium">Saldo</th>
+                </tr>
+              </thead>
+              <tbody id="fin-jornal-historial-body" class="divide-y divide-slate-100">
+                <tr id="fin-jornal-historial-vacio">
+                  <td colspan="6" class="px-4 py-8 text-center text-slate-400">Sin movimientos de jornales.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
         <div id="modal-cobranza" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
           <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-5 text-sm">
             <h3 class="font-medium text-slate-900">Registrar cobro</h3>
@@ -1142,6 +1202,36 @@
           </div>
         </div>
 
+        <div id="modal-pago-jornal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
+          <div class="bg-white rounded-xl shadow-lg max-w-md w-full p-5 text-sm">
+            <h3 class="font-medium text-slate-900">Registrar pago de jornales</h3>
+            <p class="text-xs text-slate-500 mt-1" id="modal-jornal-obligacion">—</p>
+            <p class="text-sm text-slate-700 mt-2">Saldo pendiente: <strong id="modal-jornal-saldo">$ 0</strong></p>
+            <div class="mt-4 grid gap-3">
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Medio de pago</span>
+                <select id="modal-jornal-medio" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2"></select>
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Importe a pagar</span>
+                <input type="number" id="modal-jornal-monto" min="1" step="1" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
+              </label>
+              <label class="block">
+                <span class="text-slate-600 text-xs font-medium">Fecha de pago</span>
+                <input type="date" id="modal-jornal-fecha" class="mt-1 w-full border border-slate-300 rounded-lg px-3 py-2" />
+              </label>
+              <label class="flex items-center gap-2">
+                <input type="checkbox" id="modal-jornal-confirmar" class="rounded border-slate-300" />
+                <span class="text-slate-700">Confirmo el egreso de jornales en el sistema</span>
+              </label>
+            </div>
+            <div class="flex gap-2 mt-4 justify-end">
+              <button type="button" id="modal-jornal-cancelar" class="px-3 py-1.5 border border-slate-300 rounded-lg">Cancelar</button>
+              <button type="button" id="modal-jornal-registrar" class="px-3 py-1.5 bg-obrados-600 text-white rounded-lg">Registrar pago</button>
+            </div>
+          </div>
+        </div>
+
         <section id="panel-orden-imprimible" class="hidden bg-white rounded-xl border border-slate-200 shadow-sm p-6 text-sm max-w-2xl">
           <div class="no-print flex justify-end gap-2 mb-4">
             <button type="button" id="btn-cerrar-orden-print" class="px-3 py-1.5 border border-slate-300 rounded-lg text-slate-700">Cerrar</button>
@@ -1156,8 +1246,8 @@
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.10.1">
-    © 2026 ObraDOS · Versión 0.10.1
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.10.2">
+    © 2026 ObraDOS · Versión 0.10.2
   </footer>
 
   <script>
@@ -1481,6 +1571,10 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     var ordenPrintActiva = null;
     var ordenCobranzaActiva = null;
     var contadorCobranza = 1;
+    var obligacionesJornal = [];
+    var contadorJornal = 1;
+    var contadorPagoJornal = 1;
+    var jornalPagoActivo = null;
 
     var mediosPago = [
       { id: 'transferencia', label: 'Transferencia', retencion: false },
@@ -1645,6 +1739,204 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       ordenCobranzaActiva = null;
       document.getElementById('modal-cobranza').classList.add('hidden');
       renderFinanciero();
+    }
+
+    var etiquetasJornal = {
+      pendiente: 'Pendiente',
+      parcial: 'Parcial',
+      pagado: 'Pagado'
+    };
+
+    var clasesJornal = {
+      pendiente: 'bg-slate-200 text-slate-700',
+      parcial: 'bg-amber-100 text-amber-800',
+      pagado: 'bg-emerald-100 text-emerald-800'
+    };
+
+    function saldoJornal(j) {
+      return Math.max(0, j.monto - (j.pagadoAcum || 0));
+    }
+
+    function actualizarEstadoJornal(j) {
+      if ((j.pagadoAcum || 0) >= j.monto) j.estado = 'pagado';
+      else if ((j.pagadoAcum || 0) > 0) j.estado = 'parcial';
+      else j.estado = 'pendiente';
+    }
+
+    function badgeJornal(estado) {
+      return '<span class="text-xs ' + (clasesJornal[estado] || 'bg-slate-200') + ' px-2 py-0.5 rounded-full">' + (etiquetasJornal[estado] || estado) + '</span>';
+    }
+
+    function generarObligacionesJornal(avancesCerrados, cierreId) {
+      var porObrero = {};
+      avancesCerrados.forEach(function (a) {
+        if (!a.obrero) return;
+        if (!porObrero[a.obrero]) porObrero[a.obrero] = { monto: 0, avances: 0 };
+        porObrero[a.obrero].monto += a.importe;
+        porObrero[a.obrero].avances += 1;
+      });
+      var fecha = formatearFecha(new Date().toISOString().slice(0, 10));
+      Object.keys(porObrero).forEach(function (obreroId) {
+        var data = porObrero[obreroId];
+        obligacionesJornal.push({
+          id: 'JOR-2026-' + String(contadorJornal++).padStart(4, '0'),
+          obreroId: obreroId,
+          obreroNombre: nombresObrero[obreroId] || obreroId,
+          cierreId: cierreId,
+          certObraId: certObraActivo,
+          monto: data.monto,
+          avances: data.avances,
+          fecha: fecha,
+          periodo: 'Quincenal',
+          estado: 'pendiente',
+          pagadoAcum: 0,
+          pagos: []
+        });
+      });
+    }
+
+    function renderHistorialJornalesPorObrero() {
+      var body = document.getElementById('fin-jornal-historial-body');
+      var vacio = document.getElementById('fin-jornal-historial-vacio');
+      var filtro = document.getElementById('fin-jornal-filtro-obrero');
+      var obreroFiltro = filtro ? filtro.value : '';
+      var filas = [];
+      obligacionesJornal.forEach(function (j) {
+        if (obreroFiltro && j.obreroId !== obreroFiltro) return;
+        filas.push({
+          fecha: j.fecha,
+          obrero: j.obreroNombre,
+          concepto: 'Liquidación ' + j.id + ' · ' + j.cierreId,
+          debe: j.monto,
+          haber: 0,
+          sortKey: j.id
+        });
+        (j.pagos || []).forEach(function (p) {
+          filas.push({
+            fecha: p.fecha,
+            obrero: j.obreroNombre,
+            concepto: 'Pago ' + p.id + ' · ' + j.id,
+            debe: 0,
+            haber: p.importe,
+            sortKey: p.id
+          });
+        });
+      });
+      filas.sort(function (a, b) { return a.sortKey.localeCompare(b.sortKey); });
+      var saldoCorr = 0;
+      filas.forEach(function (f) {
+        saldoCorr += f.debe - f.haber;
+        f.saldo = saldoCorr;
+      });
+      if (!filas.length) {
+        if (vacio) vacio.classList.remove('hidden');
+        body.querySelectorAll('tr:not(#fin-jornal-historial-vacio)').forEach(function (r) { r.remove(); });
+        return;
+      }
+      if (vacio) vacio.classList.add('hidden');
+      body.innerHTML = filas.map(function (f) {
+        return '<tr><td class="px-4 py-2 text-slate-600">' + f.fecha + '</td>' +
+          '<td class="px-4 py-2">' + f.obrero + '</td>' +
+          '<td class="px-4 py-2 text-slate-600">' + f.concepto + '</td>' +
+          '<td class="px-4 py-2">' + (f.debe ? formatMoneda(f.debe) : '—') + '</td>' +
+          '<td class="px-4 py-2">' + (f.haber ? formatMoneda(f.haber) : '—') + '</td>' +
+          '<td class="px-4 py-2 font-medium">' + formatMoneda(f.saldo) + '</td></tr>';
+      }).join('');
+    }
+
+    function renderJornales() {
+      var certEl = document.getElementById('fin-jornal-cert-obra');
+      if (certEl) certEl.textContent = certObraActivo;
+      var aviso = document.getElementById('fin-jornales-aviso');
+      if (aviso) aviso.classList.toggle('hidden', obligacionesJornal.length > 0);
+      var filtro = document.getElementById('fin-jornal-filtro-obrero');
+      if (filtro && filtro.options.length <= 1) {
+        Object.keys(nombresObrero).forEach(function (id) {
+          var opt = document.createElement('option');
+          opt.value = id;
+          opt.textContent = nombresObrero[id];
+          filtro.appendChild(opt);
+        });
+      }
+      var body = document.getElementById('fin-jornales-body');
+      var vacio = document.getElementById('fin-jornales-vacio');
+      if (!obligacionesJornal.length) {
+        if (vacio) vacio.classList.remove('hidden');
+        body.querySelectorAll('tr:not(#fin-jornales-vacio)').forEach(function (r) { r.remove(); });
+      } else {
+        if (vacio) vacio.classList.add('hidden');
+        obligacionesJornal.forEach(actualizarEstadoJornal);
+        body.innerHTML = obligacionesJornal.map(function (j) {
+          var saldo = saldoJornal(j);
+          var btnPago = j.estado === 'pagado'
+            ? '<span class="text-xs text-slate-400">—</span>'
+            : '<button type="button" class="btn-registrar-pago-jornal text-xs bg-obrados-600 hover:bg-obrados-700 text-white px-2 py-1 rounded-lg" data-jornal-id="' + j.id + '">Registrar pago</button>';
+          return '<tr><td class="px-4 py-3 font-mono text-xs font-medium">' + j.id + '</td>' +
+            '<td class="px-4 py-3">' + j.obreroNombre + '</td>' +
+            '<td class="px-4 py-3 text-slate-600 font-mono text-xs">' + j.cierreId + '</td>' +
+            '<td class="px-4 py-3 text-slate-600">' + j.fecha + '</td>' +
+            '<td class="px-4 py-3 font-medium">' + formatMoneda(j.monto) + '</td>' +
+            '<td class="px-4 py-3">' + formatMoneda(saldo) + '</td>' +
+            '<td class="px-4 py-3">' + badgeJornal(j.estado) + '</td>' +
+            '<td class="px-4 py-3 text-right">' + btnPago + '</td></tr>';
+        }).join('');
+      }
+      renderHistorialJornalesPorObrero();
+    }
+
+    function abrirModalPagoJornal(jornalId) {
+      var j = obligacionesJornal.find(function (o) { return o.id === jornalId; });
+      if (!j || j.estado === 'pagado') return;
+      jornalPagoActivo = jornalId;
+      actualizarEstadoJornal(j);
+      var saldo = saldoJornal(j);
+      document.getElementById('modal-jornal-obligacion').textContent = j.id + ' · ' + j.obreroNombre + ' · ' + j.cierreId;
+      document.getElementById('modal-jornal-saldo').textContent = formatMoneda(saldo);
+      var sel = document.getElementById('modal-jornal-medio');
+      sel.innerHTML = mediosPago.filter(function (m) { return !m.retencion; }).map(function (m) {
+        return '<option value="' + m.id + '">' + m.label + '</option>';
+      }).join('');
+      document.getElementById('modal-jornal-monto').value = saldo;
+      document.getElementById('modal-jornal-fecha').value = new Date().toISOString().slice(0, 10);
+      document.getElementById('modal-jornal-confirmar').checked = false;
+      document.getElementById('modal-pago-jornal').classList.remove('hidden');
+    }
+
+    function confirmarPagoJornal() {
+      if (!jornalPagoActivo) return;
+      if (!document.getElementById('modal-jornal-confirmar').checked) {
+        alert('Debés confirmar el egreso de jornales antes de registrar el pago.');
+        return;
+      }
+      var j = obligacionesJornal.find(function (o) { return o.id === jornalPagoActivo; });
+      if (!j) return;
+      var importe = parseFloat(document.getElementById('modal-jornal-monto').value);
+      if (!importe || importe <= 0) {
+        alert('Indicá un importe válido.');
+        return;
+      }
+      var saldo = saldoJornal(j);
+      if (importe > saldo) {
+        alert('El importe no puede superar el saldo pendiente (' + formatMoneda(saldo) + ').');
+        return;
+      }
+      var medioId = document.getElementById('modal-jornal-medio').value;
+      var medio = getMedioPago(medioId);
+      var fechaIso = document.getElementById('modal-jornal-fecha').value;
+      if (!j.pagos) j.pagos = [];
+      j.pagos.push({
+        id: 'PAG-JOR-2026-' + String(contadorPagoJornal++).padStart(4, '0'),
+        jornalId: j.id,
+        fecha: formatearFecha(fechaIso),
+        medio: medioId,
+        importe: importe,
+        confirmado: true
+      });
+      j.pagadoAcum = (j.pagadoAcum || 0) + importe;
+      actualizarEstadoJornal(j);
+      jornalPagoActivo = null;
+      document.getElementById('modal-pago-jornal').classList.add('hidden');
+      renderJornales();
     }
 
     var etiquetasCertAdm = {
@@ -1935,6 +2227,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       }
       renderMediosPago();
       renderHistorialCobranzas();
+      renderJornales();
     }
 
     function generarOrdenPago() {
@@ -2311,6 +2604,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
         avances: validados.length,
         consolidado: false
       });
+      generarObligacionesJornal(validados, certId);
       document.getElementById('cierre-titulo').textContent = certId + ' · Tramo cerrado';
       document.getElementById('cierre-total').textContent = formatMoneda(total);
       res.classList.remove('hidden');
@@ -2559,6 +2853,17 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     document.getElementById('modal-cobranza-registrar').addEventListener('click', confirmarCobranza);
     document.getElementById('modal-cobranza-medio').addEventListener('change', actualizarRetencionModalCobranza);
     document.getElementById('modal-cobranza-monto').addEventListener('input', actualizarRetencionModalCobranza);
+
+    document.getElementById('fin-jornales-body').addEventListener('click', function (e) {
+      var btn = e.target.closest('.btn-registrar-pago-jornal');
+      if (btn) abrirModalPagoJornal(btn.getAttribute('data-jornal-id'));
+    });
+    document.getElementById('fin-jornal-filtro-obrero').addEventListener('change', renderHistorialJornalesPorObrero);
+    document.getElementById('modal-jornal-cancelar').addEventListener('click', function () {
+      jornalPagoActivo = null;
+      document.getElementById('modal-pago-jornal').classList.add('hidden');
+    });
+    document.getElementById('modal-jornal-registrar').addEventListener('click', confirmarPagoJornal);
 
     document.getElementById('validacion-body').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
