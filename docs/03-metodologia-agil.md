@@ -1,109 +1,145 @@
-ObraDOS — Metodología ágil de gestión del proyecto
+# ObraDOS — Metodología Ágil de Gestión del Proyecto
 
 Proyecto: ObraDOS — Tu segunda mano en la gestión de obras  
-Versión: v0.3.0 · Fecha: 2026-06-19  
-Autores: Martín Tapia · Daniel Galeano
+Versión del documento: v1.0.0 · Fecha: 2026-06-21  
+Responsables: Martín Tapia · Daniel Galeano  
+Nota: Versión consolidada post-simulación (9a–9c) y replanteo Operativo (9b-4). Reemplaza v0.3.0.
 
-1. Introducción
 
-ObraDOS es una plataforma SaaS con varios módulos interrelacionados (comercial, operativo, financiero) y distintos perfiles de usuario: administrador, obrero, arquitecto y director. Ese contexto exige entregas parciales, validación frecuente y margen para corregir el rumbo sin detener el proyecto.
+## 1. Introducción
 
-El equipo está conformado por dos integrantes con roles combinados. Por eso se adoptó un enfoque ágil que combine estructura de corto plazo con visibilidad del trabajo en curso. Este documento describe ese marco: qué metodología se eligió, por qué, y cómo se organiza el día a día del proyecto.
+Este documento describe la metodología ágil adoptada para el desarrollo de ObraDOS: marco de trabajo, roles, ceremonias, artefactos y prácticas que guiarán la ejecución del proyecto.
 
-2. Enfoque adoptado: Scrumban
+La elección responde a la naturaleza del producto — un SaaS con múltiples módulos y stakeholders diversos — y a un equipo de 2 integrantes que requiere entregas incrementales y capacidad de adaptación ante cambios.
 
-Se trabaja con un híbrido entre Scrum y Kanban, habitualmente llamado Scrumban. Scrum aporta el ritmo en ciclos de dos semanas; Kanban aporta un tablero donde se ve el estado de cada historia de usuario.
 
-2.1. Scrum como marco principal
+## 2. Enfoque adoptado: Scrum + Kanban (híbrido)
 
-Los sprints duran dos semanas, alineados con la lógica quincenal del sector construcción (certificaciones y cierres de obra). Cada sprint cierra con un incremento demostrable — documentación o prototipo — y una revisión con quienes validan el producto.
+### 2.1 Framework principal — Scrum
 
-Scrum encaja porque:
+Scrum estructura el trabajo en sprints de 2 semanas, con entregas incrementales de valor y ceremonias de alineación. Se adopta como marco principal porque:
 
-- el MVP se construye por módulos;
-- el equipo es chico y necesita feedback rápido;
-- los stakeholders clave (administrador, arquitecto) pueden opinar en cada Sprint Review sin esperar al final del proyecto.
+* El producto se construye por módulos entregables de forma incremental.
+* El equipo es reducido y necesita ciclos cortos de feedback.
+* Los stakeholders (administrador, arquitecto) pueden validar avances en cada sprint review.
+* La duración del sprint se alinea con el cierre quincenal operativo del sector construcción.
 
-2.2. Kanban como complemento
+### 2.2 Complemento — Kanban
 
-Paralelamente se usa un tablero Kanban con columnas: Backlog → Ready → In Progress → Review → Done. Así se ve de un vistazo qué está pendiente, qué está en curso y qué ya cumplió la definición de terminado. Se fija un límite de dos ítems en progreso a la vez, para no dispersar el esfuerzo del equipo.
+Kanban se incorpora como práctica de visualización y flujo de trabajo. Se utiliza para:
 
-En la práctica, Scrum define cuándo se planifica y se entrega; Kanban define cómo fluye cada ítem hasta Done.
+* Tablero con estados: Backlog → Ready → In Progress → Review → Done
+* Seguimiento del avance de cada historia de usuario.
+* Identificación de cuellos de botella.
+* Límite de trabajo en progreso (WIP): máximo 2 ítems en "In Progress" a la vez.
 
-3. Justificación de la elección
+### 2.3 Síntesis del enfoque híbrido
 
-Los requerimientos de ObraDOS no están cerrados desde el día uno: coeficientes de actualización, certificaciones duales (obra y administrativo), validación del arquitecto y flujo financiero son dominios que conviene ir descubriendo con prototipos y demos. Un enfoque ágil permite repriorizar el backlog sin paralizar el desarrollo.
+* **Planificación:** Scrum (Sprint Planning quincenal) · Kanban (Flujo continuo)
+* **Ejecución:** Scrum (Objetivo de sprint) · Kanban (Tablero visual)
+* **Entrega:** Scrum (Incremento al cierre) · Kanban (Ítems en Done)
+* **Mejora:** Scrum (Retrospectiva) · Kanban (Análisis de tiempos por columna)
+* **Priorización:** Scrum (PO en backlog) · Kanban (Sistema Pull desde Ready)
 
-La entrega por módulos — presupuestos, obra, finanzas — se presta a incrementos integrables al cierre de cada sprint. Las Sprint Review dan espacio para validar con usuarios clave antes de invertir en el siguiente bloque. Y el plazo acotado del trabajo práctico se controla mejor con ciclos cortos que con un plan rígido de largo aliento.
+*Denominación:* Scrumban (Scrum para ritmo y compromiso; Kanban para visibilidad y control de flujo).
 
-3.1. Por qué no cascada
 
-Un modelo predictivo exigiría congelar todos los requerimientos antes de escribir código. En este dominio, eso aumentaría el riesgo de diseñar módulos que no coinciden con la operación real del cliente. Preferimos validar por iteraciones y corregir a tiempo.
+## 3. Justificación de la elección
 
-4. Equipo y roles
+* **Requerimientos evolutivos:** El backlog se reprioriza sin detener el equipo ante cambios del negocio.
+* **Entrega por módulos:** Presupuestos, obra y finanzas son incrementos integrables bajo el modelo de sprint.
+* **Múltiples stakeholders:** La Sprint Review permite validación temprana con usuarios clave.
+* **Plazo acotado:** Sprints de 2 semanas permiten controlar el avance y replanificar.
+* **Trazabilidad:** Cada entrega queda vinculada a documentación y repositorio.
 
-Son dos personas cubriendo las funciones esenciales de gestión, producto, desarrollo y calidad.
+### 3.1 Por qué no enfoque predictivo (cascada)
 
-Martín Tapia concentra la gestión del proyecto (cronograma, riesgos), la definición técnica, la implementación del prototipo y el control de versiones en Git. En la práctica cumple como Project Manager, Tech Lead y desarrollador.
+Un modelo en cascada obligaría a cerrar todos los requerimientos antes de desarrollar. En ObraDOS, la complejidad de coeficientes, certificaciones duales y validación externa del arquitecto hace preferible validar por iteraciones, reduciendo retrabajo.
 
-Daniel Galeano prioriza el backlog, facilita las ceremonias, mantiene el tablero Kanban y valida que cada entrega cumpla los criterios de aceptación antes de darla por cerrada. Actúa como Product Owner, Scrum Master y referente de QA.
 
-La superposición de roles es deliberada: en un equipo de dos no tiene sentido duplicar ceremonias ni burocracia; sí tiene sentido que ambos conozcan el producto y el proceso.
+## 4. Equipo y roles
 
-5. Ceremonias
+* **Martín Tapia** (Project Manager · Tech Lead · Desarrollador)  
+  *Responsabilidad:* Cronograma, hitos, riesgos, arquitectura, implementación y control de versiones en Git.
+* **Daniel Galeano** (Product Owner · Scrum Master · QA)  
+  *Responsabilidad:* Backlog, criterios de aceptación, facilitación de ceremonias, tablero Kanban y validación de entregas.
 
-Las reuniones se mantienen livianas pero regulares:
 
-- Sprint Planning (inicio de sprint, ~1 h 30): se elige el trabajo del backlog y se acuerda el objetivo del sprint.
-- Daily Scrum (tres veces por semana, ~10 min): sincronización breve de avances y bloqueos.
-- Refinamiento de backlog (mitad de sprint, ~45 min): se detallan las próximas historias de usuario.
-- Sprint Review (fin de sprint, ~45 min): demo del incremento y feedback de stakeholders.
-- Retrospectiva (fin de sprint, ~30 min): qué mejorar en el proceso de trabajo.
+## 5. Ceremonias
 
-6. Artefactos
+**Sprint Planning** (Inicio de sprint · 1,5 h): Seleccionar trabajo del backlog y definir el objetivo del sprint.
+**Daily Scrum** (3 veces por semana · 10 min): Sincronizar avance y destrabar bloqueos.
+**Refinamiento de backlog** (Mitad de sprint · 45 min): Detallar próximos ítems y aclarar requerimientos.
+**Sprint Review** (Fin de sprint · 45 min): Demo del incremento y feedback con stakeholders.
+**Retrospectiva** (Fin de sprint · 30 min): Analizar oportunidades de mejora en el proceso.
 
-- Product Backlog: lista priorizada de historias de usuario; la mantiene el Product Owner.
-- Sprint Backlog: ítems comprometidos en el sprint en curso.
-- Incremento: documentación o código usable, integrado al repositorio.
-- Tablero Kanban: estado visual de cada ítem.
-- Definición de Done (DoD): criterios para dar un ítem por terminado.
 
-7. Prácticas de trabajo
+## 6. Artefactos
 
-7.1. Definición de Done
+**Product Backlog:** Lista priorizada de requerimientos e historias de usuario (Responsable: Daniel Galeano - PO).
+**Sprint Backlog:** Ítems comprometidos en el sprint actual (Responsable: Ambos).
+**Incremento:** Documentación o software terminado y usable (Responsable: Martín Tapia).
+**Tablero Kanban:** Estado visual de cada ítem (Responsable: Daniel Galeano - SM).
+**Definición de Done:** Criterios para dar un ítem por terminado (Responsable: Ambos - ver sección 7).
 
-Un ítem se considera terminado cuando:
 
-- cumple sus criterios de aceptación;
-- está integrado al repositorio;
-- el tablero está actualizado;
-- fue revisado en la Sprint Review;
-- no quedan defectos críticos abiertos.
+## 7. Prácticas de trabajo
 
-7.2. Cambios de alcance
+### 7.1 Definición de Done (DoD)
 
-Si surge un cambio relevante, el PO lo registra y estima impacto. Si afecta el plan, se replanifica en conjunto, se documenta la decisión y se comunica en la siguiente review. No se posterga el cambio ni se acumula deuda de alcance sin registrarlo.
+Un ítem se considera **Done** cuando:
 
-7.3. Flujo del tablero
+* Cumple con sus criterios de aceptación.
+* Está integrado en el repositorio.
+* El tablero fue actualizado.
+* Fue revisado en la Sprint Review.
+* No tiene defectos críticos abiertos.
 
-Los ítems avanzan en este orden:
+### 7.2 Gestión de cambios de alcance
 
-1. Backlog — identificados pero no refinados.
-2. Ready — listos para tomar en sprint.
-3. In Progress — en desarrollo o documentación.
-4. Review — en validación por PO o QA.
-5. Done — DoD cumplida.
+1. El PO registra el cambio y evalúa el impacto.
+2. El SM facilita la replanificación si el impacto es significativo.
+3. Se documenta la decisión tomada.
+4. Se informa en la siguiente review.
 
-8. Herramientas
+### 7.3 Flujo del tablero Kanban
 
-- Documentación del proyecto en Markdown (carpeta docs/).
-- Código y snapshots del prototipo versionados con Git/GitHub.
-- Seguimiento visual del backlog con tablero Kanban (PlantUML en el repo; herramienta externa opcional para la demo).
+`Backlog -> Ready -> In Progress -> Review -> Done`
 
-9. Conclusiones
+**Backlog:** Ítem identificado, pendiente de refinamiento.
+**Ready:** Ítem listo para tomar en sprint.
+**In Progress:** En desarrollo o documentación.
+**Review:** En validación por PO / QA.
+**Done:** Cumple con la DoD.
 
-ObraDOS se gestiona con Scrumban adaptado a un equipo reducido: sprints quincenales para ritmo y validación, tablero Kanban para transparencia. Esa combinación equilibra planificación y flexibilidad, algo necesario en un producto donde lo operativo del cliente puede desafiar supuestos del diseño inicial.
 
-10. Control de versión
+## 8. Herramientas
 
-v0.3.0 (2026-06-17) — Primera redacción: metodología Scrumban, roles, ceremonias, artefactos y prácticas de trabajo.
+**Git / GitHub:** Control de versiones.
+**Markdown (docs/):** Documentación del proyecto.
+**Tablero Kanban:** Seguimiento de ítems mediante PlantUML + herramienta visual.
+
+
+## 9. Adaptación metodológica durante la ejecución
+
+Durante la simulación de desarrollo (iteraciones 9b-1 a 9b-3), el cliente indicó que el módulo Operativo basado en tareas sueltas no reflejaba su operación real. El equipo aplicó los pilares ágiles sin cambiar el marco Scrumban:
+
+**Transparencia:** Demo temprana al administrador y referente del cliente.
+**Inspección:** Feedback registrado formalmente.
+**Adaptación:** Replanteo 9b-4; snapshots 9b-1…9b-3 congelados como evidencia.
+
+**Documentos de referencia:**
+`docs/10-cambio-metodologico.md` — decisión de gestión e impacto en HU.
+`docs/09b-4-replanteo-operativo.md` — especificación del nuevo modelo Operativo.
+`docs/final/04-requerimientos.md` — HU-005–007 redactadas según el modelo acordado.
+
+La metodología base no se reemplazó; se replanificó el backlog del M2 y se pospuso la HU-008 a la iteración 9b-5.
+
+## 10. Conclusiones
+
+ObraDOS se gestiona con Scrumban, adaptado a un equipo de 2 integrantes: Scrum aporta ritmo y validación periódica; Kanban aporta transparencia en el flujo de trabajo. El replanteo del módulo Operativo demuestra la capacidad del equipo de adaptar el alcance sin abandonar el marco ágil.
+
+## 11. Control de versión de este documento
+
+**v0.3.0** (2026-06-17): Metodología Scrumban, roles, ceremonias, artefactos y prácticas de trabajo.
+**v1.0.0** (2026-06-21): Consolidación post-simulación. Incorporación de adaptación metodológica (replanteo 9b-4).
