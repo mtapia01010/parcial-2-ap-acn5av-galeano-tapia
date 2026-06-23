@@ -62,10 +62,9 @@
         <button type="button" data-modulo="financiero" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Financiero
         </button>
-        <span class="flex items-center justify-between px-3 py-2 rounded-lg text-slate-500 text-sm cursor-not-allowed">
+        <button type="button" data-modulo="dashboard" class="nav-item w-full text-left flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium">
           Dashboard
-          <span class="text-xs text-slate-600">Próximamente</span>
-        </span>
+        </button>
       </nav>
     </aside>
 
@@ -1241,13 +1240,166 @@
         </section>
       </div>
 
+      <div id="panel-dashboard" class="modulo-panel">
+        <div class="mb-6 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+          <div>
+            <h2 class="text-xl font-semibold text-slate-900">Dashboard ejecutivo</h2>
+            <p class="text-sm text-slate-600 mt-1">KPIs financieros y operativos · datos en tiempo real del prototipo</p>
+          </div>
+          <div class="flex flex-wrap gap-3 text-sm">
+            <label class="flex flex-col gap-1">
+              <span class="text-xs text-slate-500 font-medium">Período</span>
+              <select id="dash-filtro-periodo" class="border border-slate-300 rounded-lg px-3 py-1.5 min-w-[10rem]">
+                <option value="2026-06">Junio 2026</option>
+                <option value="2026-q2">2º trimestre 2026</option>
+                <option value="2026">Año 2026</option>
+                <option value="todo" selected>Todo el histórico</option>
+              </select>
+            </label>
+            <label class="flex flex-col gap-1">
+              <span class="text-xs text-slate-500 font-medium">Unidad de negocio</span>
+              <select id="dash-filtro-unidad" class="border border-slate-300 rounded-lg px-3 py-1.5 min-w-[12rem]">
+                <option value="todas" selected>Todas las unidades</option>
+                <option value="residencial">Obras Residenciales</option>
+                <option value="comercial">Obras Comerciales</option>
+              </select>
+            </label>
+          </div>
+        </div>
 
+        <div id="dashboard-tabs" class="flex gap-1 border-b border-slate-200 mb-6 text-sm">
+          <button type="button" data-dash-tab="empresa" class="dash-tab px-4 py-2 border-b-2 border-obrados-600 text-obrados-700 font-medium">Empresa</button>
+          <button type="button" data-dash-tab="unidad" class="dash-tab px-4 py-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Unidad de negocio</button>
+          <button type="button" data-dash-tab="obra" class="dash-tab px-4 py-2 border-b-2 border-transparent text-slate-500 hover:text-slate-700">Obra</button>
+        </div>
+
+        <div id="dash-panel-empresa">
+          <p class="text-xs uppercase tracking-wide text-slate-500 mb-3">Indicadores financieros</p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Facturación total</p>
+              <p class="text-2xl font-semibold text-slate-900 mt-1" id="dash-fin-facturacion">$ 0</p>
+              <p class="text-xs text-slate-400 mt-1">Órdenes de pago emitidas</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Cobrado al cliente</p>
+              <p class="text-2xl font-semibold text-emerald-700 mt-1" id="dash-fin-cobrado">$ 0</p>
+              <p class="text-xs text-slate-400 mt-1">Cobranzas confirmadas</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Pendiente de cobro</p>
+              <p class="text-2xl font-semibold text-amber-700 mt-1" id="dash-fin-pendiente-cobro">$ 0</p>
+              <p class="text-xs text-slate-400 mt-1">Saldo en órdenes abiertas</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Egresos jornales</p>
+              <p class="text-2xl font-semibold text-red-700 mt-1" id="dash-fin-egresos">$ 0</p>
+              <p class="text-xs text-slate-400 mt-1">Pagos a obradores</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Rentabilidad estimada</p>
+              <p class="text-2xl font-semibold text-slate-900 mt-1" id="dash-fin-rentabilidad">0%</p>
+              <p class="text-xs text-slate-400 mt-1">(Cobrado − egresos) / facturación</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Flujo de fondos neto</p>
+              <p class="text-2xl font-semibold mt-1" id="dash-fin-flujo">$ 0</p>
+              <p class="text-xs text-slate-400 mt-1">Cobrado − egresos jornales</p>
+            </div>
+          </div>
+          <p class="text-xs uppercase tracking-wide text-slate-500 mb-3">Indicadores operativos</p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Avance físico obra</p>
+              <p class="text-2xl font-semibold text-obrados-700 mt-1" id="dash-op-avance-fisico">0%</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Cierres obrero</p>
+              <p class="text-2xl font-semibold text-slate-900 mt-1" id="dash-op-cierres">0</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Avances pendientes</p>
+              <p class="text-2xl font-semibold text-amber-700 mt-1" id="dash-op-pendientes">0</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Cert. administrativo</p>
+              <p class="text-sm font-semibold text-slate-900 mt-2" id="dash-op-cert-adm">—</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="dash-panel-unidad" class="hidden">
+          <p class="text-sm text-slate-600 mb-4" id="dash-unidad-titulo">Unidad: Todas las unidades</p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Resultado económico</p>
+              <p class="text-2xl font-semibold mt-1" id="dash-uni-resultado">$ 0</p>
+              <p class="text-xs text-slate-400 mt-1">Ingresos − egresos del período</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Obras activas</p>
+              <p class="text-2xl font-semibold text-slate-900 mt-1" id="dash-uni-obras">0</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Certificados emitidos</p>
+              <p class="text-2xl font-semibold text-slate-900 mt-1" id="dash-uni-certs">0</p>
+              <p class="text-xs text-slate-400 mt-1">Adm. + cierres obrero</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Facturación unidad</p>
+              <p class="text-2xl font-semibold text-slate-900 mt-1" id="dash-uni-facturacion">$ 0</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Margen bruto</p>
+              <p class="text-2xl font-semibold mt-1" id="dash-uni-margen">0%</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Jornales pendientes</p>
+              <p class="text-2xl font-semibold text-amber-700 mt-1" id="dash-uni-jornales-pend">$ 0</p>
+            </div>
+          </div>
+        </div>
+
+        <div id="dash-panel-obra" class="hidden">
+          <p class="text-sm text-slate-600 mb-1" id="dash-obra-nombre">Torre Rivadavia — 24 pisos</p>
+          <p class="text-xs text-slate-500 mb-4" id="dash-obra-cert">CERT-OBR-2026-0007 · Inmobiliaria del Plata</p>
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Avance físico</p>
+              <p class="text-2xl font-semibold text-obrados-700 mt-1" id="dash-ob-avance-fisico">0%</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Avance financiero</p>
+              <p class="text-2xl font-semibold text-obrados-700 mt-1" id="dash-ob-avance-fin">0%</p>
+              <p class="text-xs text-slate-400 mt-1">Cert. adm. acumulado / presupuesto</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Pagos recibidos</p>
+              <p class="text-2xl font-semibold text-emerald-700 mt-1" id="dash-ob-recibidos">$ 0</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Pagos realizados</p>
+              <p class="text-2xl font-semibold text-red-700 mt-1" id="dash-ob-realizados">$ 0</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Rentabilidad estimada obra</p>
+              <p class="text-2xl font-semibold mt-1" id="dash-ob-rentabilidad">0%</p>
+            </div>
+            <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-4">
+              <p class="text-xs text-slate-500">Saldo pendiente cliente</p>
+              <p class="text-2xl font-semibold text-amber-700 mt-1" id="dash-ob-saldo-cliente">$ 0</p>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-xs text-slate-400 mt-6" id="dash-actualizado">Última actualización: —</p>
+      </div>
 
     </div>
   </div>
 
-  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.10.2">
-    © 2026 ObraDOS · Versión 0.10.2
+  <footer class="text-center text-xs text-slate-400 py-3 border-t border-slate-200 bg-white" data-entrega="2026-06-17" data-version="0.11.0">
+    © 2026 ObraDOS · Versión 0.11.0
   </footer>
 
   <script>
@@ -1455,6 +1607,7 @@
         });
         if (modulo === 'operativo') actualizarBannerCertObra();
         if (modulo === 'financiero') renderFinanciero();
+        if (modulo === 'dashboard') renderDashboard();
       });
     });
 
@@ -1739,6 +1892,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       ordenCobranzaActiva = null;
       document.getElementById('modal-cobranza').classList.add('hidden');
       renderFinanciero();
+      renderDashboardIfActive();
     }
 
     var etiquetasJornal = {
@@ -1937,6 +2091,174 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       jornalPagoActivo = null;
       document.getElementById('modal-pago-jornal').classList.add('hidden');
       renderJornales();
+      renderDashboardIfActive();
+    }
+
+    var obraDemoUnidad = 'residencial';
+    var etiquetasUnidadDash = {
+      todas: 'Todas las unidades',
+      residencial: 'Obras Residenciales',
+      comercial: 'Obras Comerciales'
+    };
+
+    function fechaEnPeriodo(fechaStr, periodo) {
+      var d = parseFechaAr(fechaStr);
+      if (!d) return periodo === 'todo';
+      if (periodo === 'todo') return true;
+      var y = d.getFullYear();
+      var m = d.getMonth();
+      if (periodo === '2026') return y === 2026;
+      if (periodo === '2026-q2') return y === 2026 && m >= 3 && m <= 5;
+      if (periodo === '2026-06') return y === 2026 && m === 5;
+      return true;
+    }
+
+    function obraAplicaUnidad(unidad) {
+      if (unidad === 'todas' || unidad === obraDemoUnidad) return true;
+      return false;
+    }
+
+    function pctAvanceFisicoObra() {
+      var suma = 0;
+      itemsCert.forEach(function (i) {
+        suma += (i.avanceAcum || 0) * i.pesoObra / 100;
+      });
+      return suma;
+    }
+
+    function pctAvanceFinancieroObra() {
+      var pres = obtenerTotal0142();
+      if (!pres || certAdmMontoAcum <= 0) return 0;
+      return Math.min(100, certAdmMontoAcum / pres * 100);
+    }
+
+    function calcularMetricasDashboard(periodo, unidad) {
+      var facturacion = 0;
+      var cobrado = 0;
+      var pendienteCobro = 0;
+      var egresos = 0;
+      var pendienteJornales = 0;
+      var aplica = obraAplicaUnidad(unidad);
+
+      if (aplica) {
+        ordenesPago.forEach(function (o) {
+          if (!fechaEnPeriodo(o.fecha, periodo)) return;
+          facturacion += o.neto;
+          cobrado += o.cobradoAcum || 0;
+          pendienteCobro += saldoOrden(o);
+        });
+        obligacionesJornal.forEach(function (j) {
+          if (!fechaEnPeriodo(j.fecha, periodo)) return;
+          egresos += j.pagadoAcum || 0;
+          pendienteJornales += saldoJornal(j);
+        });
+      }
+
+      var flujo = cobrado - egresos;
+      var rentabilidad = facturacion > 0 ? (flujo / facturacion * 100) : 0;
+      var margen = facturacion > 0 ? ((facturacion - egresos - pendienteJornales) / facturacion * 100) : 0;
+      var avanceFisico = aplica ? pctAvanceFisicoObra() : 0;
+      var avanceFin = aplica ? pctAvanceFinancieroObra() : 0;
+      var cierres = aplica ? cierresObrero.filter(function (c) { return fechaEnPeriodo(c.fecha, periodo); }).length : 0;
+      var pendientes = aplica ? avancesOperativo.filter(function (a) { return a.estado === 'pendiente'; }).length : 0;
+      var obrasActivas = aplica ? 1 : 0;
+      var certs = aplica ? (cierresObrero.length + (certAdmMontoAcum > 0 ? certAdmVersion : 0)) : 0;
+      var rentObra = cobrado > 0 ? (flujo / cobrado * 100) : 0;
+
+      return {
+        facturacion: facturacion,
+        cobrado: cobrado,
+        pendienteCobro: pendienteCobro,
+        egresos: egresos,
+        pendienteJornales: pendienteJornales,
+        flujo: flujo,
+        rentabilidad: rentabilidad,
+        margen: margen,
+        avanceFisico: avanceFisico,
+        avanceFin: avanceFin,
+        cierres: cierres,
+        pendientes: pendientes,
+        obrasActivas: obrasActivas,
+        certs: certs,
+        rentObra: rentObra,
+        aplica: aplica
+      };
+    }
+
+    function setDashPct(id, val) {
+      var el = document.getElementById(id);
+      if (el) el.textContent = val.toFixed(1).replace('.', ',') + '%';
+    }
+
+    function setDashMoneda(id, val, colorClass) {
+      var el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = formatMoneda(val);
+      el.className = 'text-2xl font-semibold mt-1' + (colorClass ? ' ' + colorClass : '');
+      if (id === 'dash-fin-flujo' || id === 'dash-uni-resultado') {
+        el.className = 'text-2xl font-semibold mt-1 ' + (val >= 0 ? 'text-emerald-700' : 'text-red-700');
+      }
+    }
+
+    function renderDashboard() {
+      var periodo = document.getElementById('dash-filtro-periodo').value;
+      var unidad = document.getElementById('dash-filtro-unidad').value;
+      var m = calcularMetricasDashboard(periodo, unidad);
+
+      setDashMoneda('dash-fin-facturacion', m.facturacion);
+      setDashMoneda('dash-fin-cobrado', m.cobrado, 'text-emerald-700');
+      setDashMoneda('dash-fin-pendiente-cobro', m.pendienteCobro, 'text-amber-700');
+      setDashMoneda('dash-fin-egresos', m.egresos, 'text-red-700');
+      document.getElementById('dash-fin-rentabilidad').textContent = m.rentabilidad.toFixed(1).replace('.', ',') + '%';
+      setDashMoneda('dash-fin-flujo', m.flujo);
+
+      setDashPct('dash-op-avance-fisico', m.avanceFisico);
+      document.getElementById('dash-op-cierres').textContent = m.cierres;
+      document.getElementById('dash-op-pendientes').textContent = m.pendientes;
+      document.getElementById('dash-op-cert-adm').textContent = etiquetasCertAdm[certAdmEstado] || '—';
+
+      document.getElementById('dash-unidad-titulo').textContent = 'Unidad: ' + (etiquetasUnidadDash[unidad] || unidad);
+      setDashMoneda('dash-uni-resultado', m.flujo);
+      document.getElementById('dash-uni-obras').textContent = m.obrasActivas;
+      document.getElementById('dash-uni-certs').textContent = m.certs;
+      setDashMoneda('dash-uni-facturacion', m.facturacion);
+      document.getElementById('dash-uni-margen').textContent = m.margen.toFixed(1).replace('.', ',') + '%';
+      setDashMoneda('dash-uni-jornales-pend', m.pendienteJornales, 'text-amber-700');
+
+      document.getElementById('dash-obra-nombre').textContent = m.aplica ? 'Torre Rivadavia — 24 pisos' : 'Sin obra en esta unidad';
+      document.getElementById('dash-obra-cert').textContent = m.aplica
+        ? certObraActivo + ' · Inmobiliaria del Plata'
+        : 'Seleccioná Obras Residenciales para ver la obra demo';
+      setDashPct('dash-ob-avance-fisico', m.avanceFisico);
+      setDashPct('dash-ob-avance-fin', m.avanceFin);
+      setDashMoneda('dash-ob-recibidos', m.cobrado, 'text-emerald-700');
+      setDashMoneda('dash-ob-realizados', m.egresos, 'text-red-700');
+      document.getElementById('dash-ob-rentabilidad').textContent = m.rentObra.toFixed(1).replace('.', ',') + '%';
+      setDashMoneda('dash-ob-saldo-cliente', m.pendienteCobro, 'text-amber-700');
+
+      var ahora = new Date();
+      document.getElementById('dash-actualizado').textContent =
+        'Última actualización: ' + ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    }
+
+    function renderDashboardIfActive() {
+      var panel = document.getElementById('panel-dashboard');
+      if (panel && panel.classList.contains('activo')) renderDashboard();
+    }
+
+    function activarDashTab(tab) {
+      document.querySelectorAll('#dashboard-tabs .dash-tab').forEach(function (btn) {
+        var activo = btn.getAttribute('data-dash-tab') === tab;
+        btn.classList.toggle('border-obrados-600', activo);
+        btn.classList.toggle('text-obrados-700', activo);
+        btn.classList.toggle('font-medium', activo);
+        btn.classList.toggle('border-transparent', !activo);
+        btn.classList.toggle('text-slate-500', !activo);
+      });
+      ['empresa', 'unidad', 'obra'].forEach(function (t) {
+        var el = document.getElementById('dash-panel-' + t);
+        if (el) el.classList.toggle('hidden', t !== tab);
+      });
     }
 
     var etiquetasCertAdm = {
@@ -2076,6 +2398,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       }
       renderCertAdministrativo();
       renderFinanciero();
+      renderDashboardIfActive();
     }
 
     function aprobarCertAdm() {
@@ -2088,6 +2411,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       }
       renderCertAdministrativo();
       renderFinanciero();
+      renderDashboardIfActive();
     }
 
     function solicitarRevisionCertAdm() {
@@ -2147,6 +2471,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       renderGrillasOperativo();
       renderCertAdministrativo();
       renderFinanciero();
+      renderDashboardIfActive();
     }
 
     function puedeGenerarOrdenPago() {
@@ -2268,6 +2593,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
       msg.classList.remove('hidden');
       renderFinanciero();
       renderOrdenImprimible(orden);
+      renderDashboardIfActive();
     }
 
     function getItem(id) {
@@ -2526,6 +2852,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
 
       var validadosSinCierre = avancesOperativo.filter(function (a) { return a.estado === 'validado' && !a.cerrado; }).length;
       document.getElementById('contador-validados-sin-cierre').textContent = validadosSinCierre;
+      renderDashboardIfActive();
     }
 
     function renderValidacionPendientes() {
@@ -2865,6 +3192,14 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     });
     document.getElementById('modal-jornal-registrar').addEventListener('click', confirmarPagoJornal);
 
+    document.querySelectorAll('#dashboard-tabs .dash-tab').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        activarDashTab(btn.getAttribute('data-dash-tab'));
+      });
+    });
+    document.getElementById('dash-filtro-periodo').addEventListener('change', renderDashboard);
+    document.getElementById('dash-filtro-unidad').addEventListener('change', renderDashboard);
+
     document.getElementById('validacion-body').addEventListener('click', function (e) {
       var btn = e.target.closest('.btn-aprobar-avance, .btn-rechazar-avance');
       if (!btn) return;
@@ -2878,6 +3213,7 @@ var nombresObrero = { carlos: 'Carlos Ruiz', maria: 'María López', juan: 'Juan
     renderGrillasOperativo();
     renderCertAdministrativo();
     renderFinanciero();
+    activarDashTab('empresa');
   </script>
 
 </body>
